@@ -1,0 +1,16 @@
+query FetchPost($id: String!) {
+	post(id: $id) {
+		title
+		text
+		poster {
+			name
+			_id
+			supporting {
+				_id
+			}
+			creator
+			email
+			supporters
+		}
+	}
+}

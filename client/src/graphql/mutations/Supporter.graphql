@@ -1,0 +1,24 @@
+mutation Supporter($id: String!, $add: Boolean!) {
+	handleSupporter(id: $id, add: $add) {
+		errors {
+			field
+			message
+		}
+		user {
+			name
+			_id
+			supporting {
+				_id
+			}
+			creator
+			email
+			supporters
+			posts {
+				title
+				_id
+				createdAt
+				text
+			}
+		}
+	}
+}

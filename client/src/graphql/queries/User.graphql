@@ -1,0 +1,16 @@
+query User {
+	user {
+		_id
+		supporting {
+			_id
+			name
+			email
+			supporters
+		}
+		posts {
+			_id
+			title
+			text
+		}
+	}
+}

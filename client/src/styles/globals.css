@@ -1,0 +1,54 @@
+html,
+body {
+	padding: 0;
+	margin: 0;
+	font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+		Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+	overflow-x: hidden;
+	height: 100%;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+.header {
+	width: 100%;
+	height: 400px;
+	background-size: cover;
+	background-position: center;
+	background-image: url('https://images.hdqwalls.com/wallpapers/firewatch-sd.jpg');
+
+	/* height of your footer */
+}
+
+.centered {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.container {
+	min-height: 81.3vh;
+	padding: 0 0.5rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.sticky {
+	position: fixed;
+	top: 0;
+	width: 100%;
+}
+
+.locked {
+	filter: blur(2);
+}

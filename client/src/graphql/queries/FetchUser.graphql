@@ -1,0 +1,18 @@
+query FetchUser($id: String!) {
+	fetchUser(id: $id) {
+		name
+		_id
+		supporting {
+			_id
+		}
+		creator
+		email
+		supporters
+		posts {
+			title
+			_id
+			createdAt
+			text
+		}
+	}
+}
