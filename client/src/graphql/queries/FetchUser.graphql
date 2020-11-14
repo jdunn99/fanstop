@@ -5,7 +5,6 @@ query FetchUser($id: String!) {
 		supporting {
 			_id
 		}
-		creator
 		email
 		supporters
 		posts {

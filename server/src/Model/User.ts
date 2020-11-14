@@ -16,6 +16,14 @@ export class User {
 	@prop({ required: true })
 	email!: string;
 
+	@Field({ nullable: true })
+	@prop({ required: false })
+	bio?: string;
+
+	@Field({ nullable: true })
+	@prop({ required: false })
+	links?: string;
+
 	@Field()
 	@prop({ required: true })
 	password!: string;
@@ -36,10 +44,6 @@ export class User {
 	@Field(() => Boolean)
 	@prop({ required: true, default: false })
 	admin?: boolean;
-
-	@Field(() => Boolean)
-	@prop({ required: true, default: false })
-	creator?: boolean;
 
 	@Field(() => [Post])
 	@prop({ ref: 'Post', required: true })

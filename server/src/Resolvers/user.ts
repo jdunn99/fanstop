@@ -53,7 +53,7 @@ export class UserResolver {
 
 		return await UserModel.findOne({ _id: req.userId })
 			.populate('posts')
-			.populate('supporting', '-password -admin -creator');
+			.populate('supporting', '-password -admin');
 	}
 
 	/*
@@ -141,6 +141,38 @@ export class UserResolver {
 	}
 
 	/*
+	 * @desc: Updated a user based on the requested parameters
+	 * @params:
+	 *  @param => name: string
+	 *  @param => bio: string
+	 * @param => bio: string
+	 * @returns: UserResponse
+	 */
+	@Mutation(() => UserResponse)
+	async updateUser(
+		@Arg('name', { nullable: true }) name: string,
+		@Arg('bio', { nullable: true }) bio: string,
+		@Arg('links', { nullable: true }) links: string,
+		@Ctx() { req, UserModel }: Context
+	): Promise<UserResponse> {
+		const user = await UserModel.findOne({ _id: req.userId });
+		if (!user) {
+			return {
+				errors: [{ field: '', message: 'User not found' }],
+			};
+		}
+
+		// TODO: Add error checking for inputs
+		if (name) user.name = name;
+		if (bio) user.bio = bio;
+		if (links) user.links = links;
+
+		await user.save();
+
+		return { user: user };
+	}
+
+	/*
 	 * @desc: Adds a supporter to the user
 	 * @params:
 	 * 	@param => id: string
@@ -198,7 +230,7 @@ export class UserResolver {
 
 		const user = await UserModel.findOne({ email: email })
 			.populate('posts')
-			.populate('supporting', '-password -admin -creator');
+			.populate('supporting', '-password -admin ');
 		if (!user)
 			return {
 				errors: [

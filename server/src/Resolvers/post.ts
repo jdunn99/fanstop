@@ -1,6 +1,24 @@
 import { Post } from '../Model/Post';
-import { Resolver, Query, Ctx, Arg, Mutation } from 'type-graphql';
+import {
+	Resolver,
+	Int,
+	Query,
+	Ctx,
+	Arg,
+	Mutation,
+	InputType,
+	Field,
+} from 'type-graphql';
 import { Context } from '../types';
+
+@InputType()
+class BuildInput {
+	@Field()
+	actionType: string;
+
+	@Field(() => Int)
+	index: number;
+}
 
 @Resolver(() => Post)
 export class PostResolver {
@@ -42,6 +60,8 @@ export class PostResolver {
 	async createPost(
 		@Arg('title') title: string,
 		@Arg('text') text: string,
+		@Arg('buildMap', () => [BuildInput], { nullable: true })
+		buildMap: [BuildInput],
 		@Ctx() { PostModel, UserModel, req }: Context
 	): Promise<Post> {
 		const user = await UserModel.findOne({ _id: req.userId });
@@ -49,12 +69,14 @@ export class PostResolver {
 
 		const post = new PostModel({
 			title: title,
-			text: text,
 			likes: 0,
 			tips: 0,
 			posterId: req.userId.toString(),
 			poster: user!._id,
+			buildMap: buildMap,
 		});
+
+		post.text.push(text);
 
 		const savedPost = await post.save();
 		await savedPost.populate('poster', '-password').execPopulate();

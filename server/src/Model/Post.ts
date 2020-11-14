@@ -2,6 +2,16 @@ import { ObjectType, InputType, Field, ID, Int, Float } from 'type-graphql';
 import { mongoose, prop, Ref } from '@typegoose/typegoose';
 import { User } from './User';
 
+@ObjectType()
+@InputType()
+export class BuildMap {
+	@Field()
+	actionType: string;
+
+	@Field(() => Int)
+	index: number;
+}
+
 @InputType()
 @ObjectType()
 export class Post {
@@ -12,9 +22,17 @@ export class Post {
 	@prop({ required: true })
 	title!: string;
 
-	@Field()
-	@prop({ required: true })
-	text!: string;
+	@Field(() => [String])
+	@prop({ type: [String], required: true })
+	text!: string[];
+
+	@Field(() => [BuildMap])
+	@prop({ type: [BuildMap], required: false, default: [] })
+	buildMap: BuildMap[];
+
+	@Field(() => [String])
+	@prop({ type: [String], required: false })
+	images?: string[]; // urls corresponding to images in cloud storage
 
 	@Field(() => Int)
 	@prop({ required: true })

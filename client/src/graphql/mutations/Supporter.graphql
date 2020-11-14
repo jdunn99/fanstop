@@ -10,7 +10,6 @@ mutation Supporter($id: String!, $add: Boolean!) {
 			supporting {
 				_id
 			}
-			creator
 			email
 			supporters
 			posts {
