@@ -11,7 +11,7 @@ mutation Login($email: String!, $password: String!) {
 			posts {
 				_id
 				title
-				text
+				desc
 			}
 		}
 		errors {

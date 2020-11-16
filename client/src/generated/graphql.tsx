@@ -37,6 +37,8 @@ export type User = {
   _id?: Maybe<Scalars['ID']>;
   name: Scalars['String'];
   email: Scalars['String'];
+  bio?: Maybe<Scalars['String']>;
+  links?: Maybe<Scalars['String']>;
   password: Scalars['String'];
   supporters: Scalars['Int'];
   supporting: Array<User>;
@@ -48,7 +50,9 @@ export type Post = {
   __typename?: 'Post';
   _id?: Maybe<Scalars['ID']>;
   title: Scalars['String'];
-  text: Scalars['String'];
+  desc: Scalars['String'];
+  buildMap: Array<BuildMap>;
+  images: Array<Scalars['String']>;
   likes: Scalars['Int'];
   tips: Scalars['Float'];
   poster?: Maybe<User>;
@@ -56,15 +60,23 @@ export type Post = {
   createdAt: Scalars['DateTime'];
 };
 
+export type BuildMap = {
+  __typename?: 'BuildMap';
+  type: Scalars['String'];
+  value: Scalars['String'];
+};
+
 
 export type Mutation = {
   __typename?: 'Mutation';
   register: UserResponse;
+  updateUser: UserResponse;
   handleSupporter: UserResponse;
   login: UserResponse;
   logout: Scalars['Boolean'];
   deleteAll: Scalars['Boolean'];
   createPost: Post;
+  deleteAllPosts: Scalars['Boolean'];
 };
 
 
@@ -72,6 +84,13 @@ export type MutationRegisterArgs = {
   email: Scalars['String'];
   password: Scalars['String'];
   name: Scalars['String'];
+};
+
+
+export type MutationUpdateUserArgs = {
+  links?: Maybe<Scalars['String']>;
+  bio?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
 };
 
 
@@ -88,7 +107,8 @@ export type MutationLoginArgs = {
 
 
 export type MutationCreatePostArgs = {
-  text: Scalars['String'];
+  buildMap?: Maybe<Array<BuildInput>>;
+  desc: Scalars['String'];
   title: Scalars['String'];
 };
 
@@ -111,6 +131,30 @@ export type Token = {
   refresh: Scalars['String'];
 };
 
+export type BuildInput = {
+  type: Scalars['String'];
+  value: Scalars['String'];
+};
+
+export type CreatePostMutationVariables = Exact<{
+  buildMap?: Maybe<Array<BuildInput>>;
+  title: Scalars['String'];
+  desc: Scalars['String'];
+}>;
+
+
+export type CreatePostMutation = (
+  { __typename?: 'Mutation' }
+  & { createPost: (
+    { __typename?: 'Post' }
+    & Pick<Post, '_id' | 'title' | 'desc'>
+    & { poster?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, '_id'>
+    )> }
+  ) }
+);
+
 export type LoginMutationVariables = Exact<{
   email: Scalars['String'];
   password: Scalars['String'];
@@ -129,7 +173,7 @@ export type LoginMutation = (
         & Pick<User, '_id' | 'name' | 'email' | 'supporters'>
       )>, posts: Array<(
         { __typename?: 'Post' }
-        & Pick<Post, '_id' | 'title' | 'text'>
+        & Pick<Post, '_id' | 'title' | 'desc'>
       )> }
     )>, errors?: Maybe<Array<(
       { __typename?: 'InputError' }
@@ -170,7 +214,7 @@ export type SupporterMutation = (
         & Pick<User, '_id'>
       )>, posts: Array<(
         { __typename?: 'Post' }
-        & Pick<Post, 'title' | '_id' | 'createdAt' | 'text'>
+        & Pick<Post, 'title' | '_id' | 'createdAt' | 'desc'>
       )> }
     )> }
   ) }
@@ -185,7 +229,7 @@ export type FetchPostQuery = (
   { __typename?: 'Query' }
   & { post?: Maybe<(
     { __typename?: 'Post' }
-    & Pick<Post, 'title' | 'text'>
+    & Pick<Post, 'title' | 'desc'>
     & { poster?: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'name' | '_id' | 'email' | 'supporters'>
@@ -193,6 +237,9 @@ export type FetchPostQuery = (
         { __typename?: 'User' }
         & Pick<User, '_id'>
       )> }
+    )>, buildMap: Array<(
+      { __typename?: 'BuildMap' }
+      & Pick<BuildMap, 'type' | 'value'>
     )> }
   )> }
 );
@@ -212,7 +259,7 @@ export type FetchUserQuery = (
       & Pick<User, '_id'>
     )>, posts: Array<(
       { __typename?: 'Post' }
-      & Pick<Post, 'title' | '_id' | 'createdAt' | 'text'>
+      & Pick<Post, 'title' | '_id' | 'createdAt' | 'desc'>
     )> }
   )> }
 );
@@ -224,18 +271,57 @@ export type UserQuery = (
   { __typename?: 'Query' }
   & { user?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, '_id'>
+    & Pick<User, '_id' | 'name'>
     & { supporting: Array<(
       { __typename?: 'User' }
       & Pick<User, '_id' | 'name' | 'email' | 'supporters'>
     )>, posts: Array<(
       { __typename?: 'Post' }
-      & Pick<Post, '_id' | 'title' | 'text'>
+      & Pick<Post, '_id' | 'title' | 'desc'>
     )> }
   )> }
 );
 
 
+export const CreatePostDocument = gql`
+    mutation CreatePost($buildMap: [BuildInput!], $title: String!, $desc: String!) {
+  createPost(buildMap: $buildMap, title: $title, desc: $desc) {
+    _id
+    title
+    desc
+    poster {
+      _id
+    }
+  }
+}
+    `;
+export type CreatePostMutationFn = Apollo.MutationFunction<CreatePostMutation, CreatePostMutationVariables>;
+
+/**
+ * __useCreatePostMutation__
+ *
+ * To run a mutation, you first call `useCreatePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreatePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createPostMutation, { data, loading, error }] = useCreatePostMutation({
+ *   variables: {
+ *      buildMap: // value for 'buildMap'
+ *      title: // value for 'title'
+ *      desc: // value for 'desc'
+ *   },
+ * });
+ */
+export function useCreatePostMutation(baseOptions?: Apollo.MutationHookOptions<CreatePostMutation, CreatePostMutationVariables>) {
+        return Apollo.useMutation<CreatePostMutation, CreatePostMutationVariables>(CreatePostDocument, baseOptions);
+      }
+export type CreatePostMutationHookResult = ReturnType<typeof useCreatePostMutation>;
+export type CreatePostMutationResult = Apollo.MutationResult<CreatePostMutation>;
+export type CreatePostMutationOptions = Apollo.BaseMutationOptions<CreatePostMutation, CreatePostMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
@@ -250,7 +336,7 @@ export const LoginDocument = gql`
       posts {
         _id
         title
-        text
+        desc
       }
     }
     errors {
@@ -338,7 +424,7 @@ export const SupporterDocument = gql`
         title
         _id
         createdAt
-        text
+        desc
       }
     }
   }
@@ -374,7 +460,7 @@ export const FetchPostDocument = gql`
     query FetchPost($id: String!) {
   post(id: $id) {
     title
-    text
+    desc
     poster {
       name
       _id
@@ -383,6 +469,10 @@ export const FetchPostDocument = gql`
       }
       email
       supporters
+    }
+    buildMap {
+      type
+      value
     }
   }
 }
@@ -427,7 +517,7 @@ export const FetchUserDocument = gql`
       title
       _id
       createdAt
-      text
+      desc
     }
   }
 }
@@ -468,10 +558,11 @@ export const UserDocument = gql`
       email
       supporters
     }
+    name
     posts {
       _id
       title
-      text
+      desc
     }
   }
 }

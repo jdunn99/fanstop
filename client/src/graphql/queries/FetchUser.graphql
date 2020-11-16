@@ -11,7 +11,7 @@ query FetchUser($id: String!) {
 			title
 			_id
 			createdAt
-			text
+			desc
 		}
 	}
 }

@@ -16,7 +16,7 @@ mutation Supporter($id: String!, $add: Boolean!) {
 				title
 				_id
 				createdAt
-				text
+				desc
 			}
 		}
 	}

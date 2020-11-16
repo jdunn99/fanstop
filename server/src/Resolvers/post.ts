@@ -1,7 +1,6 @@
 import { Post } from '../Model/Post';
 import {
 	Resolver,
-	Int,
 	Query,
 	Ctx,
 	Arg,
@@ -10,14 +9,15 @@ import {
 	Field,
 } from 'type-graphql';
 import { Context } from '../types';
+import { BuildMap } from 'src/Model/BuildMap';
 
 @InputType()
-class BuildInput {
+class BuildInput implements Partial<BuildMap> {
 	@Field()
-	actionType: string;
+	type: string;
 
-	@Field(() => Int)
-	index: number;
+	@Field()
+	value: string;
 }
 
 @Resolver(() => Post)
@@ -50,16 +50,17 @@ export class PostResolver {
 	}
 
 	/*
-	 * @desc: Create a post
+	 * @desc: Stores post in the database
 	 * @params:
 	 *  @param => title: string
 	 *  @param => text: string
+	 * 	@param => buildMap: [BuildInput]
 	 * @returns: Post
 	 */
 	@Mutation(() => Post)
 	async createPost(
 		@Arg('title') title: string,
-		@Arg('text') text: string,
+		@Arg('desc') desc: string,
 		@Arg('buildMap', () => [BuildInput], { nullable: true })
 		buildMap: [BuildInput],
 		@Ctx() { PostModel, UserModel, req }: Context
@@ -73,17 +74,26 @@ export class PostResolver {
 			tips: 0,
 			posterId: req.userId.toString(),
 			poster: user!._id,
-			buildMap: buildMap,
+			desc: desc,
 		});
 
-		post.text.push(text);
+		post.buildMap.push(...buildMap);
 
+		console.log(post.buildMap);
 		const savedPost = await post.save();
-		await savedPost.populate('poster', '-password').execPopulate();
+
+		await savedPost.populate('buildMap').execPopulate();
+		console.log(savedPost);
 
 		user.posts.push(savedPost.toObject());
 
 		await user.save();
 		return savedPost;
+	}
+
+	@Mutation(() => Boolean)
+	async deleteAllPosts(@Ctx() { PostModel }: Context): Promise<Boolean> {
+		await PostModel.deleteMany({});
+		return true;
 	}
 }

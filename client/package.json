@@ -11,6 +11,7 @@
   "dependencies": {
     "@apollo/client": "^3.2.5",
     "@chakra-ui/core": "^1.0.0-rc.8",
+    "@chakra-ui/transition": "^1.0.0",
     "@types/autosize": "^3.0.7",
     "apollo-link-persisted-queries": "^0.2.2",
     "autosize": "^4.0.2",

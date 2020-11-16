@@ -21,20 +21,12 @@ interface NavbarProps {
 	type?: string;
 	shadow?: string;
 }
+import { AvatarPopover } from './AvatarPopover';
+import { FaBell, FaPlusCircle } from 'react-icons/fa';
 
 const NavBody = ({ user }) => {
 	return (
 		<Flex align="center" color="white">
-			<NextLink href="/about">
-				<Button as={Link} mr={4} colorScheme="blue">
-					About
-				</Button>
-			</NextLink>
-			<NextLink href="/contact">
-				<Button as={Link} mr={4} colorScheme="blue">
-					Contact Us
-				</Button>
-			</NextLink>
 			{user ? (
 				<>
 					{user.user?.admin ? (
@@ -44,24 +36,26 @@ const NavBody = ({ user }) => {
 							</Button>
 						</NextLink>
 					) : null}
+
 					<NextLink href="/login">
 						<Button as={Link} mr={4} colorScheme="blue">
 							Dashboard
 						</Button>
 					</NextLink>
-					<NextLink href={`/user/${user._id}`}>
-						<Button as={Link} colorScheme="blue">
-							<Avatar size="sm" cursor="pointer" />
+					<NextLink href="/about">
+						<Button as={Link} mr={4} colorScheme="blue">
+							<FaBell />
 						</Button>
 					</NextLink>
+					<NextLink href="/post">
+						<Button as={Link} mr={4} colorScheme="blue">
+							<FaPlusCircle />
+						</Button>
+					</NextLink>
+					<AvatarPopover user={user} />
 				</>
 			) : (
 				<>
-					<NextLink href="/schedule">
-						<Button as={Link} mr={4} colorScheme="blue">
-							Schedule a Demo
-						</Button>
-					</NextLink>
 					<NextLink href="/login">
 						<Button as={Link} mr={4} colorScheme="blue">
 							Sign In
@@ -186,7 +180,7 @@ const NavMobile = ({ user }) => {
 export const Navbar: React.FC<NavbarProps> = () => {
 	const { data, loading } = useUserQuery();
 
-	return (
+	return loading ? null : (
 		<Flex
 			zIndex={1}
 			top={0}

@@ -2,6 +2,7 @@ import React from 'react';
 import styles from '../styles/Home.module.css';
 import { useRouter } from 'next/router';
 import { withApollo } from '../util/withApollo';
+import { Navbar } from '../components/Navbar';
 
 function Home() {
 	const router = useRouter();
@@ -9,6 +10,7 @@ function Home() {
 
 	return (
 		<div className={styles.container}>
+			<Navbar />
 			<p>Poggers</p>
 		</div>
 	);

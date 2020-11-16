@@ -116,7 +116,8 @@ const User = ({ props }) => {
 												<PostCard
 													key={post._id}
 													title={post.title}
-													text={post.text}
+													author="Test"
+													text={post.desc}
 													href={`/user/${id}/post/${post._id.toString()}`}
 												/>
 											</>
@@ -186,7 +187,7 @@ const User = ({ props }) => {
 												<PostCard
 													key={post._id}
 													title={post.title}
-													text={post.text}
+													text={post.desc}
 													href={`/user/${id}/post/${post._id.toString()}`}
 												/>
 											</>

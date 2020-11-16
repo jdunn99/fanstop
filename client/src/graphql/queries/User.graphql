@@ -7,10 +7,11 @@ query User {
 			email
 			supporters
 		}
+		name
 		posts {
 			_id
 			title
-			text
+			desc
 		}
 	}
 }

@@ -52,3 +52,51 @@ a {
 .locked {
 	filter: blur(2);
 }
+
+span {
+	display: block;
+	overflow: hidden;
+}
+
+.editable-content-title {
+	text-align: center;
+	background: transparent;
+	color: '#1A202C';
+	opacity: 0.8;
+	display: block;
+	line-height: 1.5rem;
+	font-size: 2.25rem;
+	font-weight: bolder;
+	width: 100%;
+	margin-bottom: 2rem;
+}
+
+.editable-content-text {
+	text-align: left;
+	display: block;
+	font-size: 1.125rem;
+	line-height: 1.5rem;
+}
+
+.preview-content-title {
+	text-align: center;
+	background: white;
+	border-radius: 0.5rem;
+	padding: 1rem;
+	color: '#1A202C';
+	opacity: 0.8;
+	display: block;
+	line-height: 1.5rem;
+	font-size: 1.5rem;
+	font-weight: bolder;
+	width: 100%;
+}
+
+.preview-content-text {
+	background: white;
+
+	text-align: left;
+	display: block;
+	font-size: 1.125rem;
+	line-height: 1.5rem;
+}

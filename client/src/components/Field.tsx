@@ -15,6 +15,7 @@ type FieldProps = InputHTMLAttributes<HTMLInputElement> & {
 	name: string;
 	icon?: string;
 	textarea?: boolean;
+	white?: boolean;
 };
 
 export const Field: React.FC<FieldProps> = ({
@@ -35,7 +36,13 @@ export const Field: React.FC<FieldProps> = ({
 				{icon ? (
 					<InputLeftElement children={<Icon name={icon} />} />
 				) : null}
-				<Input rounded={0} {...field} {...props} id={field.name} />
+				<FieldType
+					background="#fff"
+					rounded={0}
+					{...field}
+					{...props}
+					id={field.name}
+				/>
 			</InputGroup>
 			{error ? <small style={{ color: 'red' }}>{error}</small> : null}
 		</FormControl>
