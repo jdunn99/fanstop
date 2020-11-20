@@ -52,8 +52,9 @@ export class UserResolver {
 		if (!req.userId) return null;
 
 		return await UserModel.findOne({ _id: req.userId })
-			.populate('posts')
-			.populate('supporting', '-password -admin');
+			.populate({ path: 'posts', options: { sort: { createdAt: -1 } } })
+			.populate('supporting', '-password -admin')
+			.populate('notifications');
 	}
 
 	/*
@@ -66,7 +67,10 @@ export class UserResolver {
 		@Arg('id') id: string,
 		@Ctx() { UserModel }: Context
 	): Promise<User | null> {
-		const result = await UserModel.findOne({ _id: id }).populate('posts');
+		const result = await UserModel.findOne({ _id: id }).populate({
+			path: 'posts',
+			options: { sort: { createdAt: -1 } },
+		});
 
 		console.log(result);
 		return result;
@@ -132,8 +136,7 @@ export class UserResolver {
 				email,
 				password: hashed,
 				supporting: [],
-				supporters: 0,
-				posts: [],
+				supporters: [],
 			});
 
 			return { user: result };
@@ -196,13 +199,13 @@ export class UserResolver {
 			if (err) throw Error();
 			if (add) {
 				result?.supporting.push(id);
-				supporter.supporters++;
+				supporter.supporters.push(result!._id);
 			} else {
 				console.log(id);
 				result!.supporting = result!.supporting.filter((x) => x !== id);
-				supporter.supporters <= 0
-					? (supporter.supporters = 0)
-					: supporter.supporters--;
+				supporter.supporters = supporter.supporters.filter(
+					(x) => x !== result!._id
+				);
 			}
 
 			await result?.save();
@@ -286,5 +289,23 @@ export class UserResolver {
 		await UserModel.deleteMany({});
 
 		return true;
+	}
+
+	@Mutation(() => User)
+	async deleteNotification(
+		@Arg('id') id: string,
+		@Ctx() { req, UserModel }: Context
+	): Promise<User> {
+		const user = await UserModel.findOne({ _id: req.userId }).populate(
+			'notifications'
+		);
+		if (!user) throw Error();
+
+		const result = user.notifications?.filter((x: any) => x._id !== id);
+		user.notifications = result;
+
+		await user.save();
+
+		return user;
 	}
 }

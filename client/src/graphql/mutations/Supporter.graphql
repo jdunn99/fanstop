@@ -11,7 +11,9 @@ mutation Supporter($id: String!, $add: Boolean!) {
 				_id
 			}
 			email
-			supporters
+			supporters {
+				_id
+			}
 			posts {
 				title
 				_id

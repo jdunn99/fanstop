@@ -13,7 +13,7 @@ import { Navbar } from '../../../../components/Navbar';
 import { UserCard } from '../../../../components/UserCard';
 import { withApollo } from '../../../../util/withApollo';
 import { PostView } from '../../../../components/posts/PostView';
-
+import { LikeButton } from '../../../../components/posts/LikeButton';
 interface indexProps {
 	post: any;
 }
@@ -70,12 +70,13 @@ const Post: React.FC<indexProps> = () => {
 						<UserCard
 							name={data.post.poster.name}
 							supporting={data.post.poster.supporting.length}
-							supporters={data.post.poster.supporters}
+							supporters={data.post.poster.supporters.length}
 							href={`/user/${data.post.poster._id}`}
 						/>
 						<Flex flex={1} overflow="hidden">
 							<PostView buildState={data.post.buildMap} />
 						</Flex>
+						<LikeButton data={data} />
 					</>
 				);
 			}

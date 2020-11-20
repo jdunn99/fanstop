@@ -38,15 +38,10 @@ export class Post {
 		ref: 'User',
 		required: true,
 		type: mongoose.Schema.Types.ObjectId,
-		default: false,
 	})
 	poster?: Ref<User>;
 
-	@Field()
-	@prop({ required: true })
-	posterId!: string;
-
-	@Field()
+	@Field(() => Date)
 	@prop({ type: Date, default: Date.now })
-	createdAt?: Date;
+	createdAt: Date;
 }

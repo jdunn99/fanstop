@@ -5,13 +5,20 @@ query User {
 			_id
 			name
 			email
-			supporters
+			supporters {
+				_id
+			}
 		}
 		name
 		posts {
 			_id
 			title
 			desc
+		}
+		notifications {
+			_id
+			message
+			date
 		}
 	}
 }

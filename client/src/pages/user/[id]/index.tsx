@@ -6,6 +6,7 @@ import {
 	useSupporterMutation,
 	FetchUserQuery,
 	FetchUserDocument,
+	UserQuery,
 } from '../../../generated/graphql';
 import styles from '../../../styles/Home.module.css';
 import {
@@ -16,6 +17,7 @@ import {
 	Tabs,
 	Tab,
 	TabList,
+	Box,
 	TabPanel,
 	TabPanels,
 } from '@chakra-ui/core';
@@ -27,7 +29,50 @@ import { SupporterCard } from '../../../components/SupporterCard';
 import { isServer } from '../../../util/isServer';
 import { withApollo } from '../../../util/withApollo';
 
-const User = ({ props }) => {
+interface UserProfileProps {
+	dataUser: UserQuery;
+	id: string;
+}
+
+const UserProfile: React.FC<UserProfileProps> = ({ dataUser, id }) => {
+	return (
+		<Flex flex={1} justify="center" overflow="hidden" p={4} mt={9}>
+			<Tabs variant="enclosed" isFitted>
+				<TabList mb="1rem">
+					<Tab>Posts</Tab>
+					<Tab>Supporting</Tab>
+				</TabList>
+				<TabPanels>
+					<TabPanel>
+						<Stack spacing={8}></Stack>
+					</TabPanel>
+					<TabPanel>
+						<Flex
+							justifyContent="space-around"
+							alignItems="center"
+							flexDirection="row"
+							flexWrap="wrap"
+							w={900}
+						>
+							{dataUser.user.supporting.map((sup) => (
+								<Box key={sup._id} shadow="lg">
+									<SupporterCard
+										name={sup.name}
+										text="This is a test"
+										href={`/user/${sup._id}`}
+										key={sup._id}
+									/>
+								</Box>
+							))}
+						</Flex>
+					</TabPanel>
+				</TabPanels>
+			</Tabs>
+		</Flex>
+	);
+};
+
+const User = () => {
 	const router = useRouter();
 	const [handleSupporter] = useSupporterMutation();
 	const { id } = router.query;
@@ -125,15 +170,11 @@ const User = ({ props }) => {
 									</Stack>
 								</TabPanel>
 								<TabPanel>
-									<Grid
-										templateColumns={[
-											'1fr',
-											'1fr',
-											'repeat(2, 1fr)',
-											'repeat(3, 1fr)',
-										]}
-										p={4}
-										gap={6}
+									<Flex
+										justifyContent="center"
+										alignItems="center"
+										flexDirection="row"
+										flexWrap="wrap"
 									>
 										{data.fetchUser.supporting.map(
 											(sup) => (
@@ -147,7 +188,7 @@ const User = ({ props }) => {
 												</>
 											)
 										)}
-									</Grid>
+									</Flex>
 								</TabPanel>
 							</TabPanels>
 						</Tabs>
@@ -166,61 +207,7 @@ const User = ({ props }) => {
 					</Flex>
 				);
 			default:
-				return (
-					<Flex
-						flex={1}
-						justify="center"
-						overflow="hidden"
-						p={4}
-						mt={9}
-					>
-						<Tabs variant="enclosed" isFitted>
-							<TabList mb="1rem">
-								<Tab>Posts</Tab>
-								<Tab>Supporting</Tab>
-							</TabList>
-							<TabPanels>
-								<TabPanel>
-									<Stack spacing={8}>
-										{data.fetchUser.posts.map((post) => (
-											<>
-												<PostCard
-													key={post._id}
-													title={post.title}
-													text={post.desc}
-													href={`/user/${id}/post/${post._id.toString()}`}
-												/>
-											</>
-										))}
-									</Stack>
-								</TabPanel>
-								<TabPanel>
-									<Grid
-										templateColumns={[
-											'1fr',
-											'1fr',
-											'repeat(2, 1fr)',
-											'repeat(3, 1fr)',
-										]}
-										p={4}
-										gap={6}
-									>
-										{dataUser.user.supporting.map((sup) => (
-											<>
-												<SupporterCard
-													name={sup.name}
-													text="This is a test"
-													href={`/user/${sup._id}`}
-													key={sup._id}
-												/>
-											</>
-										))}
-									</Grid>
-								</TabPanel>
-							</TabPanels>
-						</Tabs>
-					</Flex>
-				);
+				return <UserProfile id={id as string} dataUser={dataUser} />;
 		}
 	};
 
@@ -232,7 +219,7 @@ const User = ({ props }) => {
 			</Head>
 			<Spinner />
 		</div>
-	) : (
+	) : data.fetchUser ? (
 		<div key={data.fetchUser._id}>
 			<Head>
 				<title>FanStop - {data.fetchUser.name}</title>
@@ -245,7 +232,7 @@ const User = ({ props }) => {
 					<UserCard
 						name={data.fetchUser.name}
 						supporting={data.fetchUser.supporting.length}
-						supporters={data.fetchUser.supporters}
+						supporters={data.fetchUser.supporters.length}
 						payload={payload}
 						handleFetch={() => HandleProfileFetch()}
 						href={`/user/${data.fetchUser._id}`}
@@ -254,7 +241,7 @@ const User = ({ props }) => {
 					<UserCard
 						name={data.fetchUser.name}
 						supporting={data.fetchUser.supporting.length}
-						supporters={data.fetchUser.supporters}
+						supporters={data.fetchUser.supporters.length}
 						payload={payload}
 						handleFetch={() =>
 							HandleSupportFetch(
@@ -269,6 +256,8 @@ const User = ({ props }) => {
 
 			<HandlePayload />
 		</div>
+	) : (
+		<p>User not found</p>
 	);
 };
 

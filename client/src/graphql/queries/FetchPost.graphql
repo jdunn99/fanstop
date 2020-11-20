@@ -1,5 +1,6 @@
 query FetchPost($id: String!) {
 	post(id: $id) {
+		_id
 		title
 		desc
 		poster {
@@ -9,11 +10,14 @@ query FetchPost($id: String!) {
 				_id
 			}
 			email
-			supporters
+			supporters {
+				_id
+			}
 		}
 		buildMap {
 			type
 			value
 		}
+		likes
 	}
 }

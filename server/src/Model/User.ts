@@ -1,6 +1,7 @@
-import { ObjectType, InputType, Field, ID, Int } from 'type-graphql';
+import { ObjectType, InputType, Field, ID } from 'type-graphql';
 import { mongoose, prop, Ref } from '@typegoose/typegoose';
 import { Post } from './Post';
+import { Notification } from './Notification';
 
 @InputType()
 @ObjectType()
@@ -28,16 +29,21 @@ export class User {
 	@prop({ required: true })
 	password!: string;
 
-	@Field(() => Int)
-	@prop({ required: true })
-	supporters!: number;
+	@Field(() => [User])
+	@prop({
+		ref: 'User',
+		required: true,
+		type: mongoose.Schema.Types.ObjectId,
+		default: undefined,
+	})
+	supporters!: Ref<User>[];
 
 	@Field(() => [User])
 	@prop({
 		ref: 'User',
 		required: true,
 		type: mongoose.Schema.Types.ObjectId,
-		default: false,
+		default: undefined,
 	})
 	supporting!: Ref<User>[];
 
@@ -46,6 +52,24 @@ export class User {
 	admin?: boolean;
 
 	@Field(() => [Post])
-	@prop({ ref: 'Post', required: true })
-	posts: Ref<Post>[];
+	@prop({
+		ref: 'Post',
+		required: true,
+		type: mongoose.Schema.Types.ObjectId,
+		default: undefined,
+	})
+	posts?: Ref<Post>[];
+
+	@Field(() => [Post])
+	@prop({
+		ref: 'Post',
+		required: true,
+		type: mongoose.Types.ObjectId,
+		default: undefined,
+	})
+	feed?: Ref<Post>[];
+
+	@Field(() => [Notification])
+	@prop({ type: [Notification], required: true })
+	notifications?: Ref<Notification>[];
 }

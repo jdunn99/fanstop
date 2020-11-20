@@ -6,7 +6,9 @@ query FetchUser($id: String!) {
 			_id
 		}
 		email
-		supporters
+		supporters {
+			_id
+		}
 		posts {
 			title
 			_id

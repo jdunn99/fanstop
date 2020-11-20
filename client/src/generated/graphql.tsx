@@ -20,6 +20,7 @@ export type Query = {
   users: Array<User>;
   posts: Array<Post>;
   post?: Maybe<Post>;
+  feed: Array<Post>;
 };
 
 
@@ -40,10 +41,12 @@ export type User = {
   bio?: Maybe<Scalars['String']>;
   links?: Maybe<Scalars['String']>;
   password: Scalars['String'];
-  supporters: Scalars['Int'];
+  supporters: Array<User>;
   supporting: Array<User>;
   admin: Scalars['Boolean'];
   posts: Array<Post>;
+  feed: Array<Post>;
+  notifications: Array<Notification>;
 };
 
 export type Post = {
@@ -56,7 +59,6 @@ export type Post = {
   likes: Scalars['Int'];
   tips: Scalars['Float'];
   poster?: Maybe<User>;
-  posterId: Scalars['String'];
   createdAt: Scalars['DateTime'];
 };
 
@@ -67,6 +69,13 @@ export type BuildMap = {
 };
 
 
+export type Notification = {
+  __typename?: 'Notification';
+  _id?: Maybe<Scalars['ID']>;
+  message: Scalars['String'];
+  date: Scalars['DateTime'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   register: UserResponse;
@@ -75,6 +84,8 @@ export type Mutation = {
   login: UserResponse;
   logout: Scalars['Boolean'];
   deleteAll: Scalars['Boolean'];
+  deleteNotification: User;
+  likePost?: Maybe<Scalars['Int']>;
   createPost: Post;
   deleteAllPosts: Scalars['Boolean'];
 };
@@ -103,6 +114,16 @@ export type MutationHandleSupporterArgs = {
 export type MutationLoginArgs = {
   email: Scalars['String'];
   password: Scalars['String'];
+};
+
+
+export type MutationDeleteNotificationArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationLikePostArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -136,6 +157,11 @@ export type BuildInput = {
   value: Scalars['String'];
 };
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  notify: Notification;
+};
+
 export type CreatePostMutationVariables = Exact<{
   buildMap?: Maybe<Array<BuildInput>>;
   title: Scalars['String'];
@@ -155,6 +181,32 @@ export type CreatePostMutation = (
   ) }
 );
 
+export type DeleteNotificationMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type DeleteNotificationMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteNotification: (
+    { __typename?: 'User' }
+    & { notifications: Array<(
+      { __typename?: 'Notification' }
+      & Pick<Notification, '_id' | 'message' | 'date'>
+    )> }
+  ) }
+);
+
+export type LikePostMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type LikePostMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'likePost'>
+);
+
 export type LoginMutationVariables = Exact<{
   email: Scalars['String'];
   password: Scalars['String'];
@@ -167,13 +219,20 @@ export type LoginMutation = (
     { __typename?: 'UserResponse' }
     & { user?: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, '_id'>
+      & Pick<User, '_id' | 'name'>
       & { supporting: Array<(
         { __typename?: 'User' }
-        & Pick<User, '_id' | 'name' | 'email' | 'supporters'>
+        & Pick<User, '_id' | 'name' | 'email'>
+        & { supporters: Array<(
+          { __typename?: 'User' }
+          & Pick<User, '_id'>
+        )> }
       )>, posts: Array<(
         { __typename?: 'Post' }
         & Pick<Post, '_id' | 'title' | 'desc'>
+      )>, notifications: Array<(
+        { __typename?: 'Notification' }
+        & Pick<Notification, '_id' | 'message' | 'date'>
       )> }
     )>, errors?: Maybe<Array<(
       { __typename?: 'InputError' }
@@ -208,8 +267,11 @@ export type SupporterMutation = (
       & Pick<InputError, 'field' | 'message'>
     )>>, user?: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, 'name' | '_id' | 'email' | 'supporters'>
+      & Pick<User, 'name' | '_id' | 'email'>
       & { supporting: Array<(
+        { __typename?: 'User' }
+        & Pick<User, '_id'>
+      )>, supporters: Array<(
         { __typename?: 'User' }
         & Pick<User, '_id'>
       )>, posts: Array<(
@@ -229,11 +291,14 @@ export type FetchPostQuery = (
   { __typename?: 'Query' }
   & { post?: Maybe<(
     { __typename?: 'Post' }
-    & Pick<Post, 'title' | 'desc'>
+    & Pick<Post, '_id' | 'title' | 'desc' | 'likes'>
     & { poster?: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, 'name' | '_id' | 'email' | 'supporters'>
+      & Pick<User, 'name' | '_id' | 'email'>
       & { supporting: Array<(
+        { __typename?: 'User' }
+        & Pick<User, '_id'>
+      )>, supporters: Array<(
         { __typename?: 'User' }
         & Pick<User, '_id'>
       )> }
@@ -253,8 +318,11 @@ export type FetchUserQuery = (
   { __typename?: 'Query' }
   & { fetchUser?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'name' | '_id' | 'email' | 'supporters'>
+    & Pick<User, 'name' | '_id' | 'email'>
     & { supporting: Array<(
+      { __typename?: 'User' }
+      & Pick<User, '_id'>
+    )>, supporters: Array<(
       { __typename?: 'User' }
       & Pick<User, '_id'>
     )>, posts: Array<(
@@ -274,12 +342,30 @@ export type UserQuery = (
     & Pick<User, '_id' | 'name'>
     & { supporting: Array<(
       { __typename?: 'User' }
-      & Pick<User, '_id' | 'name' | 'email' | 'supporters'>
+      & Pick<User, '_id' | 'name' | 'email'>
+      & { supporters: Array<(
+        { __typename?: 'User' }
+        & Pick<User, '_id'>
+      )> }
     )>, posts: Array<(
       { __typename?: 'Post' }
       & Pick<Post, '_id' | 'title' | 'desc'>
+    )>, notifications: Array<(
+      { __typename?: 'Notification' }
+      & Pick<Notification, '_id' | 'message' | 'date'>
     )> }
   )> }
+);
+
+export type NotificationSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type NotificationSubscription = (
+  { __typename?: 'Subscription' }
+  & { notify: (
+    { __typename?: 'Notification' }
+    & Pick<Notification, '_id' | 'message' | 'date'>
+  ) }
 );
 
 
@@ -322,6 +408,72 @@ export function useCreatePostMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreatePostMutationHookResult = ReturnType<typeof useCreatePostMutation>;
 export type CreatePostMutationResult = Apollo.MutationResult<CreatePostMutation>;
 export type CreatePostMutationOptions = Apollo.BaseMutationOptions<CreatePostMutation, CreatePostMutationVariables>;
+export const DeleteNotificationDocument = gql`
+    mutation DeleteNotification($id: String!) {
+  deleteNotification(id: $id) {
+    notifications {
+      _id
+      message
+      date
+    }
+  }
+}
+    `;
+export type DeleteNotificationMutationFn = Apollo.MutationFunction<DeleteNotificationMutation, DeleteNotificationMutationVariables>;
+
+/**
+ * __useDeleteNotificationMutation__
+ *
+ * To run a mutation, you first call `useDeleteNotificationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteNotificationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteNotificationMutation, { data, loading, error }] = useDeleteNotificationMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteNotificationMutation(baseOptions?: Apollo.MutationHookOptions<DeleteNotificationMutation, DeleteNotificationMutationVariables>) {
+        return Apollo.useMutation<DeleteNotificationMutation, DeleteNotificationMutationVariables>(DeleteNotificationDocument, baseOptions);
+      }
+export type DeleteNotificationMutationHookResult = ReturnType<typeof useDeleteNotificationMutation>;
+export type DeleteNotificationMutationResult = Apollo.MutationResult<DeleteNotificationMutation>;
+export type DeleteNotificationMutationOptions = Apollo.BaseMutationOptions<DeleteNotificationMutation, DeleteNotificationMutationVariables>;
+export const LikePostDocument = gql`
+    mutation LikePost($id: String!) {
+  likePost(id: $id)
+}
+    `;
+export type LikePostMutationFn = Apollo.MutationFunction<LikePostMutation, LikePostMutationVariables>;
+
+/**
+ * __useLikePostMutation__
+ *
+ * To run a mutation, you first call `useLikePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLikePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [likePostMutation, { data, loading, error }] = useLikePostMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useLikePostMutation(baseOptions?: Apollo.MutationHookOptions<LikePostMutation, LikePostMutationVariables>) {
+        return Apollo.useMutation<LikePostMutation, LikePostMutationVariables>(LikePostDocument, baseOptions);
+      }
+export type LikePostMutationHookResult = ReturnType<typeof useLikePostMutation>;
+export type LikePostMutationResult = Apollo.MutationResult<LikePostMutation>;
+export type LikePostMutationOptions = Apollo.BaseMutationOptions<LikePostMutation, LikePostMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
@@ -331,12 +483,20 @@ export const LoginDocument = gql`
         _id
         name
         email
-        supporters
+        supporters {
+          _id
+        }
       }
       posts {
         _id
         title
         desc
+      }
+      name
+      notifications {
+        _id
+        message
+        date
       }
     }
     errors {
@@ -419,7 +579,9 @@ export const SupporterDocument = gql`
         _id
       }
       email
-      supporters
+      supporters {
+        _id
+      }
       posts {
         title
         _id
@@ -459,6 +621,7 @@ export type SupporterMutationOptions = Apollo.BaseMutationOptions<SupporterMutat
 export const FetchPostDocument = gql`
     query FetchPost($id: String!) {
   post(id: $id) {
+    _id
     title
     desc
     poster {
@@ -468,12 +631,15 @@ export const FetchPostDocument = gql`
         _id
       }
       email
-      supporters
+      supporters {
+        _id
+      }
     }
     buildMap {
       type
       value
     }
+    likes
   }
 }
     `;
@@ -512,7 +678,9 @@ export const FetchUserDocument = gql`
       _id
     }
     email
-    supporters
+    supporters {
+      _id
+    }
     posts {
       title
       _id
@@ -556,13 +724,20 @@ export const UserDocument = gql`
       _id
       name
       email
-      supporters
+      supporters {
+        _id
+      }
     }
     name
     posts {
       _id
       title
       desc
+    }
+    notifications {
+      _id
+      message
+      date
     }
   }
 }
@@ -592,3 +767,33 @@ export function useUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserQ
 export type UserQueryHookResult = ReturnType<typeof useUserQuery>;
 export type UserLazyQueryHookResult = ReturnType<typeof useUserLazyQuery>;
 export type UserQueryResult = Apollo.QueryResult<UserQuery, UserQueryVariables>;
+export const NotificationDocument = gql`
+    subscription Notification {
+  notify {
+    _id
+    message
+    date
+  }
+}
+    `;
+
+/**
+ * __useNotificationSubscription__
+ *
+ * To run a query within a React component, call `useNotificationSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useNotificationSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useNotificationSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useNotificationSubscription(baseOptions?: Apollo.SubscriptionHookOptions<NotificationSubscription, NotificationSubscriptionVariables>) {
+        return Apollo.useSubscription<NotificationSubscription, NotificationSubscriptionVariables>(NotificationDocument, baseOptions);
+      }
+export type NotificationSubscriptionHookResult = ReturnType<typeof useNotificationSubscription>;
+export type NotificationSubscriptionResult = Apollo.SubscriptionResult<NotificationSubscription>;

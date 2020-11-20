@@ -21,6 +21,7 @@ interface NavbarProps {
 	type?: string;
 	shadow?: string;
 }
+import { NotificationAlert } from './NotificationAlert';
 import { AvatarPopover } from './AvatarPopover';
 import { FaBell, FaPlusCircle } from 'react-icons/fa';
 
@@ -42,11 +43,7 @@ const NavBody = ({ user }) => {
 							Dashboard
 						</Button>
 					</NextLink>
-					<NextLink href="/about">
-						<Button as={Link} mr={4} colorScheme="blue">
-							<FaBell />
-						</Button>
-					</NextLink>
+					<NotificationAlert user={user} />
 					<NextLink href="/post">
 						<Button as={Link} mr={4} colorScheme="blue">
 							<FaPlusCircle />

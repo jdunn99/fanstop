@@ -11,6 +11,7 @@ import { Post } from './Model/Post';
 import { getModelForClass } from '@typegoose/typegoose';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import http from 'http';
 
 const main = async () => {
 	const auth = require('./middleware/auth');
@@ -43,17 +44,37 @@ const main = async () => {
 			resolvers: [UserResolver, PostResolver],
 			validate: false,
 		}),
-		context: ({ req, res }) => ({
-			UserModel: getModelForClass(User),
-			PostModel: getModelForClass(Post),
-			req,
-			res,
-		}),
+		subscriptions: {
+			onConnect: (connectionParams, _) => {
+				console.log(connectionParams);
+			},
+		},
+		context: async ({ req, res, connection }) => {
+			// UserModel: getModelForClass(User),
+			// PostModel: getModelForClass(Post),
+			// req,
+			// res,
+			if (connection) {
+				console.log(req);
+				return connection.context;
+			} else {
+				return {
+					req,
+					res,
+					UserModel: getModelForClass(User),
+					PostModel: getModelForClass(Post),
+				};
+			}
+		},
+		playground: true,
 	});
 
 	apolloServer.applyMiddleware({ app, cors: false });
+	const httpServer = http.createServer(app);
 
-	app.listen(config.PORT, () =>
+	apolloServer.installSubscriptionHandlers(httpServer);
+
+	httpServer.listen(config.PORT, () =>
 		console.log(`Server started on ${config.PORT}`)
 	);
 };

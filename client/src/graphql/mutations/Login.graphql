@@ -6,12 +6,20 @@ mutation Login($email: String!, $password: String!) {
 				_id
 				name
 				email
-				supporters
+				supporters {
+					_id
+				}
 			}
 			posts {
 				_id
 				title
 				desc
+			}
+			name
+			notifications {
+				_id
+				message
+				date
 			}
 		}
 		errors {

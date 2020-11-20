@@ -100,3 +100,13 @@ span {
 	font-size: 1.125rem;
 	line-height: 1.5rem;
 }
+
+.contained {
+	position: relative;
+}
+
+.top-right {
+	position: absolute;
+	top: 5px;
+	right: 23px;
+}
