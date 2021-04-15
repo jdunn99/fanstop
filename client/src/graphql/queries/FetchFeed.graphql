@@ -1,0 +1,13 @@
+query FetchFeed($cursor: String) {
+  feed(cursor: $cursor) {
+    _id
+    buildMap {
+      type
+      value
+    }
+    title
+    createdAt
+    author
+    likes
+  }
+}

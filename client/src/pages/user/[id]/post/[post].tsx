@@ -1,93 +1,111 @@
-import React from 'react';
-import { useRouter } from 'next/router';
-import { isServer } from '../../../../util/isServer';
-import {
-	useFetchPostQuery,
-	useUserQuery,
-	useSupporterMutation,
-} from '../../../../generated/graphql';
-import { Flex, Spinner, Stack } from '@chakra-ui/core';
-import styles from '../../../../styles/Home.module.css';
-import Head from 'next/head';
-import { Navbar } from '../../../../components/Navbar';
-import { UserCard } from '../../../../components/UserCard';
-import { withApollo } from '../../../../util/withApollo';
-import { PostView } from '../../../../components/posts/PostView';
-import { LikeButton } from '../../../../components/posts/LikeButton';
+import React from "react";
+import { useRouter } from "next/router";
+import { isServer } from "../../../../util/isServer";
+import { useFetchPostQuery, useUserQuery } from "../../../../generated/graphql";
+import { Navbar } from "../../../../components/Navbar";
+import { UserCard } from "../../../../components/UserCard";
+import { withApollo } from "../../../../util/withApollo";
+import { LikeButton } from "../../../../components/posts/LikeButton";
+import gql from "graphql-tag";
+import { Loading } from "../../../../components/Loading";
+
+/** Type Declarations */
+
 interface indexProps {
-	post: any;
+  post: any;
 }
 
+const LIKE_SUBSCRIPTION = gql`
+  subscription Like {
+    likeSubscription
+  }
+`;
+
 const Post: React.FC<indexProps> = () => {
-	const router = useRouter();
-	const { id, post } = router.query;
+  /** State */
+  const [payload, setPayload] = React.useState("");
 
-	const [payload, setPayload] = React.useState('');
-	const { data, loading } = useFetchPostQuery({
-		variables: { id: post as string },
-		skip: isServer(),
-	});
+  /** Misc Variables */
+  const router = useRouter();
+  const { id, post } = router.query;
 
-	const { data: dataUser, loading: loadingUser } = useUserQuery({
-		skip: isServer(),
-	});
+  /** GraphQL */
+  const { data, loading, subscribeToMore } = useFetchPostQuery({
+    variables: { id: post as string },
+    skip: isServer(),
+  });
 
-	// Handles initial logic
-	React.useEffect(() => {
-		// check if the user is viewing their own profile and set payload accordingly
-		if (dataUser) {
-			if (dataUser.user && dataUser.user._id === id)
-				setPayload('Supporting');
-			else if (!dataUser.user) setPayload('Not signed in');
-			else {
-				const result = dataUser.user.supporting.some(
-					(x) => x['_id'] === id
-				);
-				if (result)
-					// if the user is in the array then we add them
-					setPayload('Supporting');
-			}
-		}
-	}, [loadingUser, id]);
+  const { data: dataUser, loading: loadingUser } = useUserQuery({
+    skip: isServer(),
+  });
 
-	const HandlePayload = () => {
-		switch (payload) {
-			case 'Not signed in': {
-				return null; // TODO: reroute user back to where they were on sign in
-			}
+  /** useEffect Hooks */
+  // Handles initial logic
+  React.useEffect(() => {
+    // check if the user is viewing their own profile and set payload accordingly
+    if (dataUser) {
+      if (dataUser.user && dataUser.user._id === id) setPayload("Supporting");
+      else if (!dataUser.user) setPayload("Not signed in");
+      else {
+        const result = dataUser.user.supporting.some((x) => x["_id"] === id);
+        if (result)
+          // if the user is in the array then we add them
+          setPayload("Supporting");
+      }
+    }
+  }, [loadingUser, id]);
 
-			case 'Supporting': {
-				return loading || !post ? (
-					<div className={styles.container}>
-						<Head>
-							<title>FanStop - Loading...</title>
-						</Head>
-						<Spinner />
-					</div>
-				) : (
-					<>
-						<Navbar />
-						<UserCard
-							name={data.post.poster.name}
-							supporting={data.post.poster.supporting.length}
-							supporters={data.post.poster.supporters.length}
-							href={`/user/${data.post.poster._id}`}
-						/>
-						<Flex flex={1} overflow="hidden">
-							<PostView buildState={data.post.buildMap} />
-						</Flex>
-						<LikeButton data={data} />
-					</>
-				);
-			}
+  /**
+   * Like Subscription Handler
+   */
+  React.useEffect(() => {
+    subscribeToMore({
+      document: LIKE_SUBSCRIPTION,
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) return prev;
+        return Object.assign({}, prev, {
+          post: {
+            like: subscriptionData.data,
+          },
+        });
+      },
+    });
+  }, []);
 
-			default: {
-				return null;
-			}
-		}
-	};
+  /**
+   * Handles whether or not the User is authorized to view the Post.
+   */
+  const HandlePayload = () => {
+    switch (payload) {
+      case "Not signed in": {
+        return null;
+      }
 
-	return <HandlePayload />;
+      case "Supporting": {
+        return loading || !post ? (
+          <Loading />
+        ) : (
+          <>
+            <Navbar />
+            <UserCard
+              name={data.post.poster.name}
+              supporting={data.post.poster.supporting.length}
+              supporters={data.post.poster.supporters.length}
+              href={`/user/${data.post.poster._id}`}
+            />
+
+            <LikeButton data={data} />
+          </>
+        );
+      }
+
+      default: {
+        return null;
+      }
+    }
+  };
+
+  return <HandlePayload />;
 };
 
 export default withApollo(Post);

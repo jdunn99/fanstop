@@ -1,142 +1,112 @@
-import React from 'react';
-import Head from 'next/head';
-import styles from '../styles/Home.module.css';
-import { Box, Button, Heading, Flex, Spinner } from '@chakra-ui/core';
-import { Field } from '../components/Field';
-import { Formik, Form } from 'formik';
-import { withApollo } from '../util/withApollo';
+import { Flex, Heading, Box, Button } from "@chakra-ui/core";
+import { Formik, Form } from "formik";
+import React from "react";
 import {
-	UserQuery,
-	UserDocument,
-	useLoginMutation,
-	useUserQuery,
-	useLogoutMutation,
-} from '../generated/graphql';
-import { useApolloClient } from '@apollo/client';
-import Link from 'next/link';
+  UserQuery,
+  UserDocument,
+  useLoginMutation,
+} from "../generated/graphql";
+import router from "next/router";
+import { withApollo } from "../util/withApollo";
+import { Field } from "../components/Field";
+import { Container } from "../components/Container";
+import { InputWrapper } from "../components/InputWrapper";
 
-const isServer = () => typeof window === 'undefined';
+/** Type Definitions */
+interface LoginProps {}
+type SubmittedValues = {
+  email: string;
+  password: string;
+};
 
-function Login() {
-	const { data, loading } = useUserQuery({ skip: isServer() });
-	const [login] = useLoginMutation();
-	const [logout] = useLogoutMutation();
+/**
+ * Logs in the User with JWTs.
+ * @returns (
+    <Container min="90vh">
+      <InputWrapper heading="Log In" w={400}>
+        <InputControl />
+      </InputWrapper>
+    </Container>
+  );
+ */
+const Login: React.FC<LoginProps> = () => {
+  const [login] = useLoginMutation();
+  const [submitting, setSubmitting] = React.useState<boolean>(false);
 
-	const [logging, setLogging] = React.useState(false);
-	const client = useApolloClient();
+  /**
+   * Submits our values to the server - attempts to log in user.
+   * @param {SubmittedValues} values - The values sent to the server.
+   */
+  const onSubmit = async (values: SubmittedValues) => {
+    setSubmitting(true);
 
-	return (
-		<div className={styles.container}>
-			<Head>
-				<title>FanStop - Login</title>
-				<link rel="icon" href="/favicon.ico" />
-			</Head>
-			{loading ? (
-				<>
-					<Spinner />
-				</>
-			) : (
-				<>
-					<section>
-						<Flex flexDir="column">
-							<Heading as="h3" size="lg">
-								Sign In
-							</Heading>
-							<Box mt="{8}" mx="auto" maxW={800}>
-								<Formik
-									initialValues={{ email: '', password: '' }}
-									onSubmit={async (values, { setErrors }) => {
-										const response = await login({
-											variables: {
-												email: values.email,
-												password: values.password,
-											},
-											update: (cache, { data }) => {
-												cache.writeQuery<UserQuery>({
-													query: UserDocument,
-													data: {
-														__typename: 'Query',
-														user: data?.login.user,
-													},
-												});
-											},
-										});
-										if (response.data?.login.errors) {
-											console.log('NOT!');
-										} else {
-											console.log('great success!');
-										}
-									}}
-								>
-									{({ isSubmitting }) => (
-										<Form>
-											<Box mt={4}>
-												<Field
-													name="email"
-													placeholder="email"
-													label="Email"
-													type="email"
-													icon="info"
-												/>
-											</Box>
-											<Box mt={4}>
-												<Field
-													name="password"
-													placeholder="password"
-													label="Password"
-													type="password"
-													icon="lock"
-												/>
-											</Box>
-											<Box textAlign="center">
-												<Button
-													mt={8}
-													type="submit"
-													isLoading={isSubmitting}
-													colorScheme="blue"
-												>
-													Sign In
-												</Button>
-											</Box>
-										</Form>
-									)}
-								</Formik>
-							</Box>
-						</Flex>
-					</section>
-					<Box mt={8}>
-						{data?.user ? (
-							<>
-								<p>{data.user._id}</p>
-								{data.user.supporting.map((x) => (
-									<Link href={`/user/${x._id}`}>
-										<a color="blue">{x._id}</a>
-									</Link>
-								))}
-							</>
-						) : (
-							<p>Not logged in</p>
-						)}
-						<Box textAlign="center">
-							<Button
-								type="submit"
-								colorScheme="blue"
-								isLoading={logging}
-								onClick={async () => {
-									setLogging(true);
-									await logout();
-									await client.resetStore();
-									setLogging(false);
-								}}
-							>
-								Sign Out
-							</Button>
-						</Box>
-					</Box>
-				</>
-			)}
-		</div>
-	);
-}
+    /** Log in the User and update the cache. */
+    const response = await login({
+      variables: {
+        email: values.email,
+        password: values.password,
+      },
+      update: (cache, { data }) => {
+        cache.writeQuery<UserQuery>({
+          query: UserDocument,
+          data: {
+            __typename: "Query",
+            user: data?.login.user,
+          },
+        });
+      },
+    });
+    setSubmitting(false);
+    if (response.data?.login.errors) {
+    } else {
+      router.push(`/user/${response.data.login.user._id}`);
+    }
+  };
+
+  /**
+   * Component to handle styling of the Input
+   */
+  const InputControl = () => {
+    return (
+      <Formik initialValues={{ email: "", password: "" }} onSubmit={onSubmit}>
+        <Form>
+          <Box mt={4}>
+            <Field
+              name="email"
+              placeholder="email"
+              label="Email"
+              type="email"
+            />
+          </Box>
+          <Box mt={4}>
+            <Field
+              name="password"
+              placeholder="password"
+              label="Password"
+              type="password"
+            />
+          </Box>
+          <Box textAlign="center">
+            <Button
+              mt={8}
+              type="submit"
+              isLoading={submitting}
+              colorScheme="blue">
+              Sign In
+            </Button>
+          </Box>
+        </Form>
+      </Formik>
+    );
+  };
+
+  return (
+    <Container min="90vh">
+      <InputWrapper heading="Log In" w={[300, 350, 400]}>
+        <InputControl />
+      </InputWrapper>
+    </Container>
+  );
+};
 
 export default withApollo(Login);

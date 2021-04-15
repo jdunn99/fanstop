@@ -1,19 +1,23 @@
-import React from 'react';
-import styles from '../styles/Home.module.css';
-import { useRouter } from 'next/router';
-import { withApollo } from '../util/withApollo';
-import { Navbar } from '../components/Navbar';
+import React from "react";
 
-function Home() {
-	const router = useRouter();
-	const { pid } = router.query;
+import { withApollo } from "../util/withApollo";
+import { useUserQuery } from "../generated/graphql";
+import router from "next/router";
+const isServer = () => typeof window === "undefined";
 
-	return (
-		<div className={styles.container}>
-			<Navbar />
-			<p>Poggers</p>
-		</div>
-	);
-}
+/**
+ * Loads the User. If they are already authenticated, send them to their profile. Otherwise, send them to login.
+ * @returns null
+ */
+const Index = () => {
+  const { data } = useUserQuery({ skip: isServer() });
 
-export default withApollo(Home);
+  React.useEffect(() => {
+    if (data)
+      data.user ? router.push(`/user/${data.user._id}`) : router.push(`/login`);
+  }, [data]);
+
+  return null;
+};
+
+export default withApollo(Index);

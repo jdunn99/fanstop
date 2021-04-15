@@ -1,19 +1,20 @@
-query FetchUser($id: String!) {
-	fetchUser(id: $id) {
-		name
-		_id
-		supporting {
-			_id
-		}
-		email
-		supporters {
-			_id
-		}
-		posts {
-			title
-			_id
-			createdAt
-			desc
-		}
-	}
+query FetchUser($id: String!, $cursor: String) {
+  fetchUser(id: $id, cursor: $cursor) {
+    name
+    _id
+    supporting {
+      _id
+    }
+    email
+    supporters {
+      _id
+      name
+    }
+    posts {
+      title
+      _id
+      createdAt
+      desc
+    }
+  }
 }
