@@ -18,7 +18,18 @@
           {
             "name": "user",
             "description": null,
-            "args": [],
+            "args": [
+              {
+                "name": "cursor",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
             "type": {
               "kind": "OBJECT",
               "name": "User",
@@ -42,6 +53,16 @@
                     "name": "String",
                     "ofType": null
                   }
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "cursor",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
                 },
                 "defaultValue": null
               }
@@ -132,7 +153,22 @@
           {
             "name": "feed",
             "description": null,
+<<<<<<< HEAD
+            "args": [
+              {
+                "name": "cursor",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
+=======
             "args": [],
+>>>>>>> 9c10981e8b37a9e24ff6a636d5e1f6f01d75c22a
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -534,22 +570,6 @@
             "deprecationReason": null
           },
           {
-            "name": "tips",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Float",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "poster",
             "description": null,
             "args": [],
@@ -562,6 +582,21 @@
             "deprecationReason": null
           },
           {
+<<<<<<< HEAD
+            "name": "author",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+=======
+>>>>>>> 9c10981e8b37a9e24ff6a636d5e1f6f01d75c22a
             "name": "createdAt",
             "description": null,
             "args": [],
@@ -587,6 +622,8 @@
         "kind": "SCALAR",
         "name": "Int",
         "description": "The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.",
+<<<<<<< HEAD
+=======
         "fields": null,
         "inputFields": null,
         "interfaces": null,
@@ -597,6 +634,7 @@
         "kind": "SCALAR",
         "name": "Float",
         "description": "The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).",
+>>>>>>> 9c10981e8b37a9e24ff6a636d5e1f6f01d75c22a
         "fields": null,
         "inputFields": null,
         "interfaces": null,
@@ -1273,9 +1311,48 @@
         "description": null,
         "fields": [
           {
+<<<<<<< HEAD
+            "name": "notification",
+            "description": null,
+            "args": [
+              {
+                "name": "supporting",
+                "description": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "subscriber",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+=======
             "name": "notify",
             "description": null,
             "args": [],
+>>>>>>> 9c10981e8b37a9e24ff6a636d5e1f6f01d75c22a
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -1287,6 +1364,25 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
+<<<<<<< HEAD
+          },
+          {
+            "name": "likeSubscription",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+=======
+>>>>>>> 9c10981e8b37a9e24ff6a636d5e1f6f01d75c22a
           }
         ],
         "inputFields": null,
