@@ -1,24 +1,26 @@
-query User {
-	user {
-		_id
-		supporting {
-			_id
-			name
-			email
-			supporters {
-				_id
-			}
-		}
-		name
-		posts {
-			_id
-			title
-			desc
-		}
-		notifications {
-			_id
-			message
-			date
-		}
-	}
+query User($cursor: String) {
+  user(cursor: $cursor) {
+    _id
+    supporting {
+      _id
+      name
+      email
+    }
+    supporters {
+      _id
+      name
+    }
+    name
+    posts {
+      _id
+      title
+      createdAt
+      desc
+    }
+    notifications {
+      _id
+      message
+      date
+    }
+  }
 }

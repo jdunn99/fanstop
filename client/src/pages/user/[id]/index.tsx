@@ -1,264 +1,425 @@
-import { useRouter } from 'next/router';
-import React from 'react';
+import { useRouter } from "next/router";
+import React, { SetStateAction } from "react";
 import {
-	useFetchUserQuery,
-	useUserQuery,
-	useSupporterMutation,
-	FetchUserQuery,
-	FetchUserDocument,
-	UserQuery,
-} from '../../../generated/graphql';
-import styles from '../../../styles/Home.module.css';
-import {
-	Flex,
-	Grid,
-	Spinner,
-	Stack,
-	Tabs,
-	Tab,
-	TabList,
-	Box,
-	TabPanel,
-	TabPanels,
-} from '@chakra-ui/core';
-import Head from 'next/head';
-import { Navbar } from '../../../components/Navbar';
-import { UserCard } from '../../../components/UserCard';
-import { PostCard } from '../../../components/PostCard';
-import { SupporterCard } from '../../../components/SupporterCard';
-import { isServer } from '../../../util/isServer';
-import { withApollo } from '../../../util/withApollo';
+  useUserQuery,
+  useSupporterMutation,
+  FetchUserQuery,
+  FetchUserDocument,
+  UserQuery,
+  useFetchFeedLazyQuery,
+  useFetchUserLazyQuery,
+  FetchFeedQuery,
+} from "../../../generated/graphql";
+import styles from "../../../styles/Home.module.css";
+import { Flex, Spinner, Text, Stack, Button, Box } from "@chakra-ui/core";
+import Head from "next/head";
+import { Navbar } from "../../../components/Navbar";
+import { UserCard } from "../../../components/UserCard";
+import { PostCard } from "../../../components/PostCard";
+import { SupporterCard } from "../../../components/SupporterCard";
+import { isServer } from "../../../util/isServer";
+import { withApollo } from "../../../util/withApollo";
+import NextLink from "next/link";
+import { Loading } from "../../../components/Loading";
 
 interface UserProfileProps {
-	dataUser: UserQuery;
-	id: string;
+  dataUser: UserQuery;
+  id: string;
 }
 
-const UserProfile: React.FC<UserProfileProps> = ({ dataUser, id }) => {
-	return (
-		<Flex flex={1} justify="center" overflow="hidden" p={4} mt={9}>
-			<Tabs variant="enclosed" isFitted>
-				<TabList mb="1rem">
-					<Tab>Posts</Tab>
-					<Tab>Supporting</Tab>
-				</TabList>
-				<TabPanels>
-					<TabPanel>
-						<Stack spacing={8}></Stack>
-					</TabPanel>
-					<TabPanel>
-						<Flex
-							justifyContent="space-around"
-							alignItems="center"
-							flexDirection="row"
-							flexWrap="wrap"
-							w={900}
-						>
-							{dataUser.user.supporting.map((sup) => (
-								<Box key={sup._id} shadow="lg">
-									<SupporterCard
-										name={sup.name}
-										text="This is a test"
-										href={`/user/${sup._id}`}
-										key={sup._id}
-									/>
-								</Box>
-							))}
-						</Flex>
-					</TabPanel>
-				</TabPanels>
-			</Tabs>
-		</Flex>
-	);
+interface TabProps {
+  active: string;
+  setActive: React.Dispatch<SetStateAction<string>>;
+  fields: string[];
+}
+
+const ProfileTab: React.FC<TabProps> = ({ active, setActive, fields }) => {
+  return (
+    <Flex gridColumnGap={8}>
+      {fields.map((field) => (
+        <Box
+          borderBottom={active === field ? "2px solid black" : "none"}
+          p={2}
+          cursor="pointer"
+          onClick={() => setActive(field)}>
+          <Text fontWeight={active === field ? 600 : 400}>{field}</Text>
+        </Box>
+      ))}
+    </Flex>
+  );
 };
 
 const User = () => {
-	const router = useRouter();
-	const [handleSupporter] = useSupporterMutation();
-	const { id } = router.query;
-	const { data: dataUser, loading: loadingUser } = useUserQuery({
-		skip: isServer(),
-	});
-	const [payload, setPayload] = React.useState<string>('Support');
+  /** State */
+  const [payload, setPayload] = React.useState<string>("Support");
+  const [active, setActive] = React.useState<string>("");
 
-	// Handles initial logic
-	React.useEffect(() => {
-		// check if the user is viewing their own profile and set payload accordingly
-		if (dataUser) {
-			if (dataUser.user && dataUser.user._id === id)
-				setPayload('Edit Profile');
-			else if (!dataUser.user) setPayload('Not signed in');
-			else {
-				const result = dataUser.user.supporting.some(
-					(x) => x['_id'] === id
-				);
-				if (result)
-					// if the user is in the array then we add them
-					setPayload('Supporting');
-			}
-		}
-	}, [loadingUser, id]);
+  /** GraphQL */
+  const {
+    data: dataUser,
+    loading: loadingUser,
+    fetchMore: fetchMoreUser,
+  } = useUserQuery({
+    skip: isServer(),
+  });
 
-	const { data, loading } = useFetchUserQuery({
-		skip: isServer(),
-		variables: { id: id as string },
-	});
+  const [
+    fetchFeed,
+    { data: feedData, loading: loadingFeed, fetchMore: fetchMoreFeed },
+  ] = useFetchFeedLazyQuery();
 
-	/*
-	 * @desc: Updates the cache based on button press in the UserCard component
-	 * @params:
-	 * 	@param => _id: string
-	 * 	@param => add: boolean
-	 * @returns:
-	 */
-	const HandleSupportFetch = async (_id: string, add: boolean) => {
-		await handleSupporter({
-			variables: {
-				id: _id,
-				add: add,
-			},
-			update: (cache, { data }) => {
-				cache.writeQuery<FetchUserQuery>({
-					query: FetchUserDocument,
-					data: {
-						__typename: 'Query',
-						fetchUser: data?.handleSupporter.user,
-					},
-				});
-			},
-		});
-		payload === 'Supporting'
-			? setPayload('Support')
-			: setPayload('Supporting');
-	};
+  const [fetchUser, { data, loading, fetchMore }] = useFetchUserLazyQuery();
+  const [handleSupporter] = useSupporterMutation();
 
-	const HandleProfileFetch = () => {
-		// router push
-		router.push('/');
-	};
+  /** Misc Variables */
+  const router = useRouter();
+  const { id } = router.query;
 
-	const HandlePayload = () => {
-		switch (payload) {
-			case 'Supporting':
-				return (
-					<Flex
-						flex={1}
-						justify="center"
-						overflow="hidden"
-						p={4}
-						mt={9}
-					>
-						<Tabs variant="enclosed" isFitted w={632}>
-							<TabList mb="1rem">
-								<Tab>Posts</Tab>
-								<Tab>Supporting</Tab>
-							</TabList>
-							<TabPanels>
-								<TabPanel>
-									<Stack spacing={8}>
-										{data.fetchUser.posts.map((post) => (
-											<>
-												<PostCard
-													key={post._id}
-													title={post.title}
-													author="Test"
-													text={post.desc}
-													href={`/user/${id}/post/${post._id.toString()}`}
-												/>
-											</>
-										))}
-									</Stack>
-								</TabPanel>
-								<TabPanel>
-									<Flex
-										justifyContent="center"
-										alignItems="center"
-										flexDirection="row"
-										flexWrap="wrap"
-									>
-										{data.fetchUser.supporting.map(
-											(sup) => (
-												<>
-													<SupporterCard
-														key={sup._id}
-														name={sup._id as string}
-														text="This is a test"
-														href={`/user/${sup._id}`}
-													/>
-												</>
-											)
-										)}
-									</Flex>
-								</TabPanel>
-							</TabPanels>
-						</Tabs>
-					</Flex>
-				);
-			case 'Support':
-				return (
-					<Flex
-						h="40vh"
-						flex={1}
-						align="center"
-						justify="center"
-						overflow="hidden"
-					>
-						<p>You must be supporting to view this content</p>
-					</Flex>
-				);
-			default:
-				return <UserProfile id={id as string} dataUser={dataUser} />;
-		}
-	};
+  /** useEffect Hooks */
 
-	return loading || !id ? (
-		<div className={styles.container}>
-			<Head>
-				<title>FanStop - Loading</title>
-				<link rel="icon" href="/favicon.ico" />
-			</Head>
-			<Spinner />
-		</div>
-	) : data.fetchUser ? (
-		<div key={data.fetchUser._id}>
-			<Head>
-				<title>FanStop - {data.fetchUser.name}</title>
-				<link rel="icon" href="/favicon.ico" />
-			</Head>
-			<header>
-				<Navbar />
+  /** Handles inital logic */
+  React.useEffect(() => {
+    // check if the user is viewing their own profile and set payload accordingly
+    if (dataUser) {
+      if (dataUser.user && dataUser.user._id === id) {
+        setPayload("Edit Profile");
+        setActive("My Posts");
+      } else if (!dataUser.user) setPayload("Not signed in");
+      else {
+        // not viewing their own profile - load this instead
+        fetchUser({ variables: { id: id as string } });
+        const result = dataUser.user.supporting.some((x) => x["_id"] === id);
+        if (result) {
+          // if the user is in the array then we add them
+          setActive("Posts");
+          setPayload("Supporting");
+        }
+      }
+    }
+  }, [loadingUser, id]);
 
-				{payload === 'Edit Profile' ? (
-					<UserCard
-						name={data.fetchUser.name}
-						supporting={data.fetchUser.supporting.length}
-						supporters={data.fetchUser.supporters.length}
-						payload={payload}
-						handleFetch={() => HandleProfileFetch()}
-						href={`/user/${data.fetchUser._id}`}
-					/>
-				) : (
-					<UserCard
-						name={data.fetchUser.name}
-						supporting={data.fetchUser.supporting.length}
-						supporters={data.fetchUser.supporters.length}
-						payload={payload}
-						handleFetch={() =>
-							HandleSupportFetch(
-								data.fetchUser._id,
-								payload === 'Support'
-							)
-						}
-						href={`/user/${data.fetchUser._id}`}
-					/>
-				)}
-			</header>
+  /** Load the Feed whenever necessary */
+  React.useEffect(() => {
+    if (active === "Feed") fetchFeed();
+  }, [active]);
 
-			<HandlePayload />
-		</div>
-	) : (
-		<p>User not found</p>
-	);
+  /**
+   * Fires the handle supporter mutation
+   * @param {string} _id - The ID of the supporter.
+   * @param {boolean} add - Whether or not the User is a supporter.
+   */
+  const HandleSupportFetch = async (_id: string, add: boolean) => {
+    console.log("firign");
+    await handleSupporter({
+      variables: {
+        id: _id,
+        add: add,
+      },
+      update: (cache, { data }) => {
+        cache.writeQuery<FetchUserQuery>({
+          query: FetchUserDocument,
+          data: {
+            __typename: "Query",
+            fetchUser: data?.handleSupporter.user,
+          },
+        });
+      },
+    });
+    payload === "Supporting" ? setPayload("Support") : setPayload("Supporting");
+  };
+
+  /** Local Components */
+
+  /**
+   * Pagination if viewing their own profile
+   */
+  const PaginateSelf = () => {
+    return (
+      <Button
+        onClick={() => {
+          fetchMoreUser({
+            variables: {
+              cursor:
+                dataUser.user.posts[dataUser.user.posts.length - 1].createdAt,
+            },
+            updateQuery: (_, { fetchMoreResult }) => {
+              const temp = fetchMoreResult as UserQuery;
+              return {
+                __typename: "Query",
+                user: {
+                  ...dataUser.user,
+                  posts: [...dataUser.user.posts, ...temp.user.posts],
+                },
+              };
+            },
+          });
+        }}>
+        Load More Posts
+      </Button>
+    );
+  };
+
+  /**
+   * Pagination if viewing another profile
+   */
+  const PaginateUser = () => {
+    return (
+      <Button
+        onClick={() => {
+          fetchMore({
+            variables: {
+              id: data.fetchUser._id,
+              cursor:
+                data.fetchUser.posts[data.fetchUser.posts.length - 1].createdAt,
+            },
+            updateQuery: (_, { fetchMoreResult }) => {
+              const temp = fetchMoreResult as FetchUserQuery;
+              return {
+                __typename: "Query",
+                fetchUser: {
+                  ...data.fetchUser,
+                  posts: [...data.fetchUser.posts, ...temp.fetchUser.posts],
+                },
+              };
+            },
+          });
+        }}>
+        Load More Posts
+      </Button>
+    );
+  };
+
+  /**
+   * Pagination for a User's feed.
+   */
+  const PaginateFeed = () => {
+    return (
+      <Button
+        onClick={() => {
+          fetchMoreFeed({
+            variables: {
+              cursor: feedData.feed[feedData.feed.length - 1].createdAt,
+            },
+            updateQuery: (_, { fetchMoreResult }) => {
+              const temp = fetchMoreResult as FetchFeedQuery;
+              return {
+                __typename: "Query",
+                feed: [...feedData.feed, ...temp.feed],
+              };
+            },
+          });
+        }}>
+        Load More Posts
+      </Button>
+    );
+  };
+
+  /**
+   * A container for holding the content on the Page.
+   */
+  const PostContainer = ({ children }) => {
+    return (
+      <Flex
+        flexDir="column"
+        align="center"
+        flex={1}
+        justify="center"
+        overflow="hidden"
+        p={4}
+        gridRowGap={8}
+        mt={9}>
+        {children}
+      </Flex>
+    );
+  };
+
+  const HandleRender = () => {
+    console.log(active);
+    switch (active) {
+      case "My Posts":
+        return (
+          <Stack spacing={8}>
+            {dataUser.user.posts.length === 0 && (
+              <Text>You have not made any posts.</Text>
+            )}
+            <NextLink href="/post">
+              <Button colorScheme="blue">Add new post</Button>
+            </NextLink>
+            {dataUser.user.posts.map((post) => (
+              <PostCard
+                key={post._id}
+                title={post.title}
+                text={post.desc}
+                href={`/user/${id}/post/${post._id.toString()}`}
+              />
+            ))}
+            {dataUser.user.posts.length > 0 && <PaginateSelf />}
+          </Stack>
+        );
+      case "Posts":
+        return data ? (
+          <Stack spacing={8} className="post-stack">
+            {data.fetchUser.posts.map((post) => (
+              <PostCard
+                key={post._id}
+                title={post.title}
+                text={post.desc}
+                href={`/user/${id}/post/${post._id.toString()}`}
+              />
+            ))}
+            {data.fetchUser.posts.length > 0 && <PaginateUser />}
+          </Stack>
+        ) : null;
+      case "Feed":
+        return (
+          <Stack spacing={8}>
+            {feedData && feedData.feed ? (
+              feedData.feed.length > 0 ? (
+                <>
+                  {feedData.feed.map((post) => (
+                    <PostCard
+                      key={post._id}
+                      title={post.title}
+                      author={post.author ? post.author : undefined}
+                      href={`/user/${id}/post/${post._id.toString()}`}
+                      text="H"
+                    />
+                  ))}
+                  <PaginateFeed />
+                </>
+              ) : (
+                <Text>Your feed is empty.</Text>
+              )
+            ) : (
+              <Spinner />
+            )}
+          </Stack>
+        );
+      case "Supporting":
+        return (
+          <Flex
+            justifyContent="center"
+            alignItems="center"
+            flexDirection="row"
+            gridColumnGap={8}
+            gridRowGap={8}
+            flexWrap="wrap">
+            {data ? (
+              data.fetchUser.supporting.length > 0 ? (
+                data.fetchUser.supporting.map(
+                  (sup) =>
+                    sup._id !== dataUser.user._id && (
+                      <SupporterCard
+                        key={sup._id}
+                        name={sup._id as string}
+                        href={`/user/${sup._id}`}
+                      />
+                    )
+                )
+              ) : (
+                <Text>{data.fetchUser.name} is not supporting anyone.</Text>
+              )
+            ) : (
+              dataUser &&
+              (dataUser.user.supporting.length > 0 ? (
+                dataUser.user.supporting.map(
+                  (sup) =>
+                    sup._id !== dataUser.user._id && (
+                      <SupporterCard
+                        key={sup._id}
+                        name={sup.name}
+                        href={`/user/${sup._id}`}
+                      />
+                    )
+                )
+              ) : (
+                <Text>You are not supporting anyone.</Text>
+              ))
+            )}
+          </Flex>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const HandleProfileFetch = () => {
+    // router push
+    router.push("/");
+  };
+
+  const HandlePayload = () => {
+    switch (payload) {
+      case "Supporting":
+        return (
+          <PostContainer>
+            <ProfileTab
+              active={active}
+              setActive={(q) => setActive(q)}
+              fields={["Posts", "Supporting"]}
+            />
+            <HandleRender />
+          </PostContainer>
+        );
+      case "Support":
+        return (
+          <Flex
+            h="40vh"
+            flex={1}
+            align="center"
+            justify="center"
+            overflow="hidden">
+            <p>You must be supporting to view this content</p>
+          </Flex>
+        );
+      default:
+        return (
+          <PostContainer>
+            <ProfileTab
+              active={active}
+              setActive={(q) => setActive(q)}
+              fields={["My Posts", "Feed", "Supporting"]}
+            />
+            <HandleRender />
+          </PostContainer>
+        );
+    }
+  };
+
+  /*
+  Compare with the Payload
+  */
+  return loading || !id || loadingUser ? (
+    <Loading />
+  ) : (
+    <Box>
+      <Navbar />
+      {dataUser && payload === "Edit Profile" && (
+        <UserCard
+          name={dataUser.user.name}
+          supporting={dataUser.user.supporting.length}
+          supporters={dataUser.user.supporters.length}
+          payload={payload}
+          handleFetch={() => HandleProfileFetch()}
+          href={`/user/${dataUser.user._id}`}
+        />
+      )}
+      {data && data.fetchUser && (
+        <UserCard
+          name={data.fetchUser.name}
+          supporting={data.fetchUser.supporting.length}
+          supporters={data.fetchUser.supporters.length}
+          payload={payload}
+          handleFetch={() =>
+            HandleSupportFetch(data.fetchUser._id, payload === "Support")
+          }
+          href={`/user/${data.fetchUser._id}`}
+        />
+      )}
+
+      <HandlePayload />
+    </Box>
+  );
 };
 
 export default withApollo(User);

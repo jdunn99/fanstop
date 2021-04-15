@@ -1,109 +1,126 @@
-import React from 'react';
+import React from "react";
 import {
-	User,
-	useNotificationSubscription,
-	useDeleteNotificationMutation,
-	UserQuery,
-	UserDocument,
-} from '../generated/graphql';
+  User,
+  useNotificationSubscription,
+  useDeleteNotificationMutation,
+  UserQuery,
+  UserDocument,
+  useUserQuery,
+} from "../generated/graphql";
 import {
-	Button,
-	Badge,
-	Flex,
-	Menu,
-	MenuButton,
-	MenuList,
-	MenuItem,
-} from '@chakra-ui/core';
-import { FaBell } from 'react-icons/fa';
+  Button,
+  Badge,
+  Flex,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+} from "@chakra-ui/core";
+import { FaBell } from "react-icons/fa";
+import gql from "graphql-tag";
+import { isServer } from "../util/isServer";
 
-interface NotificationAlertProps {
-	user: User;
-}
+interface NotificationAlertProps {}
 
-export const NotificationAlert: React.FC<NotificationAlertProps> = ({
-	user,
-}) => {
-	console.log(user.notifications);
+const NOTIFICATION_SUBSCRIPTION = gql`
+  subscription Notification($subscriber: String!, $supporting: [String!]) {
+    notification(subscriber: $subscriber, supporting: $supporting) {
+      _id
+      message
+      date
+    }
+  }
+`;
 
-	const [remove] = useDeleteNotificationMutation();
-	const { data, loading } = useNotificationSubscription();
-	const [notifications, setNotifications] = React.useState<any>([
-		...user.notifications,
-	]);
+export const NotificationAlert: React.FC<NotificationAlertProps> = () => {
+  const { data, subscribeToMore } = useUserQuery({
+    skip: isServer(),
+  });
+  const [remove] = useDeleteNotificationMutation();
 
-	React.useEffect(() => {
-		if (!loading) setNotifications([...notifications, data.notify]);
-	}, [data]);
+  React.useEffect(() => {
+    subscribeToMore({
+      document: NOTIFICATION_SUBSCRIPTION,
+      variables: {
+        subscriber: data.user._id,
+        supporting: data.user.supporters.map((sup) => sup._id),
+      },
+    });
+  }, []);
 
-	console.log(notifications);
+  React.useEffect(() => {
+    if (data && data.user) console.log(data.user.notifications);
+  }, [data]);
 
-	return (
-		<>
-			<div className="contained">
-				<Menu placement="bottom" isLazy>
-					<MenuButton>
-						<Button mr={4} colorScheme="blue">
-							<FaBell />
-						</Button>
-					</MenuButton>
-					<MenuList color="black">
-						{notifications.length > 0 ? (
-							notifications.map((noti) => (
-								<MenuItem>
-									<Flex
-										justify="space-between"
-										align="center"
-										cursor="pointer"
-										w={200}
-									>
-										<p>{noti.message}</p>
-										<Button
-											colorScheme="red"
-											size="xs"
-											onClick={async () => {
-												const response = await remove({
-													variables: { id: noti._id },
-												});
-
-												console.log(
-													response.data
-														.deleteNotification
-														.notifications
-												);
-
-												setNotifications(
-													response.data
-														.deleteNotification
-														.notifications
-												);
-											}}
-										>
-											x
-										</Button>
-									</Flex>
-								</MenuItem>
-							))
-						) : (
-							<MenuItem>
-								<p>No new notifications...</p>
-							</MenuItem>
-						)}
-					</MenuList>
-					{notifications.length > 0 ? (
-						<Badge
-							borderRadius="xl"
-							className="top-right dot"
-							background="red.500"
-							color="#1A202C"
-							fontSize="12px"
-							boxShadow="dark-lg"
-						>
-							{notifications.length}
-						</Badge>
-					) : null}
-				</Menu>
-			</div>
-		</>
-	);
+  return (
+    data &&
+    data.user && (
+      <>
+        <div className="contained">
+          <Menu placement="bottom" isLazy>
+            <MenuButton>
+              <Button mr={4} colorScheme="blue">
+                <FaBell />
+              </Button>
+            </MenuButton>
+            <MenuList color="black">
+              {data.user.notifications.length > 0 ? (
+                data.user.notifications.map((noti) => (
+                  <MenuItem key={noti._id}>
+                    {console.log(noti._id)}
+                    <Flex
+                      justify="space-between"
+                      align="center"
+                      cursor="pointer"
+                      w={200}>
+                      <p>{noti.message}</p>
+                      <Button
+                        colorScheme="red"
+                        size="xs"
+                        onClick={async () => {
+                          const response = await remove({
+                            variables: { id: noti._id },
+                            update: (cache, { data: deletedData }) => {
+                              cache.writeQuery<UserQuery>({
+                                query: UserDocument,
+                                data: {
+                                  __typename: "Query",
+                                  user: {
+                                    ...data.user,
+                                    notifications:
+                                      deletedData.deleteNotification
+                                        .notifications,
+                                  },
+                                },
+                              });
+                            },
+                          });
+                        }}>
+                        x
+                      </Button>
+                    </Flex>
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem>
+                  <p>No new notifications...</p>
+                </MenuItem>
+              )}
+            </MenuList>
+            {data.user.notifications.length > 0 ? (
+              <Badge
+                borderRadius="xl"
+                className="top-right dot"
+                background="red.500"
+                color="#1A202C"
+                fontSize="12px"
+                boxShadow="dark-lg">
+                {data.user.notifications.length}
+              </Badge>
+            ) : null}
+          </Menu>
+        </div>
+      </>
+    )
+  );
 };

@@ -24,13 +24,24 @@ export type Query = {
 };
 
 
+export type QueryUserArgs = {
+  cursor?: Maybe<Scalars['String']>;
+};
+
+
 export type QueryFetchUserArgs = {
   id: Scalars['String'];
+  cursor?: Maybe<Scalars['String']>;
 };
 
 
 export type QueryPostArgs = {
   id: Scalars['String'];
+};
+
+
+export type QueryFeedArgs = {
+  cursor?: Maybe<Scalars['String']>;
 };
 
 export type User = {
@@ -57,8 +68,8 @@ export type Post = {
   buildMap: Array<BuildMap>;
   images: Array<Scalars['String']>;
   likes: Scalars['Int'];
-  tips: Scalars['Float'];
   poster?: Maybe<User>;
+  author?: Maybe<Scalars['String']>;
   createdAt: Scalars['DateTime'];
 };
 
@@ -159,7 +170,14 @@ export type BuildInput = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  notify: Notification;
+  notification: Notification;
+  likeSubscription: Scalars['Int'];
+};
+
+
+export type SubscriptionNotificationArgs = {
+  supporting?: Maybe<Array<Scalars['String']>>;
+  subscriber: Scalars['String'];
 };
 
 export type CreatePostMutationVariables = Exact<{
@@ -173,7 +191,7 @@ export type CreatePostMutation = (
   { __typename?: 'Mutation' }
   & { createPost: (
     { __typename?: 'Post' }
-    & Pick<Post, '_id' | 'title' | 'desc'>
+    & Pick<Post, '_id' | 'title' | 'desc' | 'createdAt'>
     & { poster?: Maybe<(
       { __typename?: 'User' }
       & Pick<User, '_id'>
@@ -220,7 +238,10 @@ export type LoginMutation = (
     & { user?: Maybe<(
       { __typename?: 'User' }
       & Pick<User, '_id' | 'name'>
-      & { supporting: Array<(
+      & { supporters: Array<(
+        { __typename?: 'User' }
+        & Pick<User, '_id' | 'name'>
+      )>, supporting: Array<(
         { __typename?: 'User' }
         & Pick<User, '_id' | 'name' | 'email'>
         & { supporters: Array<(
@@ -229,7 +250,7 @@ export type LoginMutation = (
         )> }
       )>, posts: Array<(
         { __typename?: 'Post' }
-        & Pick<Post, '_id' | 'title' | 'desc'>
+        & Pick<Post, '_id' | 'title' | 'desc' | 'createdAt'>
       )>, notifications: Array<(
         { __typename?: 'Notification' }
         & Pick<Notification, '_id' | 'message' | 'date'>
@@ -270,16 +291,33 @@ export type SupporterMutation = (
       & Pick<User, 'name' | '_id' | 'email'>
       & { supporting: Array<(
         { __typename?: 'User' }
-        & Pick<User, '_id'>
+        & Pick<User, '_id' | 'name' | 'email'>
       )>, supporters: Array<(
         { __typename?: 'User' }
-        & Pick<User, '_id'>
+        & Pick<User, 'name' | '_id'>
       )>, posts: Array<(
         { __typename?: 'Post' }
         & Pick<Post, 'title' | '_id' | 'createdAt' | 'desc'>
       )> }
     )> }
   ) }
+);
+
+export type FetchFeedQueryVariables = Exact<{
+  cursor?: Maybe<Scalars['String']>;
+}>;
+
+
+export type FetchFeedQuery = (
+  { __typename?: 'Query' }
+  & { feed: Array<(
+    { __typename?: 'Post' }
+    & Pick<Post, '_id' | 'title' | 'createdAt' | 'author' | 'likes'>
+    & { buildMap: Array<(
+      { __typename?: 'BuildMap' }
+      & Pick<BuildMap, 'type' | 'value'>
+    )> }
+  )> }
 );
 
 export type FetchPostQueryVariables = Exact<{
@@ -311,6 +349,7 @@ export type FetchPostQuery = (
 
 export type FetchUserQueryVariables = Exact<{
   id: Scalars['String'];
+  cursor?: Maybe<Scalars['String']>;
 }>;
 
 
@@ -324,7 +363,7 @@ export type FetchUserQuery = (
       & Pick<User, '_id'>
     )>, supporters: Array<(
       { __typename?: 'User' }
-      & Pick<User, '_id'>
+      & Pick<User, '_id' | 'name'>
     )>, posts: Array<(
       { __typename?: 'Post' }
       & Pick<Post, 'title' | '_id' | 'createdAt' | 'desc'>
@@ -332,7 +371,9 @@ export type FetchUserQuery = (
   )> }
 );
 
-export type UserQueryVariables = Exact<{ [key: string]: never; }>;
+export type UserQueryVariables = Exact<{
+  cursor?: Maybe<Scalars['String']>;
+}>;
 
 
 export type UserQuery = (
@@ -343,13 +384,12 @@ export type UserQuery = (
     & { supporting: Array<(
       { __typename?: 'User' }
       & Pick<User, '_id' | 'name' | 'email'>
-      & { supporters: Array<(
-        { __typename?: 'User' }
-        & Pick<User, '_id'>
-      )> }
+    )>, supporters: Array<(
+      { __typename?: 'User' }
+      & Pick<User, '_id' | 'name'>
     )>, posts: Array<(
       { __typename?: 'Post' }
-      & Pick<Post, '_id' | 'title' | 'desc'>
+      & Pick<Post, '_id' | 'title' | 'createdAt' | 'desc'>
     )>, notifications: Array<(
       { __typename?: 'Notification' }
       & Pick<Notification, '_id' | 'message' | 'date'>
@@ -357,12 +397,23 @@ export type UserQuery = (
   )> }
 );
 
-export type NotificationSubscriptionVariables = Exact<{ [key: string]: never; }>;
+export type LikeSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LikeSubscription = (
+  { __typename?: 'Subscription' }
+  & Pick<Subscription, 'likeSubscription'>
+);
+
+export type NotificationSubscriptionVariables = Exact<{
+  subscriber: Scalars['String'];
+  supporting?: Maybe<Array<Scalars['String']>>;
+}>;
 
 
 export type NotificationSubscription = (
   { __typename?: 'Subscription' }
-  & { notify: (
+  & { notification: (
     { __typename?: 'Notification' }
     & Pick<Notification, '_id' | 'message' | 'date'>
   ) }
@@ -378,6 +429,7 @@ export const CreatePostDocument = gql`
     poster {
       _id
     }
+    createdAt
   }
 }
     `;
@@ -479,6 +531,10 @@ export const LoginDocument = gql`
   login(email: $email, password: $password) {
     user {
       _id
+      supporters {
+        _id
+        name
+      }
       supporting {
         _id
         name
@@ -491,6 +547,7 @@ export const LoginDocument = gql`
         _id
         title
         desc
+        createdAt
       }
       name
       notifications {
@@ -577,9 +634,12 @@ export const SupporterDocument = gql`
       _id
       supporting {
         _id
+        name
+        email
       }
       email
       supporters {
+        name
         _id
       }
       posts {
@@ -618,6 +678,47 @@ export function useSupporterMutation(baseOptions?: Apollo.MutationHookOptions<Su
 export type SupporterMutationHookResult = ReturnType<typeof useSupporterMutation>;
 export type SupporterMutationResult = Apollo.MutationResult<SupporterMutation>;
 export type SupporterMutationOptions = Apollo.BaseMutationOptions<SupporterMutation, SupporterMutationVariables>;
+export const FetchFeedDocument = gql`
+    query FetchFeed($cursor: String) {
+  feed(cursor: $cursor) {
+    _id
+    buildMap {
+      type
+      value
+    }
+    title
+    createdAt
+    author
+    likes
+  }
+}
+    `;
+
+/**
+ * __useFetchFeedQuery__
+ *
+ * To run a query within a React component, call `useFetchFeedQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFetchFeedQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFetchFeedQuery({
+ *   variables: {
+ *      cursor: // value for 'cursor'
+ *   },
+ * });
+ */
+export function useFetchFeedQuery(baseOptions?: Apollo.QueryHookOptions<FetchFeedQuery, FetchFeedQueryVariables>) {
+        return Apollo.useQuery<FetchFeedQuery, FetchFeedQueryVariables>(FetchFeedDocument, baseOptions);
+      }
+export function useFetchFeedLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FetchFeedQuery, FetchFeedQueryVariables>) {
+          return Apollo.useLazyQuery<FetchFeedQuery, FetchFeedQueryVariables>(FetchFeedDocument, baseOptions);
+        }
+export type FetchFeedQueryHookResult = ReturnType<typeof useFetchFeedQuery>;
+export type FetchFeedLazyQueryHookResult = ReturnType<typeof useFetchFeedLazyQuery>;
+export type FetchFeedQueryResult = Apollo.QueryResult<FetchFeedQuery, FetchFeedQueryVariables>;
 export const FetchPostDocument = gql`
     query FetchPost($id: String!) {
   post(id: $id) {
@@ -670,8 +771,8 @@ export type FetchPostQueryHookResult = ReturnType<typeof useFetchPostQuery>;
 export type FetchPostLazyQueryHookResult = ReturnType<typeof useFetchPostLazyQuery>;
 export type FetchPostQueryResult = Apollo.QueryResult<FetchPostQuery, FetchPostQueryVariables>;
 export const FetchUserDocument = gql`
-    query FetchUser($id: String!) {
-  fetchUser(id: $id) {
+    query FetchUser($id: String!, $cursor: String) {
+  fetchUser(id: $id, cursor: $cursor) {
     name
     _id
     supporting {
@@ -680,6 +781,7 @@ export const FetchUserDocument = gql`
     email
     supporters {
       _id
+      name
     }
     posts {
       title
@@ -704,6 +806,7 @@ export const FetchUserDocument = gql`
  * const { data, loading, error } = useFetchUserQuery({
  *   variables: {
  *      id: // value for 'id'
+ *      cursor: // value for 'cursor'
  *   },
  * });
  */
@@ -717,21 +820,23 @@ export type FetchUserQueryHookResult = ReturnType<typeof useFetchUserQuery>;
 export type FetchUserLazyQueryHookResult = ReturnType<typeof useFetchUserLazyQuery>;
 export type FetchUserQueryResult = Apollo.QueryResult<FetchUserQuery, FetchUserQueryVariables>;
 export const UserDocument = gql`
-    query User {
-  user {
+    query User($cursor: String) {
+  user(cursor: $cursor) {
     _id
     supporting {
       _id
       name
       email
-      supporters {
-        _id
-      }
+    }
+    supporters {
+      _id
+      name
     }
     name
     posts {
       _id
       title
+      createdAt
       desc
     }
     notifications {
@@ -755,6 +860,7 @@ export const UserDocument = gql`
  * @example
  * const { data, loading, error } = useUserQuery({
  *   variables: {
+ *      cursor: // value for 'cursor'
  *   },
  * });
  */
@@ -767,9 +873,35 @@ export function useUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserQ
 export type UserQueryHookResult = ReturnType<typeof useUserQuery>;
 export type UserLazyQueryHookResult = ReturnType<typeof useUserLazyQuery>;
 export type UserQueryResult = Apollo.QueryResult<UserQuery, UserQueryVariables>;
+export const LikeDocument = gql`
+    subscription Like {
+  likeSubscription
+}
+    `;
+
+/**
+ * __useLikeSubscription__
+ *
+ * To run a query within a React component, call `useLikeSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useLikeSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useLikeSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useLikeSubscription(baseOptions?: Apollo.SubscriptionHookOptions<LikeSubscription, LikeSubscriptionVariables>) {
+        return Apollo.useSubscription<LikeSubscription, LikeSubscriptionVariables>(LikeDocument, baseOptions);
+      }
+export type LikeSubscriptionHookResult = ReturnType<typeof useLikeSubscription>;
+export type LikeSubscriptionResult = Apollo.SubscriptionResult<LikeSubscription>;
 export const NotificationDocument = gql`
-    subscription Notification {
-  notify {
+    subscription Notification($subscriber: String!, $supporting: [String!]) {
+  notification(subscriber: $subscriber, supporting: $supporting) {
     _id
     message
     date
@@ -789,10 +921,12 @@ export const NotificationDocument = gql`
  * @example
  * const { data, loading, error } = useNotificationSubscription({
  *   variables: {
+ *      subscriber: // value for 'subscriber'
+ *      supporting: // value for 'supporting'
  *   },
  * });
  */
-export function useNotificationSubscription(baseOptions?: Apollo.SubscriptionHookOptions<NotificationSubscription, NotificationSubscriptionVariables>) {
+export function useNotificationSubscription(baseOptions: Apollo.SubscriptionHookOptions<NotificationSubscription, NotificationSubscriptionVariables>) {
         return Apollo.useSubscription<NotificationSubscription, NotificationSubscriptionVariables>(NotificationDocument, baseOptions);
       }
 export type NotificationSubscriptionHookResult = ReturnType<typeof useNotificationSubscription>;
