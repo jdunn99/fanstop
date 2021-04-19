@@ -1,9 +1,16 @@
 import React from "react";
-import { Heading, Box, Text, Stack, Flex } from "@chakra-ui/core";
+import {
+  Heading,
+  Box,
+  Text,
+  Stack,
+  Flex,
+  ChakraStyleProps,
+} from "@chakra-ui/core";
 import { FaChevronRight } from "react-icons/fa";
 import NextLink from "next/link";
 
-interface PostCardProps {
+interface PostCardProps extends ChakraStyleProps {
   title: string;
   text: string;
   href?: string;

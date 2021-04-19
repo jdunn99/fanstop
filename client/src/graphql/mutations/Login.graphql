@@ -1,6 +1,8 @@
 mutation Login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
     user {
+      bio
+      image
       _id
       supporters {
         _id

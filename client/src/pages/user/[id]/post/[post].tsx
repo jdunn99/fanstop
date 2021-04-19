@@ -8,6 +8,7 @@ import { withApollo } from "../../../../util/withApollo";
 import { LikeButton } from "../../../../components/posts/LikeButton";
 import gql from "graphql-tag";
 import { Loading } from "../../../../components/Loading";
+import { PostView } from "../../../../components/posts/PostView";
 
 /** Type Declarations */
 
@@ -84,18 +85,21 @@ const Post: React.FC<indexProps> = () => {
       case "Supporting": {
         return loading || !post ? (
           <Loading />
-        ) : (
+        ) : data ? (
           <>
             <Navbar />
             <UserCard
+              image={data.post.poster.image}
               name={data.post.poster.name}
               supporting={data.post.poster.supporting.length}
               supporters={data.post.poster.supporters.length}
               href={`/user/${data.post.poster._id}`}
             />
-
+            <PostView buildState={data.post.buildMap} />
             <LikeButton data={data} />
           </>
+        ) : (
+          <p>Post not found.</p>
         );
       }
 

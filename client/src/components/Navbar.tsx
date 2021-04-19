@@ -266,9 +266,3 @@ export const Navbar: React.FC<NavbarProps> = () => {
     </Flex>
   );
 };
-function remove(arg0: {
-  variables: { id: any };
-  update: (cache: any, { data: deletedData }: { data: any }) => void;
-}) {
-  throw new Error("Function not implemented.");
-}

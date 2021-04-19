@@ -7,9 +7,14 @@ import { useRouter } from "next/router";
 interface PostCardProps {
   name: string;
   href?: string;
+  image: string;
 }
 
-export const SupporterCard: React.FC<PostCardProps> = ({ name, href }) => {
+export const SupporterCard: React.FC<PostCardProps> = ({
+  name,
+  href,
+  image,
+}) => {
   const router = useRouter();
   return (
     <Box
@@ -26,7 +31,7 @@ export const SupporterCard: React.FC<PostCardProps> = ({ name, href }) => {
         justify="center"
         background="blue.500"
         roundedTop="lg">
-        <Avatar />
+        <Avatar size="lg" src={image} />
       </Flex>
       <Box p={4}>
         <Heading

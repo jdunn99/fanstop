@@ -1,23 +1,25 @@
 query FetchPost($id: String!) {
-	post(id: $id) {
-		_id
-		title
-		desc
-		poster {
-			name
-			_id
-			supporting {
-				_id
-			}
-			email
-			supporters {
-				_id
-			}
-		}
-		buildMap {
-			type
-			value
-		}
-		likes
-	}
+  post(id: $id) {
+    _id
+    title
+    desc
+    poster {
+      bio
+      name
+      image
+      _id
+      supporting {
+        _id
+      }
+      email
+      supporters {
+        _id
+      }
+    }
+    buildMap {
+      type
+      value
+    }
+    likes
+  }
 }

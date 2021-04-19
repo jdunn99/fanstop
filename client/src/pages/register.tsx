@@ -1,11 +1,7 @@
-import { Flex, Heading, Box, Button, Text } from "@chakra-ui/core";
+import { Flex, Text, Box, Button } from "@chakra-ui/core";
 import { Formik, Form } from "formik";
 import React from "react";
-import {
-  UserQuery,
-  UserDocument,
-  useLoginMutation,
-} from "../generated/graphql";
+import { useRegisterMutation } from "../generated/graphql";
 import router from "next/router";
 import { withApollo } from "../util/withApollo";
 import { Field } from "../components/Field";
@@ -13,15 +9,18 @@ import { Container } from "../components/Container";
 import { InputWrapper } from "../components/InputWrapper";
 
 /** Type Definitions */
-interface LoginProps {}
+interface RegisterProps {}
 
 type SubmittedValues = {
+  name: string;
+  bio: string;
   email: string;
   password: string;
+  confirm_password: string;
 };
 
 /**
- * Logs in the User with JWTs.
+ * 
  * @returns (
     <Container min="90vh">
       <InputWrapper heading="Log In" w={400}>
@@ -30,37 +29,30 @@ type SubmittedValues = {
     </Container>
   );
  */
-const Login: React.FC<LoginProps> = () => {
-  const [login] = useLoginMutation();
+const Register: React.FC<RegisterProps> = () => {
   const [submitting, setSubmitting] = React.useState<boolean>(false);
-
+  const [register] = useRegisterMutation();
   /**
-   * Submits our values to the server - attempts to log in user.
+   * Submits our values to the server - attempts to register.
    * @param {SubmittedValues} values - The values sent to the server.
    */
   const onSubmit = async (values: SubmittedValues) => {
     setSubmitting(true);
 
-    /** Log in the User and update the cache. */
-    const response = await login({
+    /** Registers a User */
+    const response = await register({
       variables: {
+        name: values.name,
         email: values.email,
         password: values.password,
-      },
-      update: (cache, { data }) => {
-        cache.writeQuery<UserQuery>({
-          query: UserDocument,
-          data: {
-            __typename: "Query",
-            user: data?.login.user,
-          },
-        });
+        bio: values.bio,
       },
     });
+
     setSubmitting(false);
-    if (response.data?.login.errors) {
+    if (response.data?.register.errors) {
     } else {
-      router.push(`/user/${response.data.login.user._id}`);
+      router.push(`/login`);
     }
   };
 
@@ -69,13 +61,31 @@ const Login: React.FC<LoginProps> = () => {
    */
   const InputControl = () => {
     return (
-      <Formik initialValues={{ email: "", password: "" }} onSubmit={onSubmit}>
+      <Formik
+        initialValues={{
+          email: "",
+          password: "",
+          bio: "",
+          name: "",
+          confirm_password: "",
+        }}
+        onSubmit={onSubmit}>
         <Form>
+          <Box mt={4}>
+            <Field
+              name="name"
+              placeholder="name"
+              label="Name"
+              required
+              type="text"
+            />
+          </Box>
           <Box mt={4}>
             <Field
               name="email"
               placeholder="email"
               label="Email"
+              required
               type="email"
             />
           </Box>
@@ -84,14 +94,33 @@ const Login: React.FC<LoginProps> = () => {
               name="password"
               placeholder="password"
               label="Password"
+              required
               type="password"
+            />
+          </Box>
+          <Box mt={4}>
+            <Field
+              name="confirm_password"
+              placeholder="confirm password"
+              required
+              label="Confirm Password"
+              type="password"
+            />
+          </Box>
+          <Box mt={4}>
+            <Field
+              name="bio"
+              placeholder="bio"
+              label="Bio"
+              type="text"
+              textarea
             />
           </Box>
           <Box mt={2}>
             <Text fontSize="sm">
-              New to FanStop?{" "}
+              Already have an account?{" "}
               <a style={{ color: "#3182ce" }} href="/register">
-                Sign Up.
+                Sign In.
               </a>
             </Text>
           </Box>
@@ -101,7 +130,7 @@ const Login: React.FC<LoginProps> = () => {
               type="submit"
               isLoading={submitting}
               colorScheme="blue">
-              Sign In
+              Register
             </Button>
           </Box>
         </Form>
@@ -110,12 +139,12 @@ const Login: React.FC<LoginProps> = () => {
   };
 
   return (
-    <Container min="90vh">
-      <InputWrapper heading="Log In">
+    <Container>
+      <InputWrapper heading="Register">
         <InputControl />
       </InputWrapper>
     </Container>
   );
 };
 
-export default withApollo(Login);
+export default withApollo(Register);

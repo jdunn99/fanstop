@@ -9,6 +9,10 @@ import {
   useFetchFeedLazyQuery,
   useFetchUserLazyQuery,
   FetchFeedQuery,
+  useDeletePostMutation,
+  useUserLazyQuery,
+  UserDocument,
+  useUsersLazyQuery,
 } from "../../../generated/graphql";
 import styles from "../../../styles/Home.module.css";
 import { Flex, Spinner, Text, Stack, Button, Box } from "@chakra-ui/core";
@@ -21,6 +25,14 @@ import { isServer } from "../../../util/isServer";
 import { withApollo } from "../../../util/withApollo";
 import NextLink from "next/link";
 import { Loading } from "../../../components/Loading";
+import { BsPencilSquare } from "react-icons/bs";
+import { FaPencilAlt } from "react-icons/fa";
+import {
+  EditButtons,
+  EditCard,
+  Editable,
+} from "../../../components/posts/Editing";
+import { Pagination } from "../../../components/Pagination";
 
 interface UserProfileProps {
   dataUser: UserQuery;
@@ -38,6 +50,7 @@ const ProfileTab: React.FC<TabProps> = ({ active, setActive, fields }) => {
     <Flex gridColumnGap={8}>
       {fields.map((field) => (
         <Box
+          key={field}
           borderBottom={active === field ? "2px solid black" : "none"}
           p={2}
           cursor="pointer"
@@ -51,7 +64,7 @@ const ProfileTab: React.FC<TabProps> = ({ active, setActive, fields }) => {
 
 const User = () => {
   /** State */
-  const [payload, setPayload] = React.useState<string>("Support");
+  const [payload, setPayload] = React.useState<string>("");
   const [active, setActive] = React.useState<string>("");
 
   /** GraphQL */
@@ -68,8 +81,13 @@ const User = () => {
     { data: feedData, loading: loadingFeed, fetchMore: fetchMoreFeed },
   ] = useFetchFeedLazyQuery();
 
+  const [
+    fetchUsers,
+    { data: users, loading: loadingUsers, fetchMore: fetchMoreUsers },
+  ] = useUsersLazyQuery();
   const [fetchUser, { data, loading, fetchMore }] = useFetchUserLazyQuery();
   const [handleSupporter] = useSupporterMutation();
+  const [deletePost] = useDeletePostMutation();
 
   /** Misc Variables */
   const router = useRouter();
@@ -80,6 +98,7 @@ const User = () => {
   /** Handles inital logic */
   React.useEffect(() => {
     // check if the user is viewing their own profile and set payload accordingly
+    console.log(id);
     if (dataUser) {
       if (dataUser.user && dataUser.user._id === id) {
         setPayload("Edit Profile");
@@ -93,14 +112,27 @@ const User = () => {
           // if the user is in the array then we add them
           setActive("Posts");
           setPayload("Supporting");
+        } else {
+          setPayload("Support");
         }
       }
     }
-  }, [loadingUser, id]);
+    console.log(payload);
+  }, [dataUser, id]);
 
   /** Load the Feed whenever necessary */
   React.useEffect(() => {
     if (active === "Feed") fetchFeed();
+    switch (active) {
+      case "Feed":
+        fetchFeed();
+        return;
+      case "All Users":
+        fetchUsers();
+        return;
+      default:
+        return;
+    }
   }, [active]);
 
   /**
@@ -109,7 +141,6 @@ const User = () => {
    * @param {boolean} add - Whether or not the User is a supporter.
    */
   const HandleSupportFetch = async (_id: string, add: boolean) => {
-    console.log("firign");
     await handleSupporter({
       variables: {
         id: _id,
@@ -234,7 +265,6 @@ const User = () => {
   };
 
   const HandleRender = () => {
-    console.log(active);
     switch (active) {
       case "My Posts":
         return (
@@ -246,14 +276,18 @@ const User = () => {
               <Button colorScheme="blue">Add new post</Button>
             </NextLink>
             {dataUser.user.posts.map((post) => (
-              <PostCard
+              <Editable
                 key={post._id}
                 title={post.title}
                 text={post.desc}
                 href={`/user/${id}/post/${post._id.toString()}`}
+                id={post._id}
+                dataUser={dataUser}
               />
             ))}
-            {dataUser.user.posts.length > 0 && <PaginateSelf />}
+            {dataUser.user.posts.length > 0 && (
+              <Pagination user userData={dataUser} fetchMore={fetchMoreUser} />
+            )}
           </Stack>
         );
       case "Posts":
@@ -267,7 +301,9 @@ const User = () => {
                 href={`/user/${id}/post/${post._id.toString()}`}
               />
             ))}
-            {data.fetchUser.posts.length > 0 && <PaginateUser />}
+            {data.fetchUser.posts.length > 0 && (
+              <Pagination fetch fetchUserData={data} fetchMore={fetchMore} />
+            )}
           </Stack>
         ) : null;
       case "Feed":
@@ -285,7 +321,11 @@ const User = () => {
                       text="H"
                     />
                   ))}
-                  <PaginateFeed />
+                  <Pagination
+                    feed
+                    feedData={feedData}
+                    fetchMore={fetchMoreFeed}
+                  />
                 </>
               ) : (
                 <Text>Your feed is empty.</Text>
@@ -310,6 +350,7 @@ const User = () => {
                   (sup) =>
                     sup._id !== dataUser.user._id && (
                       <SupporterCard
+                        image={sup.image}
                         key={sup._id}
                         name={sup._id as string}
                         href={`/user/${sup._id}`}
@@ -326,6 +367,7 @@ const User = () => {
                   (sup) =>
                     sup._id !== dataUser.user._id && (
                       <SupporterCard
+                        image={sup.image}
                         key={sup._id}
                         name={sup.name}
                         href={`/user/${sup._id}`}
@@ -338,6 +380,29 @@ const User = () => {
             )}
           </Flex>
         );
+      case "All Users":
+        return (
+          <Flex flexDir="column" gridGap={8}>
+            <Flex
+              justifyContent="center"
+              alignItems="center"
+              flexDirection="row"
+              gridColumnGap={8}
+              gridRowGap={8}
+              flexWrap="wrap">
+              {users &&
+                users.users.map((user) => (
+                  <SupporterCard
+                    image={user.image}
+                    key={user._id}
+                    href={`/user/${user._id}`}
+                    name={user.name}
+                  />
+                ))}
+            </Flex>
+            <Pagination users usersData={users} fetchMore={fetchMoreUsers} />
+          </Flex>
+        );
       default:
         return null;
     }
@@ -345,7 +410,7 @@ const User = () => {
 
   const HandleProfileFetch = () => {
     // router push
-    router.push("/");
+    router.push("/edit");
   };
 
   const HandlePayload = () => {
@@ -378,7 +443,7 @@ const User = () => {
             <ProfileTab
               active={active}
               setActive={(q) => setActive(q)}
-              fields={["My Posts", "Feed", "Supporting"]}
+              fields={["My Posts", "Feed", "Supporting", "All Users"]}
             />
             <HandleRender />
           </PostContainer>
@@ -397,6 +462,7 @@ const User = () => {
       {dataUser && payload === "Edit Profile" && (
         <UserCard
           name={dataUser.user.name}
+          image={dataUser.user.image}
           supporting={dataUser.user.supporting.length}
           supporters={dataUser.user.supporters.length}
           payload={payload}
@@ -406,6 +472,7 @@ const User = () => {
       )}
       {data && data.fetchUser && (
         <UserCard
+          image={data.fetchUser.image}
           name={data.fetchUser.name}
           supporting={data.fetchUser.supporting.length}
           supporters={data.fetchUser.supporters.length}

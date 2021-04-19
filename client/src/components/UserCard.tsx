@@ -8,6 +8,7 @@ interface UserCardProps {
   supporters: number;
   payload?: string;
   handleFetch?: any;
+  image: string;
   href?: string;
 }
 
@@ -23,6 +24,7 @@ export const UserCard: React.FC<UserCardProps> = ({
   name,
   supporting,
   supporters,
+  image,
   payload,
   href = "",
   handleFetch,
@@ -66,7 +68,7 @@ export const UserCard: React.FC<UserCardProps> = ({
         <Flex justifyContent="space-between" align="center">
           <NextLink href={href}>
             <Flex align="center" cursor="pointer">
-              <Avatar />
+              <Avatar src={image} />
               <StyledText size="md">{name}</StyledText>
             </Flex>
           </NextLink>

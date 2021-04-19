@@ -4,7 +4,7 @@ import { Stack, Box, Heading, Text } from "@chakra-ui/core";
 
 interface PostItemProps {
   value: string;
-  type: string; // TODO: Convert to enum
+  type: string;
 }
 
 const PostItem: React.FC<PostItemProps> = ({ value, type }) => {
@@ -36,7 +36,7 @@ interface PostViewProps {
 
 export const PostView: React.FC<PostViewProps> = ({ buildState }) => {
   return (
-    <Stack w={1200} m="auto" p={4} mt={9} spacing={4}>
+    <Stack maxW={1200} m="auto" p={4} mt={9} spacing={4}>
       {buildState.map((x, i) => (
         <div key={i}>
           <PostItem value={x.value} key={i} type={x.type} />

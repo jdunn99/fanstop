@@ -1,8 +1,11 @@
 query FetchUser($id: String!, $cursor: String) {
   fetchUser(id: $id, cursor: $cursor) {
     name
+    image
+    bio
     _id
     supporting {
+      image
       _id
     }
     email

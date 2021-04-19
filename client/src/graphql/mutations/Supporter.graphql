@@ -5,8 +5,10 @@ mutation Supporter($id: String!, $add: Boolean!) {
       message
     }
     user {
+      bio
       name
       _id
+      image
       supporting {
         _id
         name

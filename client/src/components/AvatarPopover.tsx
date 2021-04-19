@@ -8,26 +8,33 @@ import {
   MenuList,
   MenuItem,
 } from "@chakra-ui/core";
-import { User } from "../generated/graphql";
+import { useLogoutMutation, User } from "../generated/graphql";
 import { BsGearFill, BsFillPersonFill } from "react-icons/bs";
 import { FaDoorOpen } from "react-icons/fa";
+import { useApolloClient } from "@apollo/client";
+import { useRouter } from "next/router";
 interface AvatarPopoverProps {
   user: User;
 }
-import { useRouter } from "next/router";
 
 export const AvatarPopover: React.FC<AvatarPopoverProps> = ({ user }) => {
   const router = useRouter();
+  const [logout] = useLogoutMutation();
+  const client = useApolloClient();
 
   return (
     <Menu placement="bottom" isLazy>
       <MenuButton>
         <Button colorScheme="blue">
-          <Avatar size="sm" cursor="pointer" />
+          <Avatar
+            src={user.image ? user.image : ""}
+            size="sm"
+            cursor="pointer"
+          />
         </Button>
       </MenuButton>
       <MenuList color="black">
-        <MenuItem onClick={() => router.push(`/user/${user._id}`)}>
+        <MenuItem onClick={() => router.push(`/`)}>
           <Flex
             m="auto"
             justify="space-between"
@@ -38,7 +45,7 @@ export const AvatarPopover: React.FC<AvatarPopoverProps> = ({ user }) => {
             <BsFillPersonFill />
           </Flex>
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={() => router.push("/edit")}>
           <Flex justify="space-between" align="center" cursor="pointer" w={200}>
             <p>Settings</p>
             <BsGearFill />
@@ -46,7 +53,16 @@ export const AvatarPopover: React.FC<AvatarPopoverProps> = ({ user }) => {
         </MenuItem>
 
         <MenuItem>
-          <Flex justify="space-between" align="center" cursor="pointer" w={200}>
+          <Flex
+            justify="space-between"
+            align="center"
+            cursor="pointer"
+            w={200}
+            onClick={async () => {
+              const response = await logout();
+              await client.clearStore();
+              if (response.data.logout) router.push("/");
+            }}>
             <p>Log Out</p>
             <FaDoorOpen />
           </Flex>

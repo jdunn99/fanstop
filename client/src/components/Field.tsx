@@ -15,11 +15,16 @@ type FieldProps = InputHTMLAttributes<HTMLInputElement> & {
   white?: boolean;
 };
 
-export const Field: React.FC<FieldProps> = ({ label, size: _, ...props }) => {
+export const Field: React.FC<FieldProps> = ({
+  textarea,
+  label,
+  size: _,
+  ...props
+}) => {
   const [field, { error }] = useField(props);
 
   let FieldType = Input as any;
-  if (props.textarea) FieldType = Textarea;
+  if (textarea) FieldType = Textarea;
 
   return (
     <FormControl>

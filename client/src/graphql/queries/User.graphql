@@ -1,9 +1,12 @@
 query User($cursor: String) {
   user(cursor: $cursor) {
     _id
+    image
+    bio
     supporting {
       _id
       name
+      image
       email
     }
     supporters {
