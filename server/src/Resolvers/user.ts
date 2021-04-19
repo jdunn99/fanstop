@@ -145,10 +145,20 @@ export class UserResolver {
     return result;
   }
 
+  /**
+   * Fetches the current registerd Users
+   * @param {string} [cursor] - Optional cursor paramter for Pagination
+   * @param {ReturnModelType<typeof User, {}>} UserModel - The User database being queried. Called to make sure the user is signed in.
+   * @returns {Promise<User>} - A paginated array of Users
+   */
   @Query(() => [User])
-  async users(@Ctx() { UserModel }: Context): Promise<User[]> {
-    const result = await UserModel.find().populate("posts");
-    return result;
+  async users(
+    @Arg("cursor", { nullable: true }) cursor: string,
+    @Ctx() { UserModel }: Context
+  ): Promise<User[]> {
+    return !cursor
+      ? await UserModel.find().limit(2).populate("posts")
+      : await UserModel.find({ _id: { $gt: cursor } }).limit(2);
   }
 
   /** Mutations */
@@ -166,6 +176,7 @@ export class UserResolver {
     @Arg("name") name: string,
     @Arg("password") password: string,
     @Arg("email") email: string,
+    @Arg("bio", { nullable: true }) bio: string,
     @Ctx() { UserModel }: Context
   ): Promise<UserResponse> {
     const error = [] as any;
@@ -201,6 +212,7 @@ export class UserResolver {
       const result = await UserModel.create({
         name,
         email,
+        bio: bio ? bio : "",
         password: hashed,
         supporting: [],
         supporters: [],
@@ -289,6 +301,8 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async updateUser(
     @Arg("name", { nullable: true }) name: string,
+    @Arg("bio", { nullable: true }) bio: string,
+    @Arg("image", { nullable: true }) image: string,
     @Ctx() { req, UserModel }: Context
   ): Promise<UserResponse> {
     const user = await UserModel.findOne({ _id: req.userId });
@@ -298,9 +312,9 @@ export class UserResolver {
       };
     }
 
-    // TODO: Add error checking for inputs
     if (name) user.name = name;
-
+    if (bio) user.bio = bio;
+    if (image) user.image = image;
     await user.save();
 
     return { user: user };
@@ -321,32 +335,51 @@ export class UserResolver {
     @Ctx() { UserModel, req }: Context
   ): Promise<UserResponse> {
     const supporter = await UserModel.findOne({ _id: id })
-      .populate("posts")
-      .populate("supporters");
+      .populate("posts", "title createdAt desc")
+      .populate("supporters", "name")
+      .populate("supporting", "name email");
+
     if (!supporter)
       return {
         errors: [{ field: "", message: "User is not found" }],
       };
 
-    await UserModel.findOne({ _id: req.userId }, async (err, result) => {
-      if (err) throw Error();
-      if (add) {
-        result?.supporting.push(id);
-        supporter.supporters.push(result!._id);
-      } else {
-        result!.supporting = result!.supporting.filter((x) => x !== id);
-        supporter.supporters = supporter.supporters.filter(
-          (x) => x !== result!._id
-        );
-      }
+    const user = await UserModel.findOne({ _id: req.userId });
+    if (!user)
+      return {
+        errors: [{ field: "", message: "Not signed in." }],
+      };
 
-      await result?.save();
-      await supporter.save();
-    });
+    if (add) {
+      user.supporting.push(supporter);
+      supporter.supporters.push(user);
+    } else {
+      user.supporting = user.supporting.filter((x) => {
+        return x?.toString() !== id;
+      });
+
+      supporter.supporters = supporter.supporters.filter((x) => {
+        return (x as User)._id?.toString() !== user._id.toString();
+      });
+      console.log(supporter.supporters);
+    }
+
+    await user.save();
+    await supporter.save();
 
     return { user: supporter };
   }
 
+  @Mutation(() => Boolean)
+  async clearSupporters(@Ctx() { UserModel }: Context): Promise<Boolean> {
+    const users = await UserModel.find({});
+    users.forEach(async (user) => {
+      user.supporters = [];
+      user.supporting = [];
+      await user.save();
+    });
+    return true;
+  }
   @Mutation(() => Boolean)
   async deleteAll(@Ctx() { UserModel }: Context): Promise<Boolean> {
     await UserModel.deleteMany({});
