@@ -1,0 +1,7 @@
+subscription Notification($subscriber: String!, $supporting: [String!]) {
+  notification(subscriber: $subscriber, supporting: $supporting) {
+    _id
+    message
+    date
+  }
+}
