@@ -1,9 +1,0 @@
-mutation DeleteNotification($id: String!) {
-	deleteNotification(id: $id) {
-		notifications {
-			_id
-			message
-			date
-		}
-	}
-}

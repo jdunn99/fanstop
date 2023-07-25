@@ -1,7 +1,0 @@
-query Users($cursor: String) {
-  users(cursor: $cursor) {
-    name
-    _id
-    image
-  }
-}
