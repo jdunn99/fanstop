@@ -1,6 +1,8 @@
 import { CreatorBar } from '@/components/creator-bar';
 import { Navbar } from '@/components/nav';
 import Button from '@/components/ui/button';
+import { db } from '@/lib/db';
+import { InferGetServerSidePropsType } from 'next';
 import { MdMap } from 'react-icons/md';
 
 const temp = [
@@ -48,9 +50,12 @@ const temp = [
     },
 ];
 
-export default function Home() {
+export default function Home({
+    user,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
     return (
         <div className="flex min-h-screen flex-col">
+            {JSON.stringify(user)}
             <header className="container mx-auto z-40 w-full">
                 <div className="flex h-20 items-center justify-between py-6 max-w-screen-xl mx-auto ">
                     <Navbar />
@@ -95,7 +100,7 @@ export default function Home() {
                             <CreatorBar />
                         </div>
                     </div>
-                    <div className="mx-auto grid justify-center gap-4 sm:grid-cols-2 md:max-w-[64rem] md:grid-cols-3">
+                    <div className="mx-auto grid justify-center gap-4 sm:grid-cols-1 md:max-w-[64rem] md:grid-cols-2">
                         {temp.map((item) => (
                             <div
                                 key={item.author}
@@ -132,4 +137,45 @@ export default function Home() {
             </main>
         </div>
     );
+}
+
+export async function getServerSideProps() {
+    const user = await db.user.findMany({
+        select: {
+            id: true,
+            name: true,
+        },
+    });
+
+    const tags = await db.tag.findMany();
+    const creatorId = 'clkhqdifi0000u4ez0m5dlbiv'; // Example author ID
+
+    // Newsletter 1
+    const tagNames = ['Technology', 'Test'];
+
+    const result = await db.community.findMany({
+        where: {
+            tags: {
+                some: {
+                    name: { in: tagNames },
+                },
+            },
+        },
+        select: {
+            id: true,
+            description: true,
+            name: true,
+            creator: {
+                select: {
+                    name: true,
+                },
+            },
+        },
+    });
+
+    return {
+        props: {
+            user: result,
+        },
+    };
 }
