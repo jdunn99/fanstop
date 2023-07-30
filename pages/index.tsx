@@ -1,69 +1,38 @@
 import { CreatorBar } from '@/components/creator-bar';
+import { FeaturedCreator } from '@/components/featured-creators';
 import { Navbar } from '@/components/nav';
 import Button from '@/components/ui/button';
 import { db } from '@/lib/db';
 import { InferGetServerSidePropsType } from 'next';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import React from 'react';
 import { MdMap } from 'react-icons/md';
 
-const temp = [
-    {
-        icon: '',
-        name: 'FanStop Test Blog',
-        author: 'Jack Dunn',
-        description:
-            'Jack Dunn shares his favorite information about creating on FanStop. He loves to post and mess around here.',
-    },
-    {
-        icon: '',
-        name: 'FanStop Test Blog',
-        author: 'Jamal',
-        description:
-            'Jack Dunn shares his favorite information about creating on FanStop. He loves to post and mess around here.',
-    },
-    {
-        icon: '',
-        name: 'FanStop Test Blog',
-        author: 'Jack unn',
-        description:
-            'Jack Dunn shares his favorite information about creating on FanStop. He loves to post and mess around here.',
-    },
-    {
-        icon: '',
-        name: 'FanStop Test Blog',
-        author: 'Jack Dun',
-        description:
-            'Jack Dunn shares his favorite information about creating on FanStop. He loves to post and mess around here.',
-    },
-    {
-        icon: '',
-        name: 'FanStop Test Blog',
-        author: 'Jack Du',
-        description:
-            'Jack Dunn shares his favorite information about creating on FanStop. He loves to post and mess around here.',
-    },
-    {
-        icon: '',
-        name: 'FanStop Test Blog',
-        author: 'Jac Dunn',
-        description:
-            'Jack Dunn shares his favorite information about creating on FanStop. He loves to post and mess around here.',
-    },
-];
+const tagNames = ['Technology', 'Business', 'Arts', 'Health & Wellness'];
 
 export default function Home({
     user,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+    const [active, setActive] = React.useState<string>(tagNames[0]);
+
+    const { data } = useSession();
+
     return (
         <div className="flex min-h-screen flex-col">
-            {JSON.stringify(user)}
+            {JSON.stringify(data)}
             <header className="container mx-auto z-40 w-full">
                 <div className="flex h-20 items-center justify-between py-6 max-w-screen-xl mx-auto ">
                     <Navbar />
                     <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm">
-                            Login
-                        </Button>
-                        <Button size="sm">Sign Up</Button>
+                        <Link href="/login">
+                            <Button variant="ghost" size="sm">
+                                Login
+                            </Button>
+                        </Link>
+                        <Link href="/register">
+                            <Button size="sm">Sign Up</Button>
+                        </Link>
                     </div>
                 </div>
             </header>
@@ -97,11 +66,16 @@ export default function Home({
                             they love.
                         </p>
                         <div className="flex items-center text-center max-w-[64rem]">
-                            <CreatorBar />
+                            <CreatorBar
+                                keys={tagNames}
+                                active={active}
+                                setActive={setActive}
+                            />
                         </div>
                     </div>
                     <div className="mx-auto grid justify-center gap-4 sm:grid-cols-1 md:max-w-[64rem] md:grid-cols-2">
-                        {temp.map((item) => (
+                        <FeaturedCreator queryKey={active} />
+                        {/* {temp.map((item) => (
                             <div
                                 key={item.author}
                                 className="relative overflow-hidden rounded-lg border bg-white p-2"
@@ -125,7 +99,7 @@ export default function Home({
                                     </div>
                                 </div>
                             </div>
-                        ))}
+                        ))} */}
                     </div>
                     <div className="mx-auto pt-8 text-center md:max-w-[58rem]">
                         <Button>See who else is on FanStop</Button>
@@ -150,7 +124,6 @@ export async function getServerSideProps() {
     const tags = await db.tag.findMany();
     const creatorId = 'clkhqdifi0000u4ez0m5dlbiv'; // Example author ID
 
-    // Newsletter 1
     const tagNames = ['Technology', 'Test'];
 
     const result = await db.community.findMany({

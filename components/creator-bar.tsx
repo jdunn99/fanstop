@@ -1,10 +1,11 @@
 import React from 'react';
 
-const keys = ['Featured', 'Pasta', 'Chicken', 'Lasagna'];
-
-export function CreatorBar() {
-    const [active, setActive] = React.useState<string>('Featured');
-
+interface CreatorBarProps {
+    keys: string[];
+    active: string;
+    setActive(tag: string): void;
+}
+export function CreatorBar({ keys, active, setActive }: CreatorBarProps) {
     return (
         <div className="m-auto block bg-rose-50 px-2 relative flex-1 rounded-full space-x-2 py-1">
             {keys.map((key) => (
