@@ -27,6 +27,7 @@ export const authOptions: NextAuthOptions = {
                 },
             },
             async authorize(credentials) {
+                console.log('TET');
                 if (!credentials) return null;
 
                 const { email, password } = credentials;

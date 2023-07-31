@@ -3,39 +3,35 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import Input from './ui/input';
 import Button from './ui/button';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 export default null;
 
 const schema = z.object({
     email: z.string().email(),
-    name: z.string().nonempty(),
     password: z.string().min(6).describe('Password'),
 });
 type FormData = z.infer<typeof schema>;
 
-export function RegisterEmailInput() {
+export function LoginInput() {
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<FormData>({ resolver: zodResolver(schema) });
+    const { push } = useRouter();
 
-    function onSubmit(data: FormData) {
-        console.log(errors);
+    function onSubmit({ email, password }: FormData) {
+        signIn('credentials', {
+            email,
+            password,
+            callbackUrl: '/',
+        });
     }
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
-            <div className="grid gap-1 text-left">
-                <label className="text-left text-sm font-bold">Name</label>
-                <Input
-                    {...register('name')}
-                    placeholder="Name"
-                    className={errors.name ? 'border-red-500' : ''}
-                />
-                <p className="text-sm text-red-500">{errors.name?.message}</p>
-            </div>
-
             <div className="grid gap-1 text-left">
                 <label className="text-left text-sm font-bold">Email</label>
                 <Input
@@ -52,14 +48,14 @@ export function RegisterEmailInput() {
                     {...register('password')}
                     type="password"
                     placeholder="Password"
-                    className={errors.name ? 'border-red-500' : ''}
+                    className={errors.password ? 'border-red-500' : ''}
                 />
                 <p className="text-sm text-red-500">
                     {errors.password?.message}
                 </p>
             </div>
 
-            <Button onClick={handleSubmit(onSubmit)}>Create account</Button>
+            <Button type="submit">Sign in</Button>
         </form>
     );
 }
