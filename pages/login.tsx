@@ -1,9 +1,9 @@
-import { InferGetServerSidePropsType } from 'next';
-import React from 'react';
-import { getProviders, signIn } from 'next-auth/react';
-import Link from 'next/link';
-import { ProviderButtons } from '@/components/provider-buttons';
-import { LoginInput } from '@/components/login-input';
+import { InferGetServerSidePropsType } from "next";
+import React from "react";
+import { getProviders, signIn } from "next-auth/react";
+import Link from "next/link";
+import { ProviderButtons } from "@/components/provider-buttons";
+import { LoginInput } from "@/components/login-input";
 
 export default function Login({
     providers,
@@ -32,7 +32,7 @@ export default function Login({
                     </div>
                     <LoginInput />
                     <p className="text-sm opacity-80">
-                        Already have an account?{' '}
+                        Already have an account?{" "}
                         <Link
                             href="/register"
                             className="underline underline-offset-2"

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import Link from 'next/link';
-import { MdOutlinePostAdd } from 'react-icons/md';
-import { useSelectedLayoutSegment } from 'next/navigation';
+import * as React from "react";
+import Link from "next/link";
+import { MdOutlinePostAdd } from "react-icons/md";
+import { useSelectedLayoutSegment } from "next/navigation";
 
 interface MainNavProps {
     children?: React.ReactNode;

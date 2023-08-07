@@ -53,14 +53,17 @@ model User {
   communities   Community[]
   subscriptions Subscriber[]
   likes         Like[]
+  posts         Post[]
 }
 
 model Community {
-  id        String @id @default(cuid())
-  name      String
-  views     Int
-  creator   User   @relation(fields: [creatorId], references: [id])
-  creatorId String
+  id         String   @id @default(cuid())
+  name       String
+  totalViews Int
+  creator    User     @relation(fields: [creatorId], references: [id])
+  creatorId  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   subscribers Subscriber[]
   posts       Post[]
@@ -89,12 +92,18 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   content   Json?
+  views     Int
 
   community   Community @relation(fields: [communityId], references: [id])
   communityId String
-  likes       Like[]
+
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+
+  likes Like[]
 
   @@index([communityId])
+  @@index([authorId])
 }
 
 model Tags {

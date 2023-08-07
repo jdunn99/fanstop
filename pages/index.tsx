@@ -1,15 +1,15 @@
-import { CreatorBar } from '@/components/creator-bar';
-import { FeaturedCreator } from '@/components/featured-creators';
-import { Navbar } from '@/components/nav';
-import Button from '@/components/ui/button';
-import { db } from '@/lib/db';
-import { InferGetServerSidePropsType } from 'next';
-import { useSession } from 'next-auth/react';
-import Link from 'next/link';
-import React from 'react';
-import { MdMap } from 'react-icons/md';
+import { CreatorBar } from "@/components/creator-bar";
+import { FeaturedCreator } from "@/components/featured-creators";
+import { Navbar } from "@/components/nav";
+import Button from "@/components/ui/button";
+import { db } from "@/lib/db";
+import { InferGetServerSidePropsType } from "next";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import React from "react";
+import { MdMap } from "react-icons/md";
 
-const tagNames = ['Technology', 'Business', 'Arts', 'Health & Wellness'];
+const tagNames = ["Technology", "Business", "Arts", "Health & Wellness"];
 
 export default function Home({
     user,
@@ -40,7 +40,7 @@ export default function Home({
                 <section className="space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-48 flex items-center flex-col">
                     <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center">
                         <h1 className="font-bold text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
-                            <span className="text-rose-500">FanStop.</span>{' '}
+                            <span className="text-rose-500">FanStop.</span>{" "}
                             Where Creativity Meets Community.
                         </h1>
                         <p className="max-w-[42rem] leading-normal opacity-80 sm:text-xl sm:leading-8">
@@ -122,9 +122,9 @@ export async function getServerSideProps() {
     });
 
     const tags = await db.tag.findMany();
-    const creatorId = 'clkhqdifi0000u4ez0m5dlbiv'; // Example author ID
+    const creatorId = "clkhqdifi0000u4ez0m5dlbiv"; // Example author ID
 
-    const tagNames = ['Technology', 'Test'];
+    const tagNames = ["Technology", "Test"];
 
     const result = await db.community.findMany({
         where: {
