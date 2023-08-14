@@ -1,6 +1,6 @@
-import { CommunityByTag } from '@/pages/api/communities';
-import { MdMap } from 'react-icons/md';
-import { useQuery } from 'react-query';
+import { CommunityByTag } from "@/pages/api/communities";
+import { MdMap } from "react-icons/md";
+import { useQuery } from "react-query";
 
 interface FeaturedCreatorProps {
     queryKey: string;
@@ -16,16 +16,14 @@ export function FeaturedCreatorItem() {}
 
 export function FeaturedCreator({ queryKey }: FeaturedCreatorProps) {
     const { data, isLoading } = useQuery<CommunityByTag[]>(
-        ['Featured-Creators', queryKey],
+        ["Featured-Creators", queryKey],
         () =>
-            fetch(`/api/communities?tagName=${queryKey}`).then((res) =>
-                res.json()
-            )
+            fetch(`/api/tags/${queryKey}/communities`).then((res) => res.json())
     );
 
     if (isLoading) return null;
 
-    if (typeof data === 'undefined') return null;
+    if (typeof data === "undefined") return null;
 
     if (data.length === 0) return <p>No items yet.</p>;
 

@@ -111,10 +111,7 @@ model Tags {
   name        String  @unique
   description String?
 
-  communities Community @relation(fields: [communityId], references: [id])
-  communityId String
-
-  @@index([communityId])
+  communities Community[]
 }
 
 model Like {

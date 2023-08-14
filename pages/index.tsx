@@ -1,7 +1,8 @@
 import { CreatorBar } from "@/components/creator-bar";
 import { FeaturedCreator } from "@/components/featured-creators";
-import { Navbar } from "@/components/nav";
+import { AuthedNav, Navbar } from "@/components/nav";
 import Button from "@/components/ui/button";
+import { mainNav } from "@/config/config";
 import { db } from "@/lib/db";
 import { InferGetServerSidePropsType } from "next";
 import { useSession } from "next-auth/react";
@@ -11,28 +12,31 @@ import { MdMap } from "react-icons/md";
 
 const tagNames = ["Technology", "Business", "Arts", "Health & Wellness"];
 
-export default function Home({
-    user,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Home() {
     const [active, setActive] = React.useState<string>(tagNames[0]);
 
     const { data } = useSession();
 
     return (
         <div className="flex min-h-screen flex-col">
-            {JSON.stringify(data)}
             <header className="container mx-auto z-40 w-full">
                 <div className="flex h-20 items-center justify-between py-6 max-w-screen-xl mx-auto ">
-                    <Navbar />
+                    <Navbar links={mainNav} />
                     <div className="flex items-center gap-2">
-                        <Link href="/login">
-                            <Button variant="ghost" size="sm">
-                                Login
-                            </Button>
-                        </Link>
-                        <Link href="/register">
-                            <Button size="sm">Sign Up</Button>
-                        </Link>
+                        {data?.user ? (
+                            <AuthedNav />
+                        ) : (
+                            <React.Fragment>
+                                <Link href="/login">
+                                    <Button variant="ghost" size="sm">
+                                        Login
+                                    </Button>
+                                </Link>
+                                <Link href="/register">
+                                    <Button size="sm">Sign Up</Button>
+                                </Link>
+                            </React.Fragment>
+                        )}
                     </div>
                 </div>
             </header>
@@ -111,44 +115,4 @@ export default function Home({
             </main>
         </div>
     );
-}
-
-export async function getServerSideProps() {
-    const user = await db.user.findMany({
-        select: {
-            id: true,
-            name: true,
-        },
-    });
-
-    const tags = await db.tag.findMany();
-    const creatorId = "clkhqdifi0000u4ez0m5dlbiv"; // Example author ID
-
-    const tagNames = ["Technology", "Test"];
-
-    const result = await db.community.findMany({
-        where: {
-            tags: {
-                some: {
-                    name: { in: tagNames },
-                },
-            },
-        },
-        select: {
-            id: true,
-            description: true,
-            name: true,
-            creator: {
-                select: {
-                    name: true,
-                },
-            },
-        },
-    });
-
-    return {
-        props: {
-            user: result,
-        },
-    };
 }

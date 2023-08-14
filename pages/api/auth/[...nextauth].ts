@@ -1,14 +1,15 @@
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import NextAuth, { NextAuthOptions, type AuthOptions } from 'next-auth';
-import GithubProvider from 'next-auth/providers/github';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import { db } from '../../../lib/db';
-import * as argon2 from 'argon2';
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import NextAuth, { NextAuthOptions, type AuthOptions } from "next-auth";
+import GithubProvider from "next-auth/providers/github";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { db } from "../../../lib/db";
+import * as argon2 from "argon2";
 
 export const authOptions: NextAuthOptions = {
     session: {
-        strategy: 'jwt',
+        strategy: "jwt",
     },
+    secret: "JECKASDLJHIUAHSDIUHASIDUHASKJDHAKSJH",
 
     // Configure one or more authentication providers
     providers: [
@@ -17,17 +18,16 @@ export const authOptions: NextAuthOptions = {
             clientSecret: process.env.GITHUB_SECRET!,
         }),
         CredentialsProvider({
-            name: 'Credentials',
+            name: "Credentials",
             credentials: {
-                email: { label: 'Email', type: 'text', placeholder: 'email' },
+                email: { label: "Email", type: "text", placeholder: "email" },
                 password: {
-                    label: 'Password',
-                    type: 'text',
-                    placeholder: 'password',
+                    label: "Password",
+                    type: "text",
+                    placeholder: "password",
                 },
             },
             async authorize(credentials) {
-                console.log('TET');
                 if (!credentials) return null;
 
                 const { email, password } = credentials;
