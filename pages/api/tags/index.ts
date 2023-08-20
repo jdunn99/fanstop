@@ -9,11 +9,18 @@ const TagInputSchema = z.object({
 });
 type TagInput = z.infer<typeof TagInputSchema>;
 
+const TagBaseSchema = z
+    .object({
+        id: z.string().cuid(),
+    })
+    .merge(TagInputSchema);
+export type BaseTag = z.infer<typeof TagBaseSchema>;
+
 async function createTag({ name, description }: TagInput) {
     return await db.tags.create({ data: { name, description } });
 }
 
-async function getAllTags() {
+async function getAllTags(): Promise<BaseTag[]> {
     return await db.tags.findMany();
 }
 

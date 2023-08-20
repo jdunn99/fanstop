@@ -3,17 +3,19 @@ import { FeaturedCreator } from "@/components/featured-creators";
 import { AuthedNav, Navbar } from "@/components/nav";
 import Button from "@/components/ui/button";
 import { mainNav } from "@/config/config";
-import { db } from "@/lib/db";
-import { InferGetServerSidePropsType } from "next";
+import { usePopularTags } from "@/lib/queries/usePopularTags";
+import { GetServerSidePropsContext } from "next";
+import { getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
-import { MdMap } from "react-icons/md";
+import { authOptions } from "./api/auth/[...nextauth]";
 
 const tagNames = ["Technology", "Business", "Arts", "Health & Wellness"];
 
 export default function Home() {
     const [active, setActive] = React.useState<string>(tagNames[0]);
+    const { data: tags } = usePopularTags();
 
     const { data } = useSession();
 
@@ -71,7 +73,7 @@ export default function Home() {
                         </p>
                         <div className="flex items-center text-center max-w-[64rem]">
                             <CreatorBar
-                                keys={tagNames}
+                                keys={tags || []}
                                 active={active}
                                 setActive={setActive}
                             />
@@ -79,31 +81,6 @@ export default function Home() {
                     </div>
                     <div className="mx-auto grid justify-center gap-4 sm:grid-cols-1 md:max-w-[64rem] md:grid-cols-2">
                         <FeaturedCreator queryKey={active} />
-                        {/* {temp.map((item) => (
-                            <div
-                                key={item.author}
-                                className="relative overflow-hidden rounded-lg border bg-white p-2"
-                            >
-                                <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <MdMap className="text-4xl" />
-                                            <div>
-                                                <h3 className="font-bold text-lg">
-                                                    {item.name}
-                                                </h3>
-                                                <span className="text-rose-500 font-semibold text-sm">
-                                                    {item.author}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <p className="text-sm opacity-80">
-                                            {item.description}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))} */}
                     </div>
                     <div className="mx-auto pt-8 text-center md:max-w-[58rem]">
                         <Button>See who else is on FanStop</Button>
@@ -115,4 +92,23 @@ export default function Home() {
             </main>
         </div>
     );
+}
+
+export async function getServerSideProps({
+    req,
+    res,
+}: GetServerSidePropsContext) {
+    const session = await getServerSession(req, res, authOptions);
+
+    if (session) {
+        return {
+            redirect: {
+                destination: "/profile",
+            },
+        };
+    }
+
+    return {
+        props: {},
+    };
 }

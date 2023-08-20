@@ -1,27 +1,35 @@
-import type { DashboardConfig } from '@/types';
+import type { DashboardConfig } from "@/types";
 
 export const dashboardConfig: DashboardConfig = {
     header: [],
     sidebar: [
         {
-            href: '/dashboard',
-            value: 'Home',
+            href: "/profile",
+            value: "Home",
         },
         {
-            href: '/dashboard/posts',
-            value: 'Posts',
+            href: "/profile/dashboard",
+            value: "Dashboard",
         },
         {
-            href: '/dashboard/subscribers',
-            value: 'Subscribers',
+            href: "/profile/communities",
+            value: "Communities",
         },
         {
-            href: '/dashboard/stats',
-            value: 'Stats',
+            href: "/profile/posts",
+            value: "Posts",
         },
         {
-            href: '/dashboard/settings',
-            value: 'Settings',
+            href: "/profile/subscribers",
+            value: "Subscribers",
+        },
+        {
+            href: "/profile/stats",
+            value: "Stats",
+        },
+        {
+            href: "/profile/settings",
+            value: "Settings",
         },
     ],
 };

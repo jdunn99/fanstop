@@ -6,7 +6,7 @@ import { authOptions } from "../auth/[...nextauth]";
 
 const methods = ["GET", "POST"];
 
-const CommunitySchema = z.object({
+const PostSchema = z.object({
     id: z.string().cuid(),
     name: z.string(),
     totalViews: z.number(),
@@ -14,35 +14,22 @@ const CommunitySchema = z.object({
     createdAt: z.date(),
     updatedAt: z.date(),
 });
-export type Community = z.infer<typeof CommunitySchema>;
+export type Post = z.infer<typeof PostSchema>;
 
-const CreateCommunitySchema = z.object({
-    name: z.string(),
+const CreatePostSchema = z.object({
+    title: z.string(),
+    communityId: z.string().cuid(),
 });
-export type CreateCommunityInput = z.infer<typeof CreateCommunitySchema> & {
-    creatorId: string;
+export type CreatePostArgs = z.infer<typeof CreatePostSchema> & {
+    authorId: string;
 };
 
-async function getCommunitiesByTag(tagName: string, limit: number) {
-    return await db.community.findMany({
-        where: {
-            tags: {
-                some: {
-                    name: {
-                        equals: tagName,
-                    },
-                },
-            },
-        },
-    });
-}
-
 /**
- * Fetches a list of all communities from the database.
+ * Fetches a list of all posts from the database.
  * @returns
  */
-async function getAllCommunities() {
-    return await db.community.findMany();
+async function getAllPosts() {
+    return await db.post.findMany();
 }
 
 /**
@@ -50,14 +37,23 @@ async function getAllCommunities() {
  * @param name - The name of the community being created
  * @param creatorId - The id of the user creating the community
  */
-async function createCommunity({ name, creatorId }: CreateCommunityInput) {
-    return await db.community.create({
+async function createCommunity({
+    title,
+    communityId,
+    authorId,
+}: CreatePostArgs) {
+    return await db.post.create({
         data: {
-            name,
-            totalViews: 0,
-            creator: {
+            title,
+            views: 0,
+            community: {
                 connect: {
-                    id: creatorId,
+                    id: communityId,
+                },
+            },
+            author: {
+                connect: {
+                    id: authorId,
                 },
             },
         },
@@ -69,7 +65,7 @@ export default async function handler(
     res: NextApiResponse
 ) {
     try {
-        const { query, method, body } = req;
+        const { method, body } = req;
         if (!methods.includes(method!)) {
             return res.status(400).send({ message: "Invalid Method" });
         }
@@ -80,14 +76,15 @@ export default async function handler(
             if (session === null)
                 return res.status(403).send({ message: "Not authorized" });
 
-            const { name } = CreateCommunitySchema.parse(body);
-            return res
-                .status(200)
-                .json(
-                    await createCommunity({ name, creatorId: session.user.id })
-                );
+            const data = CreatePostSchema.parse(body);
+            return res.status(200).json(
+                await createCommunity({
+                    ...data,
+                    authorId: session.user.id,
+                })
+            );
         } else {
-            return res.status(200).json(await getAllCommunities());
+            return res.status(200).json(await getAllPosts());
         }
     } catch (error) {
         console.error(error);
