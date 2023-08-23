@@ -9,6 +9,8 @@ import {
     useMenu,
 } from "./ui/menu";
 import { Avatar } from "./ui/avatar";
+import { dashboardConfig } from "@/config/dashboard";
+import Link from "next/link";
 
 interface AvatarButtonProps {
     name: string;
@@ -43,9 +45,11 @@ export function AvatarMenu() {
                         <MenuText variant="sm">{data.user.email}</MenuText>
                     </MenuGroup>
                     <MenuGroup border>
-                        <MenuItem>Dashboard</MenuItem>
-                        <MenuItem>Create Post</MenuItem>
-                        <MenuItem>Settings</MenuItem>
+                        {dashboardConfig.sidebar.map(({ href, value }) => (
+                            <Link href={href} key={href}>
+                                <MenuItem>{value}</MenuItem>
+                            </Link>
+                        ))}
                     </MenuGroup>
                     <MenuItem onClick={() => void signOut()}>Sign Out</MenuItem>
                 </MenuList>

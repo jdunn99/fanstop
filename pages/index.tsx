@@ -4,16 +4,35 @@ import { AuthedNav, Navbar } from "@/components/nav";
 import Button from "@/components/ui/button";
 import { mainNav } from "@/config/config";
 import { usePopularTags } from "@/lib/queries/usePopularTags";
-import { GetServerSidePropsContext } from "next";
-import { getServerSession } from "next-auth";
-import { useSession } from "next-auth/react";
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
-import { authOptions } from "./api/auth/[...nextauth]";
+import {
+    Container,
+    DashboardItem,
+    DashboardItemHeading,
+    EmptyCard,
+    Header,
+    Layout,
+} from "@/components/layout";
+import { Avatar } from "@/components/ui/avatar";
+import { FeedPost } from "@/components/feed-post";
+import { useMutation, useQuery } from "react-query";
+import { PostItem } from "./api/user/feed";
+import { isAuthed } from "@/lib/authSSR";
+import { CreateInput } from "@/components/create-input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Input from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { MdClose } from "react-icons/md";
+import { CreateCommunityArgs } from "./api/communities";
+import { CreateCommunity } from "@/components/create-community";
 
 const tagNames = ["Technology", "Business", "Arts", "Health & Wellness"];
 
-export default function Home() {
+function HomePage() {
     const [active, setActive] = React.useState<string>(tagNames[0]);
     const { data: tags } = usePopularTags();
 
@@ -93,22 +112,71 @@ export default function Home() {
         </div>
     );
 }
+const schema = z.object({
+    name: z.string(),
+    slug: z.string(),
+});
+type FormData = z.infer<typeof schema>;
+export default function Home(
+    props: InferGetServerSidePropsType<typeof getServerSideProps>
+) {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<FormData>({ resolver: zodResolver(schema) });
+
+    function onSubmit({ name, slug }: FormData) {
+        mutate({ name, slug, tags: Object.values(selected) });
+    }
+
+    const { data: tags } = usePopularTags(10);
+    const [selected, setSelected] = React.useState<Record<string, string>>({});
+
+    const { data } = useQuery<PostItem[]>("feed", () =>
+        fetch("/api/user/feed").then((res) => res.json())
+    );
+
+    if (typeof data === "undefined") return null;
+
+    return props.data ? (
+        props.hasCommunity ? (
+            <Layout heading="Home">
+                <DashboardItem>
+                    <DashboardItemHeading heading="Feed" />
+                    <EmptyCard heading="Feed">
+                        <h3 className="font-semibold text-sm">
+                            Your feed is empty.
+                        </h3>
+                        <p className="text-sm text-slate-500 pt-2 pb-8">
+                            You can find communities on the{" "}
+                            <Link
+                                href="#"
+                                className="text-rose-500 underline font-bold"
+                            >
+                                Explore
+                            </Link>{" "}
+                            page.
+                        </p>
+                    </EmptyCard>
+                    {data.map((item) => (
+                        <FeedPost {...item} key={item.id} />
+                    ))}
+                </DashboardItem>
+            </Layout>
+        ) : (
+            <CreateCommunity />
+        )
+    ) : (
+        <HomePage />
+    );
+}
 
 export async function getServerSideProps({
     req,
     res,
 }: GetServerSidePropsContext) {
-    const session = await getServerSession(req, res, authOptions);
-
-    if (session) {
-        return {
-            redirect: {
-                destination: "/profile",
-            },
-        };
-    }
-
     return {
-        props: {},
+        props: await isAuthed({ req, res }),
     };
 }

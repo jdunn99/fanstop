@@ -15,7 +15,7 @@ const BodySchema = z.object({
 
 type CommunityArgs = { communityId: string; name?: string; userId: string };
 
-async function getCommunityByID(communityId: string) {
+export async function getCommunityByID(communityId: string) {
     return await db.community.findFirst({
         where: {
             id: {

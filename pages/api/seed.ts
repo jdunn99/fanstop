@@ -8,69 +8,49 @@ export default async function handler(
     res: NextApiResponse
 ) {
     try {
-        const a = await db.tags.create({
-            data: {
-                name: "Technology",
-                description: "Posts related to technology",
-                communities: {
-                    create: {
-                        name: "Technology Community",
-                        totalViews: 0,
-                        creator: {
-                            connect: { id: "cll9p60kv000au41dunc6eidt" }, // Replace with actual user ID
-                        },
-                    },
-                },
-            },
+        await db.tags.createMany({
+            data: [
+                { name: "Technologoy" },
+                { name: "Business" },
+                { name: "Home & Garden" },
+                { name: "Music" },
+            ],
         });
 
-        const b = await db.tags.create({
-            data: {
-                name: "Music",
-                description: "Posts related to music",
-                communities: {
-                    create: {
-                        name: "Music Community",
-                        totalViews: 0,
-                        creator: {
-                            connect: { id: "cll9p60kv000au41dunc6eidt" }, // Replace with actual user ID
-                        },
-                    },
-                },
-            },
-        });
+        // const community = await db.community.create({
+        //     data: {
+        //         name: "Jack's Community",
+        //         slug: "jdunn99",
+        //         creator: {
+        //             connect: {
+        //                 id: "clll8qs050000u426v0c0wtcd",
+        //             },
+        //         },
+        //     },
+        // });
 
-        const c = await db.tags.create({
-            data: {
-                name: "Travel",
-                description: "Posts related to travel",
-                communities: {
-                    create: {
-                        name: "Travel Community",
-                        totalViews: 0,
-                        creator: {
-                            connect: { id: "cll9p60kv000au41dunc6eidt" }, // Replace with actual user ID
-                        },
-                    },
-                },
-            },
-        });
+        // const post = await db.post.create({
+        //     data: {
+        //         title: "Test Post",
+        //         author: {
+        //             connect: {
+        //                 id: "clll8qs050000u426v0c0wtcd",
+        //             },
+        //         },
+        //         community: {
+        //             connect: {
+        //                 id: community.id,
+        //             },
+        //         },
+        //     },
+        // });
 
-        const d = await db.tags.create({
-            data: {
-                name: "Food",
-                description: "Posts related to food",
-                communities: {
-                    create: {
-                        name: "Food Community",
-                        totalViews: 0,
-                        creator: {
-                            connect: { id: "cll9p60kv000au41dunc6eidt" }, // Replace with actual user ID
-                        },
-                    },
-                },
-            },
-        });
+        // const subscription = await db.subscriber.create({
+        //     data: {
+        //         communityId: community.id,
+        //         userId: "cllmekjgn0000u4fk15zv86on",
+        //     },
+        // });
 
         return res.status(200).json({ status: true });
     } catch (error) {

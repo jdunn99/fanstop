@@ -18,24 +18,13 @@ export type Community = z.infer<typeof CommunitySchema>;
 
 const CreateCommunitySchema = z.object({
     name: z.string(),
+    slug: z.string(),
+    tags: z.array(z.string().cuid()),
 });
-export type CreateCommunityInput = z.infer<typeof CreateCommunitySchema> & {
+export type CreateCommunityArgs = z.infer<typeof CreateCommunitySchema>;
+export type CreateCommunityInput = CreateCommunityArgs & {
     creatorId: string;
 };
-
-async function getCommunitiesByTag(tagName: string, limit: number) {
-    return await db.community.findMany({
-        where: {
-            tags: {
-                some: {
-                    name: {
-                        equals: tagName,
-                    },
-                },
-            },
-        },
-    });
-}
 
 /**
  * Fetches a list of all communities from the database.
@@ -50,11 +39,19 @@ async function getAllCommunities() {
  * @param name - The name of the community being created
  * @param creatorId - The id of the user creating the community
  */
-async function createCommunity({ name, creatorId }: CreateCommunityInput) {
+async function createCommunity({
+    name,
+    slug,
+    tags,
+    creatorId,
+}: CreateCommunityInput) {
     return await db.community.create({
         data: {
             name,
-            totalViews: 0,
+            slug,
+            tags: {
+                connect: tags.map((tag) => ({ id: tag })),
+            },
             creator: {
                 connect: {
                     id: creatorId,
@@ -69,7 +66,7 @@ export default async function handler(
     res: NextApiResponse
 ) {
     try {
-        const { query, method, body } = req;
+        const { method, body } = req;
         if (!methods.includes(method!)) {
             return res.status(400).send({ message: "Invalid Method" });
         }
@@ -80,12 +77,15 @@ export default async function handler(
             if (session === null)
                 return res.status(403).send({ message: "Not authorized" });
 
-            const { name } = CreateCommunitySchema.parse(body);
-            return res
-                .status(200)
-                .json(
-                    await createCommunity({ name, creatorId: session.user.id })
-                );
+            const { name, slug, tags } = CreateCommunitySchema.parse(body);
+            return res.status(200).json(
+                await createCommunity({
+                    name,
+                    slug,
+                    tags,
+                    creatorId: session.user.id,
+                })
+            );
         } else {
             return res.status(200).json(await getAllCommunities());
         }

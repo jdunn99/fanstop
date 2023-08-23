@@ -12,7 +12,7 @@ export function Sidebar() {
     }
 
     return (
-        <nav className="grid items-start gap-2">
+        <nav className="grid items-start gap-2 ">
             {items.map((item, index) => (
                 <Link key={index} href={item.href}>
                     <span

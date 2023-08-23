@@ -50,20 +50,20 @@ model User {
 
   accounts      Account[]
   sessions      Session[]
-  communities   Community[]
+  community     Community?
   subscriptions Subscriber[]
   likes         Like[]
   posts         Post[]
 }
 
 model Community {
-  id         String   @id @default(cuid())
-  name       String
-  totalViews Int
-  creator    User     @relation(fields: [creatorId], references: [id])
-  creatorId  String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  creator   User     @relation(fields: [creatorId], references: [id])
+  creatorId String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   subscribers Subscriber[]
   posts       Post[]
@@ -87,12 +87,14 @@ model Subscriber {
 }
 
 model Post {
-  id        String   @id @default(cuid())
-  title     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  content   Json?
-  views     Int
+  id          String   @id @default(cuid())
+  title       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  content     Json?
+  views       Int      @default(0)
+  image       String?
+  description String?
 
   community   Community @relation(fields: [communityId], references: [id])
   communityId String

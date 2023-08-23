@@ -5,11 +5,16 @@ import { MdAdd } from "react-icons/md";
 import Button from "./ui/button";
 import Link from "next/link";
 import { BsArrowRight } from "react-icons/bs";
+import { AuthedNav, Navbar } from "./nav";
+import { useSession } from "next-auth/react";
 
 interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {}
 export function Container({ children, className, ...rest }: ContainerProps) {
     return (
-        <div className={`${className} grid items-start gap-8 px-8`} {...rest}>
+        <div
+            className={`${className} grid items-start gap-8 px-8 h-[calc(100vh-98px)] `}
+            {...rest}
+        >
             {children}
         </div>
     );
@@ -64,20 +69,38 @@ interface LayoutProps {
     heading: string;
 }
 export function Layout({ children, heading }: LayoutProps) {
+    const { data: session } = useSession();
+
     return (
-        <div className="flex min-h-screen flex-col ">
-            <header className="sticky top-0 z-40 bg-background border-b">
-                <div className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4"></div>
+        <div className="flex flex-col ">
+            <header className="sticky top-0 z-40 bg-white border-b">
+                <div className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4">
+                    <Navbar links={[]} />
+                    <div className="flex items-center gap-2">
+                        {session?.user ? (
+                            <AuthedNav />
+                        ) : (
+                            <React.Fragment>
+                                <Link href="/login">
+                                    <Button variant="ghost" size="sm">
+                                        Login
+                                    </Button>
+                                </Link>
+                                <Link href="/register">
+                                    <Button size="sm">Sign Up</Button>
+                                </Link>
+                            </React.Fragment>
+                        )}
+                    </div>
+                </div>
             </header>
-            <div className="max-w-screen-xl grid flex-1 gap-12 mx-auto w-full md:grid-cols-[200px_1fr] ">
-                <aside className="hidden w-[250px] flex-col md:flex border-r pr-2 pt-8">
+            <div className="max-w-screen-xl flex relative w-full mx-auto">
+                <aside className="hidden md:block sticky pt-8 top-16 col-span-3 pr-2 h-[calc(100vh-65px)] border-r justify-center w-[350px]">
                     <Sidebar />
                 </aside>
-                <main className="flex w-full flex-1 flex-col overflow-hidden pt-8">
-                    <Container>
-                        <Header heading={heading} />
-                        {children}
-                    </Container>
+                <main className="h-full grid items-start gap-8 px-8 w-full pt-8">
+                    <Header heading={heading} />
+                    {children}
                 </main>
             </div>
         </div>
@@ -92,7 +115,7 @@ interface EmptyCardProps {
 export function EmptyCard({ fromSearch, heading, children }: EmptyCardProps) {
     return (
         <div className="w-full min-h-[400px] flex items-center flex-col justify-center bg-slate-50 border rounded-lg">
-            {fromSearch ? null : (
+            {fromSearch ? null : React.Children.count(children) === 0 ? (
                 <React.Fragment>
                     <h3 className="font-semibold text-sm">
                         No {heading} Found
@@ -101,37 +124,10 @@ export function EmptyCard({ fromSearch, heading, children }: EmptyCardProps) {
                         It looks like you haven't created any{" "}
                         {heading.toLocaleLowerCase()} yet.
                     </p>
-                    {children}
                 </React.Fragment>
+            ) : (
+                children
             )}
-        </div>
-    );
-}
-
-interface DashboardSearchProps {
-    onChange(event: React.ChangeEvent<HTMLInputElement>): void;
-    onClick(): void;
-    value: string;
-}
-export function DashboardSearch({
-    value,
-    onChange,
-    onClick,
-}: DashboardSearchProps) {
-    return (
-        <div className="flex items-center gap-2 w-full">
-            <Input
-                onChange={onChange}
-                type="search"
-                placeholder="Search..."
-                className="w-full"
-            />
-            <Button className="whitespace-nowrap" onClick={onClick}>
-                <span className="sm:pr-2 text-lg">
-                    <MdAdd />
-                </span>
-                <span className="hidden sm:block">New {value}</span>
-            </Button>
         </div>
     );
 }

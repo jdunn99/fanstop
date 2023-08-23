@@ -4,31 +4,35 @@ export const dashboardConfig: DashboardConfig = {
     header: [],
     sidebar: [
         {
-            href: "/profile",
+            href: "/",
             value: "Home",
         },
+        {
+            href: "/explore",
+            value: "Explore",
+        },
+        // {
+        //     href: "/me/inbox",
+        //     value: "Inbox",
+        // },
+        // {
+        //     href: "/profile/bookmarks",
+        //     value: "Bookmarks",
+        // },
         {
             href: "/profile/dashboard",
             value: "Dashboard",
         },
         {
-            href: "/profile/communities",
-            value: "Communities",
+            href: "/profile/subscriptions",
+            value: "Subscriptions",
         },
         {
-            href: "/profile/posts",
-            value: "Posts",
+            href: "/profile",
+            value: "Profile",
         },
         {
-            href: "/profile/subscribers",
-            value: "Subscribers",
-        },
-        {
-            href: "/profile/stats",
-            value: "Stats",
-        },
-        {
-            href: "/profile/settings",
+            href: "/settings",
             value: "Settings",
         },
     ],
