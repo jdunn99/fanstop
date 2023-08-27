@@ -9,7 +9,6 @@ const methods = ["GET", "POST"];
 const CommunitySchema = z.object({
     id: z.string().cuid(),
     name: z.string(),
-    totalViews: z.number(),
     creatorId: z.string().cuid(),
     createdAt: z.date(),
     updatedAt: z.date(),

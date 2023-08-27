@@ -120,19 +120,6 @@ type FormData = z.infer<typeof schema>;
 export default function Home(
     props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<FormData>({ resolver: zodResolver(schema) });
-
-    function onSubmit({ name, slug }: FormData) {
-        mutate({ name, slug, tags: Object.values(selected) });
-    }
-
-    const { data: tags } = usePopularTags(10);
-    const [selected, setSelected] = React.useState<Record<string, string>>({});
-
     const { data } = useQuery<PostItem[]>("feed", () =>
         fetch("/api/user/feed").then((res) => res.json())
     );
@@ -144,7 +131,7 @@ export default function Home(
             <Layout heading="Home">
                 <DashboardItem>
                     <DashboardItemHeading heading="Feed" />
-                    <EmptyCard heading="Feed">
+                    {/* <EmptyCard heading="Feed">
                         <h3 className="font-semibold text-sm">
                             Your feed is empty.
                         </h3>
@@ -158,7 +145,7 @@ export default function Home(
                             </Link>{" "}
                             page.
                         </p>
-                    </EmptyCard>
+                    </EmptyCard> */}
                     {data.map((item) => (
                         <FeedPost {...item} key={item.id} />
                     ))}

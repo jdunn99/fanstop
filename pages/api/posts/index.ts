@@ -8,8 +8,11 @@ const methods = ["GET", "POST"];
 
 const PostSchema = z.object({
     id: z.string().cuid(),
-    name: z.string(),
-    totalViews: z.number(),
+    title: z.string(),
+    image: z.string().nullable(),
+    content: z.any().nullable(),
+    description: z.string().nullable(),
+    views: z.number(),
     creatorId: z.string().cuid(),
     createdAt: z.date(),
     updatedAt: z.date(),
@@ -18,7 +21,6 @@ export type Post = z.infer<typeof PostSchema>;
 
 const CreatePostSchema = z.object({
     title: z.string(),
-    communityId: z.string().cuid(),
 });
 export type CreatePostArgs = z.infer<typeof CreatePostSchema> & {
     authorId: string;
@@ -32,23 +34,14 @@ async function getAllPosts() {
     return await db.post.findMany();
 }
 
-/**
- * Create a community object.
- * @param name - The name of the community being created
- * @param creatorId - The id of the user creating the community
- */
-async function createCommunity({
-    title,
-    communityId,
-    authorId,
-}: CreatePostArgs) {
+async function createPost({ title, authorId }: CreatePostArgs) {
     return await db.post.create({
         data: {
             title,
             views: 0,
             community: {
                 connect: {
-                    id: communityId,
+                    creatorId: authorId,
                 },
             },
             author: {
@@ -78,7 +71,7 @@ export default async function handler(
 
             const data = CreatePostSchema.parse(body);
             return res.status(200).json(
-                await createCommunity({
+                await createPost({
                     ...data,
                     authorId: session.user.id,
                 })

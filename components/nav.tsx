@@ -4,6 +4,7 @@ import { NavLink } from "@/types";
 import { Search } from "./search";
 import Button from "./ui/button";
 import { AvatarMenu } from "./avatar-menu";
+import { CreatePostButton } from "./create-post-button";
 
 interface MainNavProps {
     children?: React.ReactNode;
@@ -14,7 +15,7 @@ export function AuthedNav() {
     return (
         <React.Fragment>
             <Search />
-            <Button className="whitespace-nowrap">Create post</Button>
+            <CreatePostButton />
             <AvatarMenu />
         </React.Fragment>
     );
