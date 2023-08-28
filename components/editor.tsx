@@ -5,6 +5,8 @@ import { Layout } from "./layout";
 import Link from "next/link";
 import { Navbar, AuthedNav } from "./nav";
 import Button from "./ui/button";
+import { EditorBlock } from "./editor/editor-block";
+import { Block } from "./editor/editor-block";
 
 interface EditorProps {
     id: string;
@@ -12,47 +14,40 @@ interface EditorProps {
     content?: any;
 }
 
+interface Props {
+    tag: keyof JSX.IntrinsicElements;
+    handleKey(e: any): void;
+}
+function Test({ tag, handleKey }: Props) {
+    const Tag = tag;
+
+    return <Tag contentEditable onKeyDown={handleKey} />;
+}
+
 export function Editor({ id, title, content }: EditorProps) {
-    const [isMounted, setIsMounted] = React.useState<boolean>(false);
-    const editorRef = React.useRef<EditorJS>();
+    const [temp, setTemp] = React.useState<Block[]>([
+        {
+            id: "test",
+            tag: "p",
+            data: {
+                text: "",
+            },
+        },
+    ]);
 
-    const initEditor = React.useCallback(async () => {
-        const EditorJS = (await import("@editorjs/editorjs")).default;
-        const Header = (await import("@editorjs/header")).default;
-        const Paragraph = (await import("@editorjs/paragraph" as any)).default;
-        const Image = (await import("@editorjs/image" as any)).default;
-
-        if (!editorRef.current) {
-            const editor = new EditorJS({
-                holder: "editor",
-                onReady() {
-                    editorRef.current = editor;
-                },
-                tools: {
-                    header: Header,
-                    image: Image,
-                    paragraph: Paragraph,
-                },
-            });
-        }
-    }, []);
-
-    React.useEffect(() => {
-        if (typeof window !== "undefined") {
-            setIsMounted(true);
-        }
-    }, []);
-
-    React.useEffect(() => {
-        if (isMounted) {
-            initEditor();
-
-            return () => {
-                editorRef.current?.destroy();
-                editorRef.current = undefined;
-            };
-        }
-    }, [isMounted, initEditor]);
+    function callback(data: string, index: number) {
+        const arr = [...temp];
+        arr[index].data.text = data;
+        arr.splice(index + 1, 0, {
+            id: "test2",
+            data: {
+                text: "Pasta",
+            },
+            tag: "h1",
+        });
+        console.log(index, arr);
+        setTemp(arr);
+    }
 
     return (
         <form>
@@ -63,7 +58,7 @@ export function Editor({ id, title, content }: EditorProps) {
                         <Button>Publish</Button>
                     </div>
                 </header>
-                <div className="prose prose-stone mx-auto w-[800px] dark:prose-invert">
+                <div className="prose prose-stone mx-auto  dark:prose-invert">
                     <textarea
                         autoFocus
                         defaultValue={title}
@@ -76,8 +71,19 @@ export function Editor({ id, title, content }: EditorProps) {
                         id="description"
                         placeholder="Post description"
                         className="w-full resize-none appearance-none bg-transparent focus:outline-none font-semibold"
+                        onKeyDown={(e) => {}}
                     />
-                    <div id="editor" className="min-h-[500px]" />
+                    <div className="w-full bg-orange-500">
+                        {temp.map((block, index) => (
+                            <EditorBlock
+                                callback={callback}
+                                block={block}
+                                key={index}
+                                index={index}
+                            />
+                        ))}
+                    </div>
+                    {/* <div id="editor" className="min-h-[500px]" /> */}
                 </div>
             </div>
         </form>
