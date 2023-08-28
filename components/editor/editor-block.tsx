@@ -10,18 +10,27 @@ export interface Block {
     };
 }
 
-interface EditorBlockProps {
+interface EditorBlockProps extends React.HTMLAttributes<HTMLDivElement> {
     index: number;
     block: Block;
     callback(data: string, index: number): void;
 }
-export function EditorBlock({ block, callback, index }: EditorBlockProps) {
-    return (
-        <EditorTag
-            tag={block.tag}
-            callback={callback}
-            index={index}
-            dangerouslySetInnerHTML={{ __html: block.data.text || "" }}
-        />
-    );
-}
+
+export const EditorBlock = React.forwardRef(
+    (
+        { index, block, callback, ...rest }: EditorBlockProps,
+        ref: React.Ref<any>
+    ) => {
+        return (
+            <EditorTag
+                ref={ref}
+                tag={block.tag}
+                callback={callback}
+                index={index}
+                {...rest}
+                dangerouslySetInnerHTML={{ __html: block.data.text || "" }}
+            />
+        );
+    }
+);
+EditorBlock.displayName = "EditorBlock";

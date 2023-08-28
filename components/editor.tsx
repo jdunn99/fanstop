@@ -1,9 +1,5 @@
-import { Post } from "@/pages/api/posts";
-import EditorJS from "@editorjs/editorjs";
 import React from "react";
-import { Layout } from "./layout";
 import Link from "next/link";
-import { Navbar, AuthedNav } from "./nav";
 import Button from "./ui/button";
 import { EditorBlock } from "./editor/editor-block";
 import { Block } from "./editor/editor-block";
@@ -13,21 +9,10 @@ interface EditorProps {
     title: string;
     content?: any;
 }
-
-interface Props {
-    tag: keyof JSX.IntrinsicElements;
-    handleKey(e: any): void;
-}
-function Test({ tag, handleKey }: Props) {
-    const Tag = tag;
-
-    return <Tag contentEditable onKeyDown={handleKey} />;
-}
-
 export function Editor({ id, title, content }: EditorProps) {
-    const [temp, setTemp] = React.useState<Block[]>([
+    const [blocks, setBlocks] = React.useState<Block[]>([
         {
-            id: "test",
+            id: "1",
             tag: "p",
             data: {
                 text: "",
@@ -35,18 +20,17 @@ export function Editor({ id, title, content }: EditorProps) {
         },
     ]);
 
-    function callback(data: string, index: number) {
-        const arr = [...temp];
-        arr[index].data.text = data;
-        arr.splice(index + 1, 0, {
-            id: "test2",
+    function handleBlockChange(data: string, index: number) {
+        const updatedBlocks = [...blocks];
+        updatedBlocks[index].data.text = data;
+        updatedBlocks.splice(index + 1, 0, {
+            id: Math.random().toString(), // this is bad but for now i dont want to add uuid
             data: {
-                text: "Pasta",
+                text: "",
             },
-            tag: "h1",
+            tag: "p",
         });
-        console.log(index, arr);
-        setTemp(arr);
+        setBlocks(updatedBlocks);
     }
 
     return (
@@ -74,9 +58,9 @@ export function Editor({ id, title, content }: EditorProps) {
                         onKeyDown={(e) => {}}
                     />
                     <div className="w-full bg-orange-500">
-                        {temp.map((block, index) => (
+                        {blocks.map((block, index) => (
                             <EditorBlock
-                                callback={callback}
+                                callback={handleBlockChange}
                                 block={block}
                                 key={index}
                                 index={index}
