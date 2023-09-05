@@ -1,4 +1,4 @@
-import { Editor } from "@/components/editor";
+import { Editor } from "@/components/editor/editor";
 import { Post } from "@/pages/api/posts";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useQuery } from "react-query";

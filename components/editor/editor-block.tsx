@@ -1,35 +1,26 @@
 import React from "react";
 import { EditorTag } from "./editor-tag";
-import { data } from "autoprefixer";
-
-export interface Block {
-    id: string;
-    tag: "h1" | "p";
-    data: {
-        text?: string;
-    };
-}
+import { Block, EditorActionType, useEditor } from "@/lib/useEditor";
+import { Menu, MenuGroup, MenuItem, MenuList, useMenu } from "../ui/menu";
+import Button from "../ui/button";
+import { EditorCreateButton } from "./editor-create-button";
+import { EditorUpdateButton } from "./editor-update-menu";
 
 interface EditorBlockProps extends React.HTMLAttributes<HTMLDivElement> {
     index: number;
     block: Block;
-    callback(data: string, index: number): void;
 }
 
 export const EditorBlock = React.forwardRef(
-    (
-        { index, block, callback, ...rest }: EditorBlockProps,
-        ref: React.Ref<any>
-    ) => {
+    ({ index, block, ...rest }: EditorBlockProps, ref: React.Ref<any>) => {
+        const { isOpen, toggle, onClose } = useMenu();
+
         return (
-            <EditorTag
-                ref={ref}
-                tag={block.tag}
-                callback={callback}
-                index={index}
-                {...rest}
-                dangerouslySetInnerHTML={{ __html: block.data.text || "" }}
-            />
+            <div className="flex items-center justify-center">
+                <EditorCreateButton index={index} />
+                <EditorUpdateButton index={index} tag={block.tag} />
+                <EditorTag ref={ref} tag={block.tag} index={index} {...rest} />
+            </div>
         );
     }
 );
