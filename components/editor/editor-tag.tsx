@@ -3,6 +3,7 @@ import Button from "../ui/button";
 import { EditorHeader } from "./editor-header";
 import { EditorParagraph } from "./editor-paragraph";
 import { EditorActionType, ValidTags, useEditor } from "@/lib/useEditor";
+import { EditorImage } from "./editor-image";
 
 interface EditorTagProps extends React.HTMLAttributes<HTMLElement> {
     tag: ValidTags;
@@ -12,6 +13,13 @@ interface EditorTagProps extends React.HTMLAttributes<HTMLElement> {
 export const EditorTag = React.forwardRef<HTMLDivElement, EditorTagProps>(
     ({ tag, index, ...rest }, ref) => {
         const { dispatch, editorState } = useEditor();
+        const focusedRef = React.useRef<HTMLDivElement>(null);
+
+        React.useEffect(() => {
+            if (focusedRef.current) {
+                focusedRef.current.focus();
+            }
+        }, []);
 
         function handleNewline(
             event: React.KeyboardEvent<
@@ -23,7 +31,7 @@ export const EditorTag = React.forwardRef<HTMLDivElement, EditorTagProps>(
                     dispatch({
                         type: EditorActionType.DeleteBlock,
                         payload: {
-                            blockIdxToDelete: index,
+                            index,
                         },
                     });
                 }
@@ -52,20 +60,25 @@ export const EditorTag = React.forwardRef<HTMLDivElement, EditorTagProps>(
         if (tag === "p")
             return (
                 <EditorParagraph
-                    ref={ref}
+                    ref={focusedRef}
+                    {...rest}
                     onBlur={handleKeyChange}
+                    placeholder="Test"
                     onKeyDown={handleNewline}
                     dangerouslySetInnerHTML={{
                         __html: editorState.blocks[index].data.text || "",
                     }}
                 />
             );
+        else if (tag === "img")
+            return <img src={editorState.blocks[index].data.src} />;
         else
             return (
                 <EditorHeader
                     tag={tag}
-                    ref={ref}
+                    ref={focusedRef}
                     onBlur={handleKeyChange}
+                    {...rest}
                     onKeyDown={handleNewline}
                     dangerouslySetInnerHTML={{
                         __html: editorState.blocks[index].data.text || "",

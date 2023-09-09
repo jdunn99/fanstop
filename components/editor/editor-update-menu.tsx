@@ -7,7 +7,7 @@ import {
 import Button from "../ui/button";
 import { Menu, MenuList, MenuGroup, MenuItem, useMenu } from "../ui/menu";
 import React from "react";
-import { BsGripVertical } from "react-icons/bs";
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 interface EditorCreateButtonProps {
     index: number;
@@ -22,7 +22,7 @@ export function EditorUpdateButton({ tag, index }: EditorCreateButtonProps) {
             dispatch({
                 type: EditorActionType.ChangeBlockTag,
                 payload: {
-                    blockIndex: index,
+                    index,
                     newTag,
                 },
             });
@@ -40,12 +40,12 @@ export function EditorUpdateButton({ tag, index }: EditorCreateButtonProps) {
     }
 
     function handleDelete() {
-        if (index !== 0) {
-            dispatch({
-                type: EditorActionType.DeleteBlock,
-                payload: { blockIdxToDelete: index },
-            });
-        }
+        if (index === 0 && editorState.blocks.length === 1) return;
+
+        dispatch({
+            type: EditorActionType.DeleteBlock,
+            payload: { index },
+        });
         toggle();
     }
 
@@ -77,8 +77,8 @@ export function EditorUpdateButton({ tag, index }: EditorCreateButtonProps) {
 
     return (
         <Menu onClose={onClose}>
-            <Button onClick={toggle} variant="ghost">
-                <BsGripVertical />
+            <Button onClick={toggle} variant="ghost" size="sm">
+                <BsThreeDotsVertical />
             </Button>
             {isOpen ? (
                 <MenuList>
@@ -86,7 +86,12 @@ export function EditorUpdateButton({ tag, index }: EditorCreateButtonProps) {
                         <MenuItem disabled={index === 0} onClick={handleMoveUp}>
                             Move Up
                         </MenuItem>
-                        <MenuItem onClick={handleDelete} disabled={index === 0}>
+                        <MenuItem
+                            onClick={handleDelete}
+                            disabled={
+                                index === 0 && editorState.blocks.length === 1
+                            }
+                        >
                             Delete
                         </MenuItem>
                         <MenuItem

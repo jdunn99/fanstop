@@ -69,7 +69,7 @@ const MenuList = React.forwardRef<
         <div
             {...rest}
             ref={ref}
-            className={`${className} absolute right-0 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5`}
+            className={`${className} z-50 absolute right-0 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5`}
         >
             <div
                 className="py-1"
@@ -93,7 +93,7 @@ const MenuItem = React.forwardRef<HTMLButtonElement, MenuItemProps>(
                 {...rest}
                 ref={ref}
                 role="menuitem"
-                className={`${className} w-full text-left block px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900`}
+                className={`${className} disabled:bg-slate-50 disabled:text-slate-400 w-full text-left block px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900`}
             />
         );
     }

@@ -1,12 +1,15 @@
 import React from "react";
+import { Cloudinary } from "@cloudinary/url-gen";
 
-export type ValidTags = "h1" | "h2" | "h3" | "h4" | "h5" | "p";
+export type ValidTags = "h1" | "h2" | "h3" | "h4" | "h5" | "p" | "img";
 
 export interface Block {
     id: string;
     tag: ValidTags;
     data: {
         text?: string;
+        src?: string;
+        formData?: FormData;
     };
 }
 
@@ -22,6 +25,7 @@ export interface EditorState {
 
 export enum EditorActionType {
     AddBlock,
+    AddImageBlock,
     UpdateBlockText,
     ChangeBlockTag,
     ChangeBlockOrder,
@@ -32,6 +36,15 @@ interface AddBlockAction {
     type: EditorActionType.AddBlock;
     payload: {
         tag: ValidTags;
+        index: number;
+    };
+}
+
+interface AddImageBlockAction {
+    type: EditorActionType.AddImageBlock;
+    payload: {
+        formData: FormData;
+        src: string;
         index: number;
     };
 }
@@ -47,7 +60,7 @@ interface UpdateBlockTextAction {
 interface ChangeBlockTagAction {
     type: EditorActionType.ChangeBlockTag;
     payload: {
-        blockIndex: number;
+        index: number;
         newTag: ValidTags;
     };
 }
@@ -55,7 +68,7 @@ interface ChangeBlockTagAction {
 interface DeleteBlockAction {
     type: EditorActionType.DeleteBlock;
     payload: {
-        blockIdxToDelete: number;
+        index: number;
     };
 }
 
@@ -69,6 +82,7 @@ interface UpdateBlockOrderAction {
 
 export type EditorAction =
     | AddBlockAction
+    | AddImageBlockAction
     | UpdateBlockTextAction
     | ChangeBlockTagAction
     | DeleteBlockAction
@@ -76,7 +90,7 @@ export type EditorAction =
 
 export function editorReducer(state: EditorState, action: EditorAction) {
     switch (action.type) {
-        case EditorActionType.AddBlock:
+        case EditorActionType.AddBlock: {
             const { index, tag } = action.payload;
             const blocks = [...state.blocks];
 
@@ -90,8 +104,28 @@ export function editorReducer(state: EditorState, action: EditorAction) {
 
             return {
                 ...state,
+                currentIndex: index + 1,
                 blocks,
             };
+        }
+        case EditorActionType.AddImageBlock: {
+            const { index, formData, src } = action.payload;
+
+            const blocks = [...state.blocks];
+            blocks.splice(index + 1, 0, {
+                id: Math.random().toString(),
+                data: {
+                    src,
+                    formData,
+                },
+                tag: "img",
+            });
+            return {
+                ...state,
+                blocks,
+                currentIndex: index + 1,
+            };
+        }
         case EditorActionType.UpdateBlockText: {
             const { index, text } = action.payload;
             const updatedBlocks = [...state.blocks];
@@ -100,16 +134,21 @@ export function editorReducer(state: EditorState, action: EditorAction) {
 
             return {
                 ...state,
+                currentIndex: index,
                 blocks: updatedBlocks,
             };
         }
         case EditorActionType.ChangeBlockTag: {
-            const { blockIndex, newTag } = action.payload;
+            const { index, newTag } = action.payload;
 
             const updatedBlocks = [...state.blocks];
-            updatedBlocks[blockIndex].tag = newTag;
+            updatedBlocks[index].tag = newTag;
 
-            return { ...state, blocks: updatedBlocks };
+            return {
+                ...state,
+                currentIndex: index,
+                blocks: updatedBlocks,
+            };
         }
 
         case EditorActionType.ChangeBlockOrder: {
@@ -123,13 +162,12 @@ export function editorReducer(state: EditorState, action: EditorAction) {
             return { ...state, blocks };
         }
         case EditorActionType.DeleteBlock: {
-            const { blockIdxToDelete } = action.payload;
+            const { index } = action.payload;
 
             return {
                 ...state,
-                blocks: state.blocks.filter(
-                    (_, index) => index !== blockIdxToDelete
-                ),
+                currentIndex: index === 0 ? 0 : index - 1,
+                blocks: state.blocks.filter((_, idx) => index !== idx),
             };
         }
 
@@ -141,12 +179,14 @@ export const EditorContext = React.createContext<
     | {
           editorState: EditorState;
           dispatch: React.Dispatch<EditorAction>;
+          cld: Cloudinary;
       }
     | undefined
 >(undefined);
 
 export function useEditor() {
     const context = React.useContext(EditorContext);
+    // TODO: ENV THIS
 
     if (context === undefined) {
         throw new Error("Context must be called within a Provider");
