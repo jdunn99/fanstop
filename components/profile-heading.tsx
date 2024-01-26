@@ -1,0 +1,3 @@
+interface ProfileHeadingProps {
+  editable?: boolean;
+}

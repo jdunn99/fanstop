@@ -64,6 +64,7 @@ model Community {
   creatorId String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  description String 
 
   subscribers Subscriber[]
   posts       Post[]
