@@ -17,6 +17,7 @@ interface EditorProps {
   id: string;
   title: string;
   content?: any;
+  description: string | null;
 }
 
 const EditorContentSchema = z
@@ -34,9 +35,11 @@ export type EditorContent = z.infer<typeof EditorContentSchema>;
 export const BASE_EDITOR_TAG_CONFIG =
   "flex-1  m-0 bg-transparent focus:outline-none overflow-hidden";
 
-export function Editor({ id, title, content }: EditorProps) {
+export function Editor({ id, title, content, description }: EditorProps) {
   const [editorTitle, setEditorTitle] = React.useState<string>(title);
-  const [description, setDescription] = React.useState<string>("");
+  const [editorDescription, setEditorDescription] = React.useState<string>(
+    description || ""
+  );
 
   const cld = new Cloudinary({ cloud: { cloudName: "dw7064r1g " } });
   const blocks: Block[] = React.useMemo(() => {
@@ -57,11 +60,7 @@ export function Editor({ id, title, content }: EditorProps) {
   }, []);
 
   const [editorState, dispatch] = React.useReducer(editorReducer, {
-    metadata: {
-      title,
-      description: "",
-      authorId: "",
-    },
+    metadata: null,
     currentIndex: 0,
     blocks,
   });
@@ -88,7 +87,7 @@ export function Editor({ id, title, content }: EditorProps) {
       },
       body: JSON.stringify({
         title: editorTitle,
-        description,
+        description: editorDescription,
         content,
       }),
     });
@@ -132,7 +131,8 @@ export function Editor({ id, title, content }: EditorProps) {
               id="description"
               placeholder="Post description"
               className="w-full resize-none appearance-none bg-transparent focus:outline-none font-semibold m-0"
-              onChange={(e) => setDescription(e.target.value)}
+              defaultValue={description || ""}
+              onChange={(e) => setEditorDescription(e.target.value)}
             />
             <div className="w-full ">
               {editorState.blocks.map((block, index) => (

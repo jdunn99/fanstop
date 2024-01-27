@@ -54,17 +54,18 @@ model User {
   subscriptions Subscriber[]
   likes         Like[]
   posts         Post[]
+  comments      Comment[]
 }
 
 model Community {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique
-  creator   User     @relation(fields: [creatorId], references: [id])
-  creatorId String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  description String 
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  creator     User     @relation(fields: [creatorId], references: [id])
+  creatorId   String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  description String
 
   subscribers Subscriber[]
   posts       Post[]
@@ -103,7 +104,8 @@ model Post {
   author   User   @relation(fields: [authorId], references: [id])
   authorId String
 
-  likes Like[]
+  likes    Like[]
+  comments Comment[]
 
   @@index([communityId])
   @@index([authorId])
@@ -123,6 +125,18 @@ model Like {
   userId String
   post   Post   @relation(fields: [postId], references: [id])
   postId String
+
+  @@index([userId])
+  @@index([postId])
+}
+
+model Comment {
+  id      String @id @default(cuid())
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+  post    Post   @relation(fields: [postId], references: [id])
+  postId  String
+  content String @db.Text
 
   @@index([userId])
   @@index([postId])

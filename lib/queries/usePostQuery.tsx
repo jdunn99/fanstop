@@ -6,7 +6,3 @@ export function usePostQuery(id: string) {
     fetch(`/api/posts/${id}`).then((result) => result.json())
   );
 }
-
-export function usePostsForUser() {
-  return useQuery<Post[]>;
-}
