@@ -13,6 +13,7 @@ const CommentSchema = z.object({
   postId: z.string().cuid(),
   content: z.string(),
   user: z.object({
+    id: z.string().cuid(),
     name: z.string(),
   }),
   createdAt: z.date(),
