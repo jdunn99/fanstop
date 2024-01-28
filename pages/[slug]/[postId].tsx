@@ -91,11 +91,13 @@ export default function PostPage({
             </Button>
           </div>
         </div>
-        {typeof comments !== "undefined"
-          ? comments.map((comment) => (
-              <PostComment {...comment} key={comment.id} />
-            ))
-          : null}
+        <div className="pb-4">
+          {typeof comments !== "undefined"
+            ? comments.map((comment) => (
+                <PostComment {...comment} key={comment.id} />
+              ))
+            : null}
+        </div>
       </DashboardItem>
     </Layout>
   );
