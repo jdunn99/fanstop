@@ -26,19 +26,31 @@ export type CreateCommunityInput = CreateCommunityArgs & {
   creatorId: string;
 };
 
-/**
- * Fetches a list of all communities from the database.
- * @returns
- */
 async function getAllCommunities() {
-  return await db.community.findMany();
+  return await db.community.findMany({
+    include: {
+      creator: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
 }
 
-/**
- * Create a community object.
- * @param name - The name of the community being created
- * @param creatorId - The id of the user creating the community
- */
+async function getAllCommunitiesExplore(userId: string) {
+  return await db.community.findMany({
+    where: { creatorId: { not: userId } },
+    include: {
+      creator: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+}
+
 async function createCommunity({
   name,
   slug,
@@ -73,9 +85,9 @@ export default async function handler(
       return res.status(400).send({ message: "Invalid Method" });
     }
 
-    if (method === "POST") {
-      const session = await getServerSession(req, res, authOptions);
+    const session = await getServerSession(req, res, authOptions);
 
+    if (method === "POST") {
       if (session === null)
         return res.status(403).send({ message: "Not authorized" });
 
@@ -92,7 +104,12 @@ export default async function handler(
         })
       );
     } else {
-      return res.status(200).json(await getAllCommunities());
+      if (session === null) {
+        return res.status(200).json(await getAllCommunities());
+      }
+      return res
+        .status(200)
+        .json(await getAllCommunitiesExplore(session.user.id));
     }
   } catch (error) {
     console.error(error);

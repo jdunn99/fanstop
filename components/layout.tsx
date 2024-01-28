@@ -7,6 +7,7 @@ import Link from "next/link";
 import { BsArrowRight } from "react-icons/bs";
 import { AuthedNav, Navbar } from "./nav";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {}
 export function Container({ children, className, ...rest }: ContainerProps) {
@@ -66,7 +67,7 @@ export function DashboardItem({ children }: DashboardItemProps) {
 
 interface LayoutProps {
   children?: React.ReactNode;
-  heading: string;
+  heading?: string;
 }
 export function Layout({ children, heading }: LayoutProps) {
   const { data: session } = useSession();
@@ -99,7 +100,7 @@ export function Layout({ children, heading }: LayoutProps) {
           <Sidebar />
         </aside>
         <main className="h-full grid items-start gap-8 px-8 w-full pt-8">
-          <Header heading={heading} />
+          {typeof heading === "undefined" ? null : <Header heading={heading} />}
           {children}
         </main>
       </div>

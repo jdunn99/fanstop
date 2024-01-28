@@ -1,10 +1,11 @@
 import { CommunityProfile } from "@/pages/api/communities/[communityId]";
+import { CommunityByTag } from "@/pages/api/tags/[tagId]/communities";
 import { Community } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { useQuery } from "react-query";
 
 export function useCommunitiesQuery() {
-  return useQuery<Community[]>("communities", () =>
+  return useQuery<CommunityByTag[]>("communities", () =>
     fetch(`/api/communities`).then((result) => result.json())
   );
 }

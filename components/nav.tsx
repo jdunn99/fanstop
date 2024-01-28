@@ -7,40 +7,40 @@ import { AvatarMenu } from "./avatar-menu";
 import { CreatePostButton } from "./create-post-button";
 
 interface MainNavProps {
-    children?: React.ReactNode;
-    links: NavLink[];
+  children?: React.ReactNode;
+  links: NavLink[];
 }
 
 export function AuthedNav() {
-    return (
-        <React.Fragment>
-            <Search />
-            <CreatePostButton />
-            <AvatarMenu />
-        </React.Fragment>
-    );
+  return (
+    <React.Fragment>
+      {/* <Search /> */}
+      <CreatePostButton />
+      <AvatarMenu />
+    </React.Fragment>
+  );
 }
 
 export function Navbar({ links, children }: MainNavProps) {
-    return (
-        <div className="flex gap-6 md:gap-10">
-            <Link href="/" className="hidden items-center space-x-1 md:flex">
-                <span className="hidden text-lg font-bold sm:inline-block ">
-                    FanStop
-                </span>
-            </Link>
+  return (
+    <div className="flex gap-6 md:gap-10">
+      <Link href="/" className="hidden items-center space-x-1 md:flex">
+        <span className="hidden text-lg font-bold sm:inline-block ">
+          FanStop
+        </span>
+      </Link>
 
-            <nav className="hidden gap-6 md:flex">
-                {links.map(({ value, href }) => (
-                    <Link
-                        className="flex items-center text-lg font-medium transition-colors opacity-80 hover:opacity-100 hover:text-rose-500 sm:text-sm"
-                        key={href}
-                        href={href}
-                    >
-                        {value}
-                    </Link>
-                ))}
-            </nav>
-        </div>
-    );
+      <nav className="hidden gap-6 md:flex">
+        {links.map(({ value, href }) => (
+          <Link
+            className="flex items-center text-lg font-medium transition-colors opacity-80 hover:opacity-100 hover:text-rose-500 sm:text-sm"
+            key={href}
+            href={href}
+          >
+            {value}
+          </Link>
+        ))}
+      </nav>
+    </div>
+  );
 }

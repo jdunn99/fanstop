@@ -28,8 +28,9 @@ export default function PostPage({
   postId,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data } = usePostQuery(postId);
+  const { back } = useRouter();
 
-  const { data: comments } = useQuery<Comment[]>(["comments"], () =>
+  const { data: comments } = useQuery<Comment[]>(["comments", postId], () =>
     fetch(`/api/posts/${postId}/comment`).then((res) => res.json())
   );
   const [comment, setComment] = React.useState<string>("");
@@ -42,12 +43,19 @@ export default function PostPage({
   if (!data) return null;
 
   return (
-    <Layout heading={""}>
+    <Layout>
       <DashboardItem>
         <div className="grid w-full gap-2 py-4 px-8 border-b">
           <header className="sticky top-0 bg-white ">
             <div className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4">
-              <Link href="/">Back</Link>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={back}
+                className="!p-0 !h-0"
+              >
+                Back
+              </Button>
             </div>
           </header>
           <article className="prose px-0 mx-auto w-full max-w-screen-lg">

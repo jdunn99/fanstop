@@ -1,3 +1,4 @@
+import { CommunityCard } from "@/components/community-card";
 import { FeaturedCreator } from "@/components/featured-creators";
 import { Layout } from "@/components/layout";
 import { useCommunitiesQuery } from "@/lib/queries/useCommunities";
@@ -13,7 +14,7 @@ export default function ExplorePage() {
       ) : (
         <div>
           {communities.map((community) => (
-            <div key={community.id}>{community.name}</div>
+            <CommunityCard {...community} key={community.id} />
           ))}
         </div>
       )}

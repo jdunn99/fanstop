@@ -3,6 +3,7 @@ import Link from "next/link";
 import { MdMap } from "react-icons/md";
 import { useQuery } from "react-query";
 import Button from "./ui/button";
+import { CommunityCard } from "./community-card";
 
 interface FeaturedCreatorProps {
   queryKey: string;
@@ -35,28 +36,7 @@ export function FeaturedCreator({ queryKey }: FeaturedCreatorProps) {
       </div>
     );
 
-  return data.map(({ slug, creator, id, name, description }) => (
-    <Link className="mx-1" key={id} href={`/${slug}`}>
-      <div
-        key={id}
-        className="relative overflow-hidden rounded-lg 
-      border bg-white p-2 hover:border-rose-400 cursor-pointer 
-      hover:bg-rose-50"
-      >
-        <div className="flex flex-col justify-between rounded-md p-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <div>
-                <h3 className="font-bold text-lg">{name}</h3>
-                <span className="text-rose-500 font-semibold text-sm">
-                  {creator.name}
-                </span>
-              </div>
-            </div>
-            <p className="text-sm opacity-80">{description}</p>
-          </div>
-        </div>
-      </div>
-    </Link>
+  return data.map((community) => (
+    <CommunityCard {...community} key={community.id} />
   ));
 }

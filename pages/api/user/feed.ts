@@ -19,6 +19,10 @@ export const PostItemSchema = z.object({
   createdAt: z.date(),
   views: z.number(),
   description: z.string(),
+  _count: z.object({
+    likes: z.number(),
+    comments: z.number(),
+  }),
 });
 export type PostItem = z.infer<typeof PostItemSchema>;
 

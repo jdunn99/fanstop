@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import { z } from "zod";
 import { useCommunitiesByIDQuery } from "@/lib/queries/useCommunities";
+import { PostComponent } from "@/components/posts/post-item";
 
 export default function ProfilePage({
   slug,
@@ -28,17 +29,9 @@ export default function ProfilePage({
       {session?.user.id === data.creatorId ? null : (
         <Layout heading={data.name}>
           <div className="grid grid-cols-4 gap-4 w-full overflow-hidden"></div>
-          <div className="space-y-4">
+          <div className="space-y-8">
             {data.posts.map((post) => (
-              <div key={post.id} className="flex">
-                <div />
-                <div className="space-y-2">
-                  <h1 className="text-base font-semibold max-w-xs wrap text-slate-800">
-                    {post.title}
-                  </h1>
-                  <p className="text-sm text-slate-600">{post.description}</p>
-                </div>
-              </div>
+              <PostComponent {...post} isOwn key={post.id} />
             ))}
           </div>
         </Layout>

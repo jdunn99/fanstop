@@ -24,48 +24,52 @@ export type CommunityProfile = z.infer<typeof CommunitySchema>;
 type CommunityArgs = { communityId: string; name?: string; userId: string };
 
 export async function getCommunityByID(communityId: string) {
-  return CommunitySchema.nullable().parse(
-    await db.community.findFirst({
-      where: {
-        OR: [
-          { id: { equals: communityId } },
-          { slug: { equals: communityId } },
-        ],
-      },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        createdAt: true,
-        creatorId: true,
-        updatedAt: true,
-        posts: {
-          orderBy: {
-            createdAt: "desc",
-          },
-          select: {
-            id: true,
-            description: true,
-            author: {
-              select: {
-                name: true,
-                community: {
-                  select: {
-                    slug: true,
-                    name: true,
-                  },
-                },
-                image: true,
-              },
+  const result = await db.community.findFirst({
+    where: {
+      OR: [{ id: { equals: communityId } }, { slug: { equals: communityId } }],
+    },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      createdAt: true,
+      creatorId: true,
+      updatedAt: true,
+      posts: {
+        orderBy: {
+          createdAt: "desc",
+        },
+        select: {
+          _count: {
+            select: {
+              comments: true,
+              likes: true,
             },
-            title: true,
-            createdAt: true,
-            views: true,
           },
+          id: true,
+          description: true,
+          author: {
+            select: {
+              name: true,
+              community: {
+                select: {
+                  slug: true,
+                  name: true,
+                },
+              },
+              image: true,
+            },
+          },
+          title: true,
+          createdAt: true,
+          views: true,
         },
       },
-    })
-  );
+    },
+  });
+
+  console.log(result);
+  return CommunitySchema.nullable().parse(result);
 }
 
 // async function updateCommunity({ communityId, name, userId }: CommunityArgs) {

@@ -13,7 +13,7 @@ interface IconButtonProps {
   onClick(): void;
   children: React.ReactNode;
 }
-function IconButton({ onClick, children }: IconButtonProps) {
+export function IconButton({ onClick, children }: IconButtonProps) {
   return (
     <div
       className="flex gap-1 items-center transition-all hover:text-rose-500 hover:underline cursor-pointer"
