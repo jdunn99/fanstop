@@ -17,18 +17,20 @@ const CommentSchema = z.object({
     name: z.string(),
   }),
   createdAt: z.date(),
+  updatedAt: z.date(),
 });
 export type Comment = z.infer<typeof CommentSchema>;
 
 async function getCommentsForPost(postId: string) {
-  const result = await db.comment.findMany({
-    where: { postId },
-    include: { user: { select: { name: true } } },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-  return z.array(CommentSchema).parse(result);
+  return z.array(CommentSchema).parse(
+    await db.comment.findMany({
+      where: { postId },
+      include: { user: { select: { name: true, id: true } } },
+      orderBy: {
+        createdAt: "desc",
+      },
+    })
+  );
 }
 
 export default async function handler(

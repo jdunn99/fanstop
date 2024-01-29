@@ -58,23 +58,20 @@ model User {
 }
 
 model Community {
-  id             String   @id @default(cuid())
-  name           String
-  slug           String   @unique
-  creator        User     @relation(fields: [creatorId], references: [id])
-  creatorId      String   @unique
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  description    String
-  // featuredPost   Post?    @relation(fields: [featuredPostId], references: [id]) @relation("FeaturedPost")
-  featuredPostId String?
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  creator     User     @relation(fields: [creatorId], references: [id])
+  creatorId   String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  description String
 
   subscribers Subscriber[]
   posts       Post[]
   tags        Tags[]
 
   @@index([creatorId])
-  @@index([featuredPostId])
 }
 
 model Subscriber {
@@ -102,7 +99,7 @@ model Post {
   description String?
 
   community   Community @relation(fields: [communityId], references: [id])
-  communityId String    @unique
+  communityId String
 
   author   User   @relation(fields: [authorId], references: [id])
   authorId String

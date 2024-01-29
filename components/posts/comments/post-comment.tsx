@@ -10,12 +10,60 @@ import {
   BsTrash2Fill,
   BsTrashFill,
 } from "react-icons/bs";
+import { useMutation, useQueryClient } from "react-query";
 
-export function PostComment({ content, createdAt, user }: Comment) {
+export function PostComment({
+  content,
+  updatedAt,
+  createdAt,
+  user,
+  id,
+  postId,
+}: Comment) {
   const { data } = useSession();
+
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation(
+    ["comment", id],
+    () =>
+      fetch(`/api/comments/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: editedText,
+        }),
+      }).then((res) => res.json()),
+    {
+      onSuccess(data, variables, context) {
+        console.log("SUCCESS");
+        queryClient.setQueryData(["comments", postId], (oldData) => {
+          const temp = oldData as unknown as Comment[];
+          const index = temp.findIndex((item) => item.id === id);
+
+          const { content, updatedAt } = data as unknown as Comment;
+
+          if (index !== -1) {
+            temp[index] = {
+              ...temp[index],
+              content,
+              updatedAt,
+            };
+          }
+          return temp;
+        });
+      },
+    }
+  );
 
   const [isEditing, setIsEditing] = React.useState<boolean>(false);
   const [editedText, setEditedText] = React.useState<string>(content);
+
+  function onSubmit() {
+    mutate();
+    setIsEditing(false);
+  }
 
   return (
     <div className="w-full flex items-start py-4 px-8">
@@ -25,7 +73,10 @@ export function PostComment({ content, createdAt, user }: Comment) {
           <div className="w-full">
             <h4 className="text-lg font-bold text-slate-900">{user.name}</h4>
             <p className="text-xs text-slate-500">
-              {new Date(createdAt).toLocaleDateString()}
+              {new Date(createdAt).toLocaleDateString()}{" "}
+              {new Date(createdAt).getTime() === new Date(updatedAt).getTime()
+                ? ""
+                : "(Edited)"}
             </p>
             {isEditing ? (
               <div className="w-full flex flex-col mt-2 gap-2">
@@ -41,7 +92,9 @@ export function PostComment({ content, createdAt, user }: Comment) {
                   >
                     Cancel
                   </Button>
-                  <Button size="sm">Submit</Button>
+                  <Button size="sm" type="submit" onClick={onSubmit}>
+                    Submit
+                  </Button>
                 </div>
               </div>
             ) : (
