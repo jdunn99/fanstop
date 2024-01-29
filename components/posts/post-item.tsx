@@ -15,6 +15,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { MdThumbUp } from "react-icons/md";
 import { BsEyeFill } from "react-icons/bs";
+import Image from "next/image";
+import { truncateString } from "@/lib/truncate";
 
 interface PostComponentProps extends PostItem {
   isOwn?: boolean;
@@ -49,6 +51,7 @@ export function PostComponent({
   description,
   author,
   isOwn,
+  image,
   views,
   createdAt,
   _count,
@@ -56,40 +59,49 @@ export function PostComponent({
   return (
     <div>
       <div className="flex">
-        <div />
-        <Link
-          href={`/${author.community.slug}/${id}`}
-          className="hover:underline"
-        >
-          <div className="space-y-2">
-            <h1 className="text-base font-semibold max-w-xs wrap text-slate-800">
-              {title}
-            </h1>
-            <p className="text-xs text-rose-500 ">
-              {new Date(createdAt).toLocaleString()}
-            </p>
-            <p className="text-sm text-slate-600">{description}</p>
+        {image ? (
+          <img
+            src={image}
+            className="w-[260px] h-[156px] object-contain border border-slate-100 mr-4 rounded-lg shadow-sm"
+          />
+        ) : null}
+        <div>
+          <Link
+            href={`/${author.community.slug}/${id}`}
+            className="hover:underline"
+          >
+            <div className="space-y-2">
+              <h1 className="text-base font-semibold max-w-xs wrap text-slate-800">
+                {title}
+              </h1>
+              <p className="text-xs text-rose-500 ">
+                {new Date(createdAt).toLocaleString()}
+              </p>
+              <p className="text-sm text-slate-600">
+                {truncateString(description, 200)}
+              </p>
+            </div>
+          </Link>
+          <div className="w-full flex gap-4 pt-2  text-xs text-slate-600">
+            <div className="flex gap-1 items-center">
+              <MdThumbUp />
+              <p>{_count.likes} Likes</p>
+            </div>
+            <div className="flex gap-1 items-center">
+              <FaComment />
+              <p>{_count.comments} Comments</p>
+            </div>
+            <div className="flex gap-1 items-center">
+              <BsEyeFill />
+              <p>{views} Views</p>
+            </div>
           </div>
-        </Link>
+        </div>
         {isOwn ? (
           <div className="pl-4">
             <OwnPostMenu id={id} />
           </div>
         ) : null}
-      </div>
-      <div className="w-full flex gap-4 pt-2  text-xs text-slate-600">
-        <div className="flex gap-1 items-center">
-          <MdThumbUp />
-          <p>{_count.likes} Likes</p>
-        </div>
-        <div className="flex gap-1 items-center">
-          <FaComment />
-          <p>{_count.comments} Comments</p>
-        </div>
-        <div className="flex gap-1 items-center">
-          <BsEyeFill />
-          <p>{views} Views</p>
-        </div>
       </div>
     </div>
   );

@@ -17,6 +17,7 @@ export const PostPatchSchema = z.object({
   title: z.string().optional(),
   description: z.string().optional().nullable(),
   content: z.any().optional().nullable(),
+  image: z.string().optional().nullable(),
 });
 
 type PostInputArgs = z.infer<typeof PostPatchSchema> & PostArgs;
@@ -49,6 +50,7 @@ async function updatePost({
   authorId,
   content,
   title,
+  image,
   description,
 }: PostInputArgs) {
   return await db.post.update({
@@ -57,6 +59,7 @@ async function updatePost({
       title,
       description,
       content,
+      image,
     },
   });
 }
@@ -85,13 +88,15 @@ export default async function handler(
       const authorId = session!.user.id;
 
       if (method === "PUT") {
-        const { content, title, description } = PostPatchSchema.parse(body);
+        const { content, title, description, image } =
+          PostPatchSchema.parse(body);
 
         return res.status(200).json(
           await updatePost({
             postId,
             content,
             title,
+            image,
             description,
             authorId,
           })

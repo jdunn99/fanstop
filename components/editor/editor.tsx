@@ -66,14 +66,21 @@ export function Editor({ id, title, content, description }: EditorProps) {
   });
 
   const focusedRef = React.useRef<HTMLDivElement>();
+  const [coverImage, setCoverImage] = React.useState<string>();
 
   async function onClick() {
+    // Batch upload images
     const content = await Promise.all(
       editorState.blocks.map(async (block) => {
         const temp = { ...block };
         if (temp.tag === "img" && temp.data.formData) {
           temp.data.src = await uploadImage(temp.data.formData!);
           temp.data.formData = undefined;
+
+          if (coverImage === null) {
+            console.log("SETTING COVER IMAGE TO: ", temp.data.src);
+            setCoverImage(() => temp.data.src);
+          }
         }
 
         return temp;
@@ -89,6 +96,7 @@ export function Editor({ id, title, content, description }: EditorProps) {
         title: editorTitle,
         description: editorDescription,
         content,
+        image: coverImage,
       }),
     });
 

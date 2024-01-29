@@ -46,6 +46,7 @@ export async function getCommunityByID(communityId: string) {
               likes: true,
             },
           },
+          image: true,
           id: true,
           description: true,
           author: {

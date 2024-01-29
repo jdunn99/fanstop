@@ -23,6 +23,7 @@ export type PostWithLikes = Post & { likes: Like[] };
 
 const CreatePostSchema = z.object({
   title: z.string(),
+  image: z.string().nullable().optional(),
 });
 export type CreatePostArgs = z.infer<typeof CreatePostSchema> & {
   authorId: string;
@@ -36,10 +37,11 @@ async function getAllPosts() {
   return await db.post.findMany();
 }
 
-async function createPost({ title, authorId }: CreatePostArgs) {
+async function createPost({ image, title, authorId }: CreatePostArgs) {
   return await db.post.create({
     data: {
       title,
+      image,
       views: 0,
       community: {
         connect: {
