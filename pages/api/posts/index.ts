@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "../auth/[...nextauth]";
+import { Like } from "../like";
 
 const methods = ["GET", "POST"];
 
@@ -18,6 +19,7 @@ const PostSchema = z.object({
   updatedAt: z.date(),
 });
 export type Post = z.infer<typeof PostSchema>;
+export type PostWithLikes = Post & { likes: Like[] };
 
 const CreatePostSchema = z.object({
   title: z.string(),

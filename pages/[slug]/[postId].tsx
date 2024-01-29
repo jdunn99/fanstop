@@ -1,20 +1,12 @@
-import {
-  DashboardItem,
-  DashboardItemHeading,
-  Layout,
-} from "@/components/layout";
+import { DashboardItem, Layout } from "@/components/layout";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React from "react";
 import { useQuery } from "react-query";
 import { z } from "zod";
-import { useCommunitiesByIDQuery } from "@/lib/queries/useCommunities";
 import { usePostQuery } from "@/lib/queries/usePostQuery";
 import { EditorBlock } from "@/components/editor/editor-block";
 import Button from "@/components/ui/button";
-import Link from "next/link";
-import { title } from "process";
 import { Block } from "@/lib/useEditor";
 import { Avatar } from "@/components/ui/avatar";
 import Textarea from "@/components/ui/textarea";
@@ -23,21 +15,35 @@ import { PostComment } from "@/components/posts/comments/post-comment";
 import { useCreateCommentMutation } from "@/lib/mutations/useCreateCommentMutation";
 import { CreateCommentArgs } from "../api/comment";
 import { Comment } from "../api/posts/[postId]/comment";
+import { addViewToPost } from "../api/posts/[postId]";
+import { useSession } from "next-auth/react";
+import { useToast } from "@/components/ui/toast";
 
 export default function PostPage({
   postId,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data } = usePostQuery(postId);
   const { back } = useRouter();
+  const { toast } = useToast();
 
   const { data: comments } = useQuery<Comment[]>(["comments", postId], () =>
     fetch(`/api/posts/${postId}/comment`).then((res) => res.json())
   );
   const [comment, setComment] = React.useState<string>("");
+  const { data: session } = useSession();
   const { mutate } = useCreateCommentMutation();
 
   function onClick({ content, postId }: Partial<CreateCommentArgs>) {
-    mutate({ authorId: "", content: content || "", postId: postId || "" });
+    if (session === null) {
+      toast({
+        title: "Not signed in.",
+        description: "You must be signed in to perform this action",
+        variant: "error",
+        timeout: 1000,
+      });
+    } else {
+      mutate({ authorId: "", content: content || "", postId: postId || "" });
+    }
   }
 
   if (!data) return null;
@@ -82,7 +88,7 @@ export default function PostPage({
         </div>
       </DashboardItem>
       <DashboardItem>
-        <PostBar postId={postId} views={data.views} />
+        <PostBar postId={postId} views={data.views} likes={data.likes} />
         <div className="w-full px-8">
           <h1 className="text-2xl font-bold text-slate-900">Comments</h1>
           <div className="flex gap-2 mt-4 w-full">
@@ -112,11 +118,13 @@ export default function PostPage({
 }
 
 export async function getServerSideProps({ query }: GetServerSidePropsContext) {
-  const { postId } = query;
+  const postId = z.string().parse(query.postId);
+
+  await addViewToPost(postId);
 
   return {
     props: {
-      postId: z.string().parse(postId),
+      postId,
     },
   };
 }

@@ -5,29 +5,11 @@ import Button from "@/components/ui/button";
 import { mainNav } from "@/config/config";
 import { usePopularTags } from "@/lib/queries/usePopularTags";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
-import {
-  Container,
-  DashboardItem,
-  DashboardItemHeading,
-  EmptyCard,
-  Header,
-  Layout,
-} from "@/components/layout";
-import { Avatar } from "@/components/ui/avatar";
-import { FeedPost } from "@/components/feed-post";
-import { useMutation, useQuery } from "react-query";
-import { PostItem } from "./api/user/feed";
+import { DashboardItem } from "@/components/layout";
 import { isAuthed } from "@/lib/authSSR";
-import { CreateInput } from "@/components/create-input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Input from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { MdClose } from "react-icons/md";
-import { CreateCommunityArgs } from "./api/communities";
 import { CreateCommunity } from "@/components/create-community";
 import { Sidebar } from "@/components/sidebar";
 import { useFeedQuery } from "@/lib/queries/useFeedQuery";

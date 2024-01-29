@@ -21,8 +21,22 @@ export const PostPatchSchema = z.object({
 
 type PostInputArgs = z.infer<typeof PostPatchSchema> & PostArgs;
 
-async function getPostByID(postId: string) {
-  return await db.post.findFirst({ where: { id: { equals: postId } } });
+async function getPostByID(postId: string, authorId?: string) {
+  return await db.post.findFirst({
+    where: { id: postId },
+    include: { likes: true },
+  });
+}
+
+export async function addViewToPost(postId: string) {
+  await db.post.update({
+    where: { id: postId },
+    data: {
+      views: {
+        increment: 1,
+      },
+    },
+  });
 }
 
 // Experimenting
@@ -72,8 +86,6 @@ export default async function handler(
 
       if (method === "PUT") {
         const { content, title, description } = PostPatchSchema.parse(body);
-
-        console.log(content, title, description);
 
         return res.status(200).json(
           await updatePost({

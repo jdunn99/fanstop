@@ -1,16 +1,11 @@
 import { Avatar } from "@/components/ui/avatar";
 import Button from "@/components/ui/button";
 import Textarea from "@/components/ui/textarea";
+import { useUpdateCommentMutation } from "@/lib/mutations/useUpdateCommentMutation";
 import { Comment } from "@/pages/api/posts/[postId]/comment";
 import { useSession } from "next-auth/react";
 import React from "react";
-import {
-  BsPencil,
-  BsPencilFill,
-  BsTrash2Fill,
-  BsTrashFill,
-} from "react-icons/bs";
-import { useMutation, useQueryClient } from "react-query";
+import { BsPencilFill, BsTrashFill } from "react-icons/bs";
 
 export function PostComment({
   content,
@@ -21,47 +16,13 @@ export function PostComment({
   postId,
 }: Comment) {
   const { data } = useSession();
-
-  const queryClient = useQueryClient();
-  const { mutate } = useMutation(
-    ["comment", id],
-    () =>
-      fetch(`/api/comments/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          content: editedText,
-        }),
-      }).then((res) => res.json()),
-    {
-      onSuccess(data, variables, context) {
-        console.log("SUCCESS");
-        queryClient.setQueryData(["comments", postId], (oldData) => {
-          const temp = oldData as unknown as Comment[];
-          const index = temp.findIndex((item) => item.id === id);
-
-          const { content, updatedAt } = data as unknown as Comment;
-
-          if (index !== -1) {
-            temp[index] = {
-              ...temp[index],
-              content,
-              updatedAt,
-            };
-          }
-          return temp;
-        });
-      },
-    }
-  );
+  const { mutateAsync } = useUpdateCommentMutation(id);
 
   const [isEditing, setIsEditing] = React.useState<boolean>(false);
   const [editedText, setEditedText] = React.useState<string>(content);
 
-  function onSubmit() {
-    mutate();
+  async function onSubmit() {
+    await mutateAsync({ content: editedText, postId });
     setIsEditing(false);
   }
 
