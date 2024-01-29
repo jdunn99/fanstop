@@ -12,6 +12,9 @@ import Link from "next/link";
 import { ZodType, z } from "zod";
 import { Cloudinary } from "@cloudinary/url-gen";
 import { imageConfigDefault } from "next/dist/shared/lib/image-config";
+import Textarea from "../ui/textarea";
+import TextareaAutosize from "react-textarea-autosize";
+import { usePublishPostMutation } from "@/lib/mutations/usePublishPostMutation";
 
 interface EditorProps {
   id: string;
@@ -33,7 +36,7 @@ const EditorContentSchema = z
 export type EditorContent = z.infer<typeof EditorContentSchema>;
 
 export const BASE_EDITOR_TAG_CONFIG =
-  "flex-1  m-0 bg-transparent focus:outline-none overflow-hidden";
+  "flex-1  m-0 bg-transparent focus:outline-none ";
 
 export function Editor({ id, title, content, description }: EditorProps) {
   const [editorTitle, setEditorTitle] = React.useState<string>(title);
@@ -66,53 +69,10 @@ export function Editor({ id, title, content, description }: EditorProps) {
   });
 
   const focusedRef = React.useRef<HTMLDivElement>();
-  const [coverImage, setCoverImage] = React.useState<string>();
+  const { mutate } = usePublishPostMutation(id);
 
-  async function onClick() {
-    // Batch upload images
-    const content = await Promise.all(
-      editorState.blocks.map(async (block) => {
-        const temp = { ...block };
-        if (temp.tag === "img" && temp.data.formData) {
-          temp.data.src = await uploadImage(temp.data.formData!);
-          temp.data.formData = undefined;
-
-          if (coverImage === null) {
-            console.log("SETTING COVER IMAGE TO: ", temp.data.src);
-            setCoverImage(() => temp.data.src);
-          }
-        }
-
-        return temp;
-      })
-    );
-
-    const result = await fetch(`/api/posts/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({
-        title: editorTitle,
-        description: editorDescription,
-        content,
-        image: coverImage,
-      }),
-    });
-
-    console.log(await result.json());
-  }
-
-  async function uploadImage(formData: FormData) {
-    const result = await fetch(
-      "https://api.cloudinary.com/v1_1/dw7064r1g/upload",
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
-    const json = await result.json();
-    return json["secure_url"];
+  function onClick() {
+    mutate({ title: editorTitle, description: editorDescription, editorState });
   }
 
   return (
@@ -126,22 +86,22 @@ export function Editor({ id, title, content, description }: EditorProps) {
             </div>
           </header>
           <article className="prose mx-auto w-full max-w-screen-lg">
-            <textarea
+            <TextareaAutosize
               autoFocus
               defaultValue={title}
-              onChange={(e) => setEditorTitle(e.target.value)}
+              onChange={(e: any) => setEditorTitle(e.target.value)}
               id="title"
               placeholder="Post title"
-              className="w-full text-slate-900 resize-none appearance-none  bg-transparent text-5xl font-bold focus:outline-none h-14"
+              className="w-full text-slate-900 resize-none appearance-none  bg-transparent text-5xl font-bold focus:outline-none"
             />
-            <textarea
-              autoFocus
+            <TextareaAutosize
               id="description"
               placeholder="Post description"
               className="w-full resize-none appearance-none bg-transparent focus:outline-none font-semibold m-0"
               defaultValue={description || ""}
               onChange={(e) => setEditorDescription(e.target.value)}
             />
+            <input type="file" />
             <div className="w-full ">
               {editorState.blocks.map((block, index) => (
                 <EditorBlock

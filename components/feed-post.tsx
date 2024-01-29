@@ -2,9 +2,15 @@ import { PostItem } from "@/pages/api/user/feed";
 import { Avatar } from "./ui/avatar";
 import Link from "next/link";
 
-export function FeaturedPost({ author, title, createdAt, views }: PostItem) {
+export function FeaturedPost({
+  author,
+  title,
+  createdAt,
+  views,
+  image,
+}: PostItem) {
   return (
-    <div className="gap-8 flex flex-col">
+    <div className="gap-8 flex flex-col items-center">
       <div>
         <div className="grid grid-cols-1">
           <div className="bg-slate-50 cursor-pointer rounded-lg w-full">
@@ -24,13 +30,15 @@ export function FeaturedPost({ author, title, createdAt, views }: PostItem) {
                   {author.name}
                 </p>
               </div>
-              <div className="aspect-video overflow-hidden flex-grow flex-shrink basis-1/2">
-                <img
-                  src="https://images.pexels.com/photos/7232128/pexels-photo-7232128.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                  alt="Image"
-                  className="h-full object-cover w-full rounded-r-lg"
-                />
-              </div>
+              {image ? (
+                <div className="aspect-video overflow-hidden flex-grow flex-shrink basis-1/2">
+                  <img
+                    src={image}
+                    alt="Image"
+                    className="h-full object-cover w-full rounded-r-lg"
+                  />
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { Avatar } from "@/components/ui/avatar";
 import Button from "@/components/ui/button";
 import Textarea from "@/components/ui/textarea";
+import { useDeleteCommentMutation } from "@/lib/mutations/useDeleteCommentMutation";
 import { useUpdateCommentMutation } from "@/lib/mutations/useUpdateCommentMutation";
 import { Comment } from "@/pages/api/posts/[postId]/comment";
 import { useSession } from "next-auth/react";
@@ -17,6 +18,7 @@ export function PostComment({
 }: Comment) {
   const { data } = useSession();
   const { mutateAsync } = useUpdateCommentMutation(id);
+  const { mutateAsync: deleteCommentAsync } = useDeleteCommentMutation(id);
 
   const [isEditing, setIsEditing] = React.useState<boolean>(false);
   const [editedText, setEditedText] = React.useState<string>(content);
@@ -24,6 +26,10 @@ export function PostComment({
   async function onSubmit() {
     await mutateAsync({ content: editedText, postId });
     setIsEditing(false);
+  }
+
+  async function deleteComment() {
+    await deleteCommentAsync({ postId });
   }
 
   return (
@@ -74,7 +80,7 @@ export function PostComment({
             <BsPencilFill />
           </Button>
 
-          <Button size="xs" variant="ghost">
+          <Button size="xs" variant="ghost" onClick={deleteComment}>
             <BsTrashFill />
           </Button>
         </div>

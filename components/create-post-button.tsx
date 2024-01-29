@@ -10,7 +10,7 @@ export function CreatePostButton() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title: "Untitled Post" }),
+      body: JSON.stringify({ title: "Untitled Post", description: "" }),
     });
 
     const { id } = await response.json();

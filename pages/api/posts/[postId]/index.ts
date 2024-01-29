@@ -91,6 +91,8 @@ export default async function handler(
         const { content, title, description, image } =
           PostPatchSchema.parse(body);
 
+        console.log({ body, image });
+
         return res.status(200).json(
           await updatePost({
             postId,

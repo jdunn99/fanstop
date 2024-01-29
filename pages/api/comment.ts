@@ -25,7 +25,7 @@ async function createComment({ content, postId, authorId }: CreateCommentArgs) {
       postId,
       userId: authorId,
     },
-    include: { user: { select: { name: true } } },
+    include: { user: { select: { id: true, name: true } } },
   });
 }
 

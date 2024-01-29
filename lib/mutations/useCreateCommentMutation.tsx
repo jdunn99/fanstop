@@ -21,11 +21,6 @@ export function useCreateCommentMutation() {
       queryClient.setQueryData(["comments", variables.postId], (oldData) => {
         return [data, ...(oldData as unknown as Comment[])];
       });
-      toast({
-        title: "Comment Created",
-        description: "Comment successfully created!",
-        variant: "success",
-      });
     },
   });
 }

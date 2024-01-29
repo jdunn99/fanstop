@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
 import { z } from "zod";
-import { PostItemSchema } from "../../user/feed";
+import { PostItem, PostItemSchema } from "../../user/feed";
 
 const methods = ["GET", "PUT", "DELETE"];
 
@@ -17,11 +17,20 @@ const CommunitySchema = z.object({
   creatorId: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),
+  description: z.string().optional().nullable(),
   posts: z.array(PostItemSchema),
 });
-export type CommunityProfile = z.infer<typeof CommunitySchema>;
 
 type CommunityArgs = { communityId: string; name?: string; userId: string };
+
+const CommunityBYIDQuerySchema = z
+  .object({
+    featuredPost: PostItemSchema.nullable().optional(),
+    recentPosts: z.array(PostItemSchema),
+    isOwn: z.boolean(),
+  })
+  .merge(CommunitySchema);
+export type CommunityProfile = z.infer<typeof CommunityBYIDQuerySchema>;
 
 export async function getCommunityByID(communityId: string) {
   const result = await db.community.findFirst({
@@ -35,6 +44,7 @@ export async function getCommunityByID(communityId: string) {
       createdAt: true,
       creatorId: true,
       updatedAt: true,
+      description: true,
       posts: {
         orderBy: {
           createdAt: "desc",
@@ -69,7 +79,6 @@ export async function getCommunityByID(communityId: string) {
     },
   });
 
-  console.log(result);
   return CommunitySchema.nullable().parse(result);
 }
 
@@ -111,14 +120,38 @@ export default async function handler(
     const { method, query } = req;
     const { communityId } = QuerySchema.parse(query);
 
+    const session = await getSession({ req });
+
     if (!methods.includes(method!)) {
       return res.status(400).send({ message: "Invalid Method" });
     }
 
     if (method === "GET") {
-      return res.status(200).json(await getCommunityByID(communityId));
+      const result = await getCommunityByID(communityId);
+      let isOwn = false;
+      let featuredPost: PostItem | null = null;
+      let recentPosts: PostItem[] = [];
+      let posts: PostItem[] = [];
+
+      if (session && result) {
+        isOwn = result.creatorId === session.user.id;
+        featuredPost = result.posts[0];
+        recentPosts = result.posts.slice(1, 4) || [];
+        posts = result.posts.slice(4) || [];
+      }
+
+      console.log({ isOwn, featuredPost, recentPosts, posts });
+
+      return res.status(200).json(
+        CommunityBYIDQuerySchema.parse({
+          ...result,
+          isOwn,
+          featuredPost,
+          recentPosts,
+          posts,
+        })
+      );
     } else {
-      const session = await getSession({ req });
       if (session === null) res.status(403).send({ message: "Not authorized" });
 
       const userId = session!.user.id;

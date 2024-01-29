@@ -75,7 +75,7 @@ export default function ToastProvider({ children }: ToastProps) {
   return (
     <ToastContext.Provider value={{ toast, close }}>
       {children}
-      <div className="space-y-2 z-50 absolute bottom-2 right-2">
+      <div className="space-y-2 z-50 fixed bottom-2 right-2">
         {toasts.map(({ id, description, title, variant }) => (
           <div key={id} className="">
             <Button

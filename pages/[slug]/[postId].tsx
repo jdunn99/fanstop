@@ -74,6 +74,7 @@ export default function PostPage({
             <p className="w-full resize-none font-semibold m-0">
               {data.description}
             </p>
+
             <div className="w-full ">
               {(data.content as unknown as Block[]).map((block, index) => (
                 <EditorBlock
@@ -95,6 +96,7 @@ export default function PostPage({
             <Avatar />
             <Textarea
               placeholder="Comment"
+              value={comment}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                 setComment(e.target.value)
               }

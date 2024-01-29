@@ -73,7 +73,7 @@ export function Layout({ children, heading }: LayoutProps) {
   const { data: session } = useSession();
 
   return (
-    <div className="flex flex-col ">
+    <div className="flex flex-col overflow-hidden">
       <header className="sticky top-0 z-40 bg-white border-b">
         <div className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4">
           <Navbar links={[]} />
@@ -95,13 +95,20 @@ export function Layout({ children, heading }: LayoutProps) {
           </div>
         </div>
       </header>
-      <div className="max-w-screen-xl flex relative w-full mx-auto">
-        <aside className="hidden md:block sticky pt-8 top-16 col-span-3 pr-2 h-[calc(100vh-65px)] border-r justify-center w-[350px]">
+      <div
+        className="grid bg-white min-h-screen"
+        style={{ gridTemplateColumns: "minmax(150px, 350px) 1fr" }}
+      >
+        <aside className="justify-self-end gap-8 px-8 pt-8 border-r w-full">
           <Sidebar />
         </aside>
-        <main className="h-full grid items-start gap-8 px-8 w-full pt-8">
-          {typeof heading === "undefined" ? null : <Header heading={heading} />}
-          {children}
+        <main className="h-full bg-slate-50 overflow-auto">
+          <div className="max-w-screen-lg mx-auto px-8 space-y-8 py-8 ">
+            {typeof heading === "undefined" ? null : (
+              <Header heading={heading} />
+            )}
+            {children}
+          </div>
         </main>
       </div>
     </div>
