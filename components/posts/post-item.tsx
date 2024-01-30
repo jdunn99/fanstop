@@ -16,7 +16,6 @@ import { useRouter } from "next/router";
 import { MdThumbUp } from "react-icons/md";
 import { BsEyeFill } from "react-icons/bs";
 import { truncateString } from "@/lib/truncate";
-import { Avatar } from "../ui/avatar";
 
 interface PostComponentProps extends PostItem {
   isOwn?: boolean;
@@ -25,12 +24,22 @@ interface PostComponentProps extends PostItem {
   includeAuthor?: boolean;
 }
 
-export function OwnPostMenu({ id }: { id: string }) {
+export function OwnPostMenu({
+  id,
+  isPublished,
+}: {
+  id: string;
+  isPublished?: boolean;
+}) {
   const { isOpen, toggle, onClose } = useMenu();
   const { push } = useRouter();
 
   function onEditClick() {
     push(`/editor/${id}`);
+  }
+
+  function onPublishClick() {
+    push(`/editor/${id}/publish`);
   }
 
   return (
@@ -42,6 +51,9 @@ export function OwnPostMenu({ id }: { id: string }) {
         <MenuList>
           <MenuItem onClick={onEditClick}>Edit</MenuItem>
           <MenuItem>Delete</MenuItem>
+          {!isPublished ? (
+            <MenuItem onClick={onPublishClick}>Publish</MenuItem>
+          ) : null}
         </MenuList>
       ) : null}
     </Menu>

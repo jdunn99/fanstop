@@ -1,23 +1,15 @@
-import {
-  Block,
-  EditorActionType,
-  EditorContext,
-  ValidTags,
-  editorReducer,
-} from "@/lib/useEditor";
+import { Block, EditorContext, editorReducer } from "@/lib/useEditor";
 import React from "react";
 import { EditorBlock } from "./editor-block";
 import Button from "../ui/button";
-import Link from "next/link";
-import { ZodType, z } from "zod";
-import { Cloudinary } from "@cloudinary/url-gen";
-
+import { z } from "zod";
 import TextareaAutosize from "react-textarea-autosize";
 import { usePublishPostMutation } from "@/lib/mutations/usePublishPostMutation";
 import { Layout } from "../layout";
 import { Breadcrumbs } from "../ui/breadcrumbs";
 import { useRouter } from "next/router";
 import { useToast } from "../ui/toast";
+import { useSavePostMutation } from "@/lib/mutations/useSavePostMutation";
 
 interface EditorProps {
   id: string;
@@ -44,6 +36,7 @@ export const BASE_EDITOR_TAG_CONFIG =
 export function Editor({ id, title, content, description }: EditorProps) {
   const [editorTitle, setEditorTitle] = React.useState<string>(title);
   const editorTitleRef = React.useRef<HTMLTextAreaElement>(null);
+
   const [editorDescription, setEditorDescription] = React.useState<string>(
     description || ""
   );
@@ -72,10 +65,11 @@ export function Editor({ id, title, content, description }: EditorProps) {
     blocks,
   });
 
-  const focusedRef = React.useRef<HTMLDivElement>();
-  const { mutateAsync, isError } = usePublishPostMutation(id);
+  const { mutateAsync } = useSavePostMutation(id);
   const { toast } = useToast();
+
   const router = useRouter();
+  const focusedRef = React.useRef<HTMLDivElement>();
 
   const handleSavePress = React.useCallback(async (event: KeyboardEvent) => {
     if (event.ctrlKey && event.key === "s") {

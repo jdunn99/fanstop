@@ -1,56 +1,69 @@
-import { PostWithLikes } from "@/pages/api/posts";
 import { useMutation } from "react-query";
-import { EditorState } from "../useEditor";
+import { uploadImage } from "../file";
+import { Block } from "../useEditor";
 
 interface PostPublishProps {
   title: string;
   description: string;
-  editorState: EditorState;
-}
-
-export async function uploadImage(formData: FormData) {
-  const result = await fetch(
-    "https://api.cloudinary.com/v1_1/dw7064r1g/upload",
-    {
-      method: "POST",
-      body: formData,
-    }
-  );
-  const json = await result.json();
-
-  return json["secure_url"];
+  img?: {
+    formData?: FormData;
+    src: string;
+  };
+  postContent: Block[];
 }
 
 export function usePublishPostMutation(id: string) {
-  return useMutation(["post", id], {
-    async mutationFn({ title, description, editorState }: PostPublishProps) {
-      const content = await Promise.all(
-        editorState.blocks.map(async (block) => {
-          const temp = { ...block };
-          if (temp.tag === "img" && temp.data.formData) {
-            temp.data.src = await uploadImage(temp.data.formData!);
-            temp.data.formData = undefined;
-          }
+  return useMutation(
+    ["post", id],
+    async ({ title, description, img, postContent }: PostPublishProps) => {
+      let image: string | undefined = undefined;
 
-          return temp;
-        })
-      );
+      if (img) {
+        if (img.formData) {
+          image = await uploadImage(img.formData);
+        } else {
+          image = img.src;
+        }
+      }
+
+      // now set the cover image as the first element
+      let content = postContent;
+
+      if (content[0] && content[0].tag === "img") {
+        content[0] = {
+          ...content[0],
+          data: {
+            src: image,
+          },
+        };
+      } else {
+        content = [
+          {
+            id: new Date().toString(),
+            data: {
+              src: image,
+            },
+            tag: "img",
+          },
+          ...content,
+        ];
+      }
 
       const result = await fetch(`/api/posts/${id}`, {
-        method: "PUT",
         headers: {
-          "Content-type": "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           title,
           description,
+          image,
           content,
-          image: content[0].tag === "img" ? content[0].data.src : undefined,
-          isPublished: false,
+          isPublished: true,
         }),
+        method: "PUT",
       });
 
       return await result.json();
-    },
-  });
+    }
+  );
 }

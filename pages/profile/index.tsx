@@ -11,33 +11,11 @@ export default function Profile({
   return <ProfileComponent slug={user.id} data={data} />;
 }
 
-// export async function getServersideProps({
-//   req,
-//   res,
-//   query,
-// }: GetServerSidePropsContext) {
-//   const session = await getServerSession(req, res, authOptions);
-
-//   if (session === null) {
-//     return {
-//       redirect: {
-//         destination: "/login",
-//       },
-//     };
-//   }
-
-//   return {
-//     props: {
-//       user: session.user,
-//     },
-//   };
-// }
 export async function getServerSideProps({
   req,
   res,
 }: GetServerSidePropsContext) {
   const session = await getServerSession(req, res, authOptions);
-  console.log("SERVER SESSION: ", session);
 
   if (session === null) {
     return {
