@@ -1,11 +1,8 @@
-import { useToast } from "@/components/ui/toast";
 import { CreateCommentArgs } from "@/pages/api/comment";
-import { Post } from "@/pages/api/posts";
 import { useMutation, useQueryClient } from "react-query";
 
 export function useCreateCommentMutation() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   return useMutation("comment", {
     mutationFn: async ({ authorId, content, postId }: CreateCommentArgs) => {

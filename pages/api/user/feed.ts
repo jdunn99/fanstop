@@ -26,6 +26,7 @@ export const PostItemSchema = z.object({
   }),
 });
 export type PostItem = z.infer<typeof PostItemSchema>;
+export type FeedItem = Record<string, PostItem[]>;
 
 async function getFeedForUser(userId: string) {
   const subscriptions = await getSubscriptionsForUser(userId);
@@ -44,6 +45,13 @@ async function getFeedForUser(userId: string) {
     },
     select: {
       id: true,
+      _count: {
+        select: {
+          likes: true,
+          comments: true,
+        },
+      },
+      image: true,
       description: true,
       author: {
         select: {
@@ -63,7 +71,25 @@ async function getFeedForUser(userId: string) {
     },
   });
 
-  return z.array(PostItemSchema).parse(result);
+  const parsed = z.array(PostItemSchema).parse(result);
+  const data: FeedItem = {};
+
+  const { format } = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
+  for (const item of parsed) {
+    const dateKey = format(item.createdAt);
+    if (!data[dateKey]) {
+      data[dateKey] = [];
+    }
+
+    data[dateKey].push(item);
+  }
+
+  return data;
 }
 
 export default async function handler(

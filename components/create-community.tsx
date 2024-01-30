@@ -27,6 +27,7 @@ export function CreateCommunity() {
   const router = useRouter();
 
   async function onSubmit({ name, slug, description }: FormData) {
+    console.log("FIRING");
     await mutateAsync({
       name,
       slug,
@@ -74,7 +75,9 @@ export function CreateCommunity() {
                 placeholder="Description"
                 className={errors.description ? "border-red-500" : "h-18"}
               />
-              <p className="text-sm text-red-500">{errors.slug?.message}</p>
+              <p className="text-sm text-red-500">
+                {errors.description?.message}
+              </p>
             </div>
             <label className="text-left text-sm font-bold">Tags</label>
             <div className="flex flex-wrap items-center gap-2">

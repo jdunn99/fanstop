@@ -19,6 +19,9 @@ const CommunitySchema = z.object({
   updatedAt: z.date(),
   description: z.string().optional().nullable(),
   posts: z.array(PostItemSchema),
+  subscribers: z.array(
+    z.object({ id: z.string().cuid(), userId: z.string().cuid() })
+  ),
 });
 
 type CommunityArgs = { communityId: string; name?: string; userId: string };
@@ -35,13 +38,22 @@ export type CommunityProfile = z.infer<typeof CommunityBYIDQuerySchema>;
 export async function getCommunityByID(communityId: string) {
   const result = await db.community.findFirst({
     where: {
-      OR: [{ id: { equals: communityId } }, { slug: { equals: communityId } }],
+      OR: [
+        { creatorId: { equals: communityId } },
+        { slug: { equals: communityId } },
+      ],
     },
     select: {
       id: true,
       name: true,
       slug: true,
       createdAt: true,
+      subscribers: {
+        select: {
+          id: true,
+          userId: true,
+        },
+      },
       creatorId: true,
       updatedAt: true,
       description: true,
@@ -139,8 +151,6 @@ export default async function handler(
         recentPosts = result.posts.slice(1, 4) || [];
         posts = result.posts.slice(4) || [];
       }
-
-      console.log({ isOwn, featuredPost, recentPosts, posts });
 
       return res.status(200).json(
         CommunityBYIDQuerySchema.parse({

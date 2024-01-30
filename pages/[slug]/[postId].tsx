@@ -18,6 +18,8 @@ import { Comment } from "../api/posts/[postId]/comment";
 import { addViewToPost } from "../api/posts/[postId]";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/components/ui/toast";
+import { usePathname } from "next/navigation";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 
 export default function PostPage({
   postId,
@@ -25,6 +27,7 @@ export default function PostPage({
   const { data } = usePostQuery(postId);
   const { back } = useRouter();
   const { toast } = useToast();
+  const pathname = usePathname();
 
   const { data: comments } = useQuery<Comment[]>(["comments", postId], () =>
     fetch(`/api/posts/${postId}/comment`).then((res) => res.json())
@@ -52,17 +55,21 @@ export default function PostPage({
     <Layout>
       <DashboardItem>
         <div className="grid w-full gap-2 py-4 px-8 border-b">
-          <header className="sticky top-0 bg-white ">
-            <div className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={back}
-                className="!p-0 !h-0"
-              >
-                Back
-              </Button>
-            </div>
+          <header className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4 bg-slate-50">
+            <Breadcrumbs
+              paths={[
+                { href: "/", value: "Home" },
+                {
+                  href: `/${data.community.slug}`,
+                  value: data.community.slug,
+                },
+                {
+                  href: `/${data.community.slug}/${postId}`,
+                  value: data.title,
+                  disabled: true,
+                },
+              ]}
+            />
           </header>
           <article className="prose px-0 mx-auto w-full max-w-screen-lg">
             <h1

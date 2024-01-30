@@ -73,7 +73,7 @@ export function Layout({ children, heading }: LayoutProps) {
   const { data: session } = useSession();
 
   return (
-    <div className="flex flex-col overflow-hidden">
+    <div className="flex h-screen flex-col overflow-hidden">
       <header className="sticky top-0 z-40 bg-white border-b">
         <div className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4">
           <Navbar links={[]} />
@@ -96,10 +96,10 @@ export function Layout({ children, heading }: LayoutProps) {
         </div>
       </header>
       <div
-        className="grid bg-white min-h-screen"
+        className="grid bg-white overflow-hidden h-screen"
         style={{ gridTemplateColumns: "minmax(150px, 350px) 1fr" }}
       >
-        <aside className="justify-self-end gap-8 px-8 pt-8 border-r w-full">
+        <aside className="justify-self-end gap-8 px-8 pt-8 border-r overflow-hidden w-full sticky">
           <Sidebar />
         </aside>
         <main className="h-full bg-slate-50 overflow-auto">
@@ -120,12 +120,12 @@ interface EmptyCardProps {
   fromSearch?: boolean;
   heading: string;
 }
-export function EmptyCard({ fromSearch, heading, children }: EmptyCardProps) {
+export function EmptyCard({ heading, children }: EmptyCardProps) {
   return (
-    <div className="w-full min-h-[400px] flex items-center flex-col justify-center bg-slate-50 border rounded-lg">
-      {fromSearch ? null : React.Children.count(children) === 0 ? (
+    <div className="w-full min-h-[400px] flex items-center flex-col justify-center bg-white border rounded-lg">
+      {React.Children.count(children) === 0 ? (
         <React.Fragment>
-          <h3 className="font-semibold text-sm">No {heading} Found</h3>
+          <h3 className="font-semibold text-sm">{heading}</h3>
           <p className="text-sm text-slate-500 pt-2 pb-8">
             It looks like you haven't created any {heading.toLocaleLowerCase()}{" "}
             yet.

@@ -11,7 +11,7 @@ export function useCommunitiesQuery() {
 }
 
 export function useCommunitiesByIDQuery(slug: string) {
-  return useQuery<CommunityProfile>([slug], () =>
+  return useQuery<CommunityProfile>(["community", slug], () =>
     fetch(`/api/communities/${slug}`).then((res) => res.json())
   );
 }

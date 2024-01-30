@@ -23,10 +23,12 @@ export const PostPatchSchema = z.object({
 type PostInputArgs = z.infer<typeof PostPatchSchema> & PostArgs;
 
 async function getPostByID(postId: string, authorId?: string) {
-  return await db.post.findFirst({
+  const result = await db.post.findFirst({
     where: { id: postId },
-    include: { likes: true },
+    include: { likes: true, community: { select: { slug: true } } },
   });
+  console.log(result);
+  return result;
 }
 
 export async function addViewToPost(postId: string) {

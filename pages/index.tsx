@@ -8,11 +8,18 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
-import { DashboardItem } from "@/components/layout";
+import {
+  DashboardItem,
+  DashboardItemHeading,
+  EmptyCard,
+  Layout,
+} from "@/components/layout";
 import { isAuthed } from "@/lib/authSSR";
 import { CreateCommunity } from "@/components/create-community";
 import { Sidebar } from "@/components/sidebar";
 import { useFeedQuery } from "@/lib/queries/useFeedQuery";
+import { PostComponent } from "@/components/posts/post-item";
+import _ from "lodash";
 
 function HomePage() {
   const [active, setActive] = React.useState<string>("Technology");
@@ -100,6 +107,21 @@ export default function Home(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
   const { data, isLoading } = useFeedQuery();
+  const keys = React.useMemo(() => {
+    if (data) {
+      return Object.keys(data);
+    } else {
+      return [];
+    }
+  }, [data]);
+
+  const isSameDate = React.useCallback((first: Date, second: Date) => {
+    return (
+      first.getFullYear() === second.getFullYear() &&
+      first.getMonth() === second.getMonth() &&
+      first.getDate() === second.getDate()
+    );
+  }, []);
 
   if (typeof data === "undefined") return null;
 
@@ -107,38 +129,34 @@ export default function Home(
 
   return props.data ? (
     props.hasCommunity ? (
-      <div className="flex flex-col ">
-        <header className="sticky top-0 z-40 bg-white border-b">
-          <div className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4">
-            <Navbar links={[]} />
-            <div className="flex items-center gap-2">
-              <AuthedNav />
-            </div>
-          </div>
-        </header>
-        <div className="flex relative w-full mx-auto">
-          <aside className="ml-16 hidden md:block sticky pt-8 top-16 col-span-3 pr-2 h-[calc(100vh-65px)] border-r justify-center w-[350px]">
-            <Sidebar />
-          </aside>
-          <main className="h-full grid max-w-screen-lg mx-auto items-start gap-8 px-8 w-full pt-8">
-            <h1 className="text-4xl font-bold text-slate-800">Your Feed</h1>
-            <DashboardItem>
-              {data.map((item) => (
-                <div className="flex ">
-                  {/* Image */}
-                  <div />
-                  <div className="space-y-2">
-                    <h1 className="text-xl font-bold text-slate-800">
-                      {item.title}
-                    </h1>
-                    <p>{item.description}</p>
-                  </div>
-                </div>
+      <Layout heading="Your Feed">
+        {keys.length > 0 ? (
+          keys.map((group) => (
+            <DashboardItem key={group}>
+              <DashboardItemHeading
+                heading={
+                  isSameDate(new Date(), new Date(group)) ? "Today" : group
+                }
+              />
+              {data[group].map((item) => (
+                <PostComponent key={item.id} {...item} includeAuthor />
               ))}
             </DashboardItem>
-          </main>
-        </div>
-      </div>
+          ))
+        ) : (
+          <EmptyCard heading="Feed">
+            <h3 className="text-sm font-semibold text-slate-800">
+              Your Feed is empty.
+            </h3>
+            <p className="text-xs mt-2 text-slate-600">
+              To add items to your feed, you can subscribe to creators{" "}
+              <Link href="/explore" className="text-rose-500">
+                here.
+              </Link>
+            </p>
+          </EmptyCard>
+        )}
+      </Layout>
     ) : (
       <CreateCommunity />
     )

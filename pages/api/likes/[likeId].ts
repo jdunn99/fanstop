@@ -29,7 +29,6 @@ export default async function handler(
   try {
     const { method, query } = req;
     const { likeId } = QuerySchema.parse(query);
-    console.log({ likeId });
 
     if (!methods.includes(method!)) {
       return res.status(400).send({ message: "Invalid Method" });

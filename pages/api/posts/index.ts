@@ -17,6 +17,7 @@ const PostSchema = z.object({
   creatorId: z.string().cuid(),
   createdAt: z.date(),
   updatedAt: z.date(),
+  community: z.object({ slug: z.string() }),
 });
 export type Post = z.infer<typeof PostSchema>;
 export type PostWithLikes = Post & { likes: Like[] };

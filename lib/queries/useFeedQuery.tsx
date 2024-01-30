@@ -1,8 +1,8 @@
-import { PostItem } from "@/pages/api/user/feed";
+import { FeedItem, PostItem } from "@/pages/api/user/feed";
 import { useQuery } from "react-query";
 
 export function useFeedQuery() {
-  return useQuery<PostItem[]>("feed", () =>
+  return useQuery<FeedItem>("feed", () =>
     fetch("/api/user/feed").then((res) => res.json())
   );
 }
