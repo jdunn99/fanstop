@@ -19,7 +19,7 @@ export const PostItemSchema = z.object({
   title: z.string(),
   createdAt: z.date(),
   views: z.number(),
-  description: z.string(),
+  description: z.string().nullable(),
   _count: z.object({
     likes: z.number(),
     comments: z.number(),

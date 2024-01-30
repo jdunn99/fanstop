@@ -11,10 +11,11 @@ import Button from "../ui/button";
 import Link from "next/link";
 import { ZodType, z } from "zod";
 import { Cloudinary } from "@cloudinary/url-gen";
-import { imageConfigDefault } from "next/dist/shared/lib/image-config";
-import Textarea from "../ui/textarea";
+
 import TextareaAutosize from "react-textarea-autosize";
 import { usePublishPostMutation } from "@/lib/mutations/usePublishPostMutation";
+import { Layout } from "../layout";
+import { Breadcrumbs } from "../ui/breadcrumbs";
 
 interface EditorProps {
   id: string;
@@ -77,44 +78,45 @@ export function Editor({ id, title, content, description }: EditorProps) {
 
   return (
     <EditorContext.Provider value={{ dispatch, editorState, cld }}>
-      <div>
-        <div className="grid w-full gap-2 pt-4 px-8">
-          <header className="sticky top-0 z-40 bg-white ">
-            <div className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4">
-              <Link href="/">Back</Link>
-              <Button onClick={onClick}>Publish</Button>
-            </div>
-          </header>
-          <article className="prose mx-auto w-full max-w-screen-lg">
-            <TextareaAutosize
-              autoFocus
-              defaultValue={title}
-              onChange={(e: any) => setEditorTitle(e.target.value)}
-              id="title"
-              placeholder="Post title"
-              className="w-full text-slate-900 resize-none appearance-none  bg-transparent text-5xl font-bold focus:outline-none"
-            />
-            <TextareaAutosize
-              id="description"
-              placeholder="Post description"
-              className="w-full resize-none appearance-none bg-transparent focus:outline-none font-semibold m-0"
-              defaultValue={description || ""}
-              onChange={(e) => setEditorDescription(e.target.value)}
-            />
-            <input type="file" />
-            <div className="w-full ">
-              {editorState.blocks.map((block, index) => (
-                <EditorBlock
-                  ref={editorState.currentIndex === index ? focusedRef : null}
-                  block={block}
-                  key={index}
-                  index={index}
-                />
-              ))}
-            </div>
-          </article>
+      <Layout>
+        <div>
+          <div className="grid w-full gap-2 pt-4 px-8">
+            <header className="sticky top-0 z-40 bg-slate-50 ">
+              <div className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4">
+                <Breadcrumbs paths={[{ href: "/", value: "Home" }]} />
+                <Button onClick={onClick}>Publish</Button>
+              </div>
+            </header>
+            <article className="prose mx-auto w-full max-w-screen-lg">
+              <TextareaAutosize
+                autoFocus
+                defaultValue={title}
+                onChange={(e: any) => setEditorTitle(e.target.value)}
+                id="title"
+                placeholder="Post title"
+                className="w-full text-slate-900 resize-none appearance-none  bg-transparent text-5xl font-bold focus:outline-none"
+              />
+              <TextareaAutosize
+                id="description"
+                placeholder="Post description"
+                className="w-full resize-none appearance-none bg-transparent focus:outline-none font-semibold m-0"
+                defaultValue={description || ""}
+                onChange={(e) => setEditorDescription(e.target.value)}
+              />
+              <div className="w-full ">
+                {editorState.blocks.map((block, index) => (
+                  <EditorBlock
+                    ref={editorState.currentIndex === index ? focusedRef : null}
+                    block={block}
+                    key={index}
+                    index={index}
+                  />
+                ))}
+              </div>
+            </article>
+          </div>
         </div>
-      </div>
+      </Layout>
     </EditorContext.Provider>
   );
 }

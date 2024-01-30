@@ -1,9 +1,18 @@
 import React from "react";
-import Button from "../ui/button";
 import { EditorHeader } from "./editor-header";
 import { EditorParagraph } from "./editor-paragraph";
 import { EditorActionType, ValidTags, useEditor } from "@/lib/useEditor";
 import { EditorImage } from "./editor-image";
+
+export const TAG_WITH_TEXT: Record<ValidTags, string> = {
+  p: "Text",
+  h1: "Heading 1",
+  h2: "Heading 2",
+  h3: "Heading 3",
+  h4: "Heading 4",
+  h5: "Heading 5",
+  img: "Image",
+};
 
 export interface EditorTagProps extends React.HTMLAttributes<HTMLElement> {
   tag: ValidTags;

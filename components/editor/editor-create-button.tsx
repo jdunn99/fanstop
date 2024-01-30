@@ -8,48 +8,14 @@ import Button from "../ui/button";
 import { Menu, MenuList, MenuGroup, MenuItem, useMenu } from "../ui/menu";
 import React from "react";
 import { BsPlus } from "react-icons/bs";
+import { EditorControlItem } from "./editor-control";
+import { TAG_WITH_TEXT } from "./editor-tag";
 
 interface EditorCreateButtonProps {
   index: number;
 }
 export function EditorCreateButton({ index }: EditorCreateButtonProps) {
   const { isOpen, toggle, onClose } = useMenu();
-  const { dispatch } = useEditor();
-  const imageInputRef = React.useRef<HTMLInputElement>(null);
-  const [file, setFile] = React.useState<File>();
-
-  function addBlock(tag: ValidTags) {
-    dispatch({ type: EditorActionType.AddBlock, payload: { index, tag } });
-  }
-
-  function onFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-    if (event.target.files) {
-      const selectedFile = event.target.files[0];
-      const reader = new FileReader();
-      const formData = new FormData();
-
-      formData.append("file", selectedFile);
-      formData.append("upload_preset", "fanstop");
-
-      reader.onload = (event) => {
-        const { target } = event;
-        if (!target) {
-          return;
-        }
-
-        dispatch({
-          type: EditorActionType.AddImageBlock,
-          payload: {
-            index,
-            src: target.result!.toString(),
-            formData,
-          },
-        });
-      };
-
-      reader.readAsDataURL(selectedFile);
-    }
-  }
 
   return (
     <Menu onClose={onClose}>
@@ -59,21 +25,16 @@ export function EditorCreateButton({ index }: EditorCreateButtonProps) {
       {isOpen ? (
         <MenuList>
           <MenuGroup>
-            <MenuItem onClick={() => addBlock("p")}>Text</MenuItem>
-            <MenuItem onClick={() => addBlock("h1")}>Heading</MenuItem>
-            <MenuItem
-              onClick={() => {
-                imageInputRef.current?.click();
-              }}
-            >
-              Image
-            </MenuItem>
-            <input
-              type="file"
-              ref={imageInputRef}
-              className="hidden"
-              onChange={onFileChange}
-            />
+            {Object.keys(TAG_WITH_TEXT).map((tag) => (
+              <EditorControlItem
+                key={tag}
+                tag={tag as ValidTags}
+                action={EditorActionType.AddBlock}
+                index={index}
+              >
+                {TAG_WITH_TEXT[tag as ValidTags]}
+              </EditorControlItem>
+            ))}
           </MenuGroup>
         </MenuList>
       ) : null}

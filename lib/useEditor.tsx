@@ -64,6 +64,10 @@ interface ChangeBlockTagAction {
   payload: {
     index: number;
     newTag: ValidTags;
+    imgData?: {
+      formData: FormData;
+      src: string;
+    };
   };
 }
 
@@ -105,7 +109,7 @@ export function editorReducer(state: EditorState, action: EditorAction) {
       const blocks = [...state.blocks];
 
       blocks.splice(index + 1, 0, {
-        id: Math.random().toString(),
+        id: Date.now().toString(),
         data: {
           text: "",
         },
@@ -128,7 +132,7 @@ export function editorReducer(state: EditorState, action: EditorAction) {
 
       const blocks = [...state.blocks];
       blocks.splice(index + 1, 0, {
-        id: Math.random().toString(),
+        id: Date.now().toString(),
         data: {
           src,
           formData,
@@ -154,10 +158,18 @@ export function editorReducer(state: EditorState, action: EditorAction) {
       };
     }
     case EditorActionType.ChangeBlockTag: {
-      const { index, newTag } = action.payload;
+      const { index, newTag, imgData } = action.payload;
 
       const updatedBlocks = [...state.blocks];
       updatedBlocks[index].tag = newTag;
+
+      if (newTag === "img") {
+        if (typeof imgData === "undefined") {
+          return state;
+        }
+
+        updatedBlocks[index].data = imgData;
+      }
 
       return {
         ...state,
