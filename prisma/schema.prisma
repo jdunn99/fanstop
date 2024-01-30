@@ -97,6 +97,7 @@ model Post {
   views       Int      @default(0)
   image       String?
   description String?  @db.Text
+  isPublished Boolean
 
   community   Community @relation(fields: [communityId], references: [id])
   communityId String

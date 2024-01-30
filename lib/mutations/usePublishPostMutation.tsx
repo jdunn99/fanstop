@@ -8,7 +8,7 @@ interface PostPublishProps {
   editorState: EditorState;
 }
 
-async function uploadImage(formData: FormData) {
+export async function uploadImage(formData: FormData) {
   const result = await fetch(
     "https://api.cloudinary.com/v1_1/dw7064r1g/upload",
     {
@@ -36,14 +36,6 @@ export function usePublishPostMutation(id: string) {
         })
       );
 
-      let image: string | undefined;
-      for (const { tag, data } of content) {
-        if (tag === "img") {
-          image = data.src;
-          break;
-        }
-      }
-
       const result = await fetch(`/api/posts/${id}`, {
         method: "PUT",
         headers: {
@@ -53,7 +45,8 @@ export function usePublishPostMutation(id: string) {
           title,
           description,
           content,
-          image,
+          image: content[0].tag === "img" ? content[0].data.src : undefined,
+          isPublished: false,
         }),
       });
 

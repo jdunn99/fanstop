@@ -2,7 +2,6 @@ import React from "react";
 import { EditorHeader } from "./editor-header";
 import { EditorParagraph } from "./editor-paragraph";
 import { EditorActionType, ValidTags, useEditor } from "@/lib/useEditor";
-import { EditorImage } from "./editor-image";
 
 export const TAG_WITH_TEXT: Record<ValidTags, string> = {
   p: "Text",

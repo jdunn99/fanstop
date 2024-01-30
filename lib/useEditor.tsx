@@ -206,7 +206,6 @@ export const EditorContext = React.createContext<
   | {
       editorState: EditorState;
       dispatch: React.Dispatch<EditorAction>;
-      cld: Cloudinary;
     }
   | undefined
 >(undefined);

@@ -58,6 +58,9 @@ export async function getCommunityByID(communityId: string) {
       updatedAt: true,
       description: true,
       posts: {
+        where: {
+          isPublished: true,
+        },
         orderBy: {
           createdAt: "desc",
         },
@@ -70,6 +73,7 @@ export async function getCommunityByID(communityId: string) {
           },
           image: true,
           id: true,
+          isPublished: true,
           description: true,
           author: {
             select: {
@@ -140,6 +144,7 @@ export default async function handler(
 
     if (method === "GET") {
       const result = await getCommunityByID(communityId);
+      console.log(result);
       let isOwn = false;
       let featuredPost: PostItem | null = null;
       let recentPosts: PostItem[] = [];

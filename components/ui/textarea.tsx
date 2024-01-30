@@ -1,4 +1,5 @@
 import React from "react";
+import TextAreaAutosize from "react-textarea-autosize";
 
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
@@ -6,7 +7,7 @@ export interface TextareaProps
 const Textarea = React.forwardRef<any, any>(
   ({ className, value, unstyled, ...rest }, ref) => {
     return (
-      <textarea
+      <TextAreaAutosize
         className={`${className} ${
           unstyled
             ? ""

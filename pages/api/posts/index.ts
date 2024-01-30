@@ -14,10 +14,11 @@ const PostSchema = z.object({
   content: z.any().nullable(),
   description: z.string().nullable(),
   views: z.number(),
-  creatorId: z.string().cuid(),
+  authorId: z.string().cuid(),
   createdAt: z.date(),
   updatedAt: z.date(),
   community: z.object({ slug: z.string() }),
+  isPublished: z.boolean(),
 });
 export type Post = z.infer<typeof PostSchema>;
 export type PostWithLikes = Post & { likes: Like[] };
@@ -41,6 +42,7 @@ async function getAllPosts() {
 async function createPost({ image, title, authorId }: CreatePostArgs) {
   return await db.post.create({
     data: {
+      isPublished: false,
       title,
       image,
       views: 0,

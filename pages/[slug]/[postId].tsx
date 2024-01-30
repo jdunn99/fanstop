@@ -20,14 +20,13 @@ import { useSession } from "next-auth/react";
 import { useToast } from "@/components/ui/toast";
 import { usePathname } from "next/navigation";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { OwnPostMenu } from "@/components/posts/post-item";
 
 export default function PostPage({
   postId,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data } = usePostQuery(postId);
-  const { back } = useRouter();
   const { toast } = useToast();
-  const pathname = usePathname();
 
   const { data: comments } = useQuery<Comment[]>(["comments", postId], () =>
     fetch(`/api/posts/${postId}/comment`).then((res) => res.json())
@@ -70,6 +69,9 @@ export default function PostPage({
                 },
               ]}
             />
+            {session?.user.id === data.authorId ? (
+              <OwnPostMenu id={postId} />
+            ) : null}
           </header>
           <article className="prose px-0 mx-auto w-full max-w-screen-lg">
             <h1
@@ -83,6 +85,7 @@ export default function PostPage({
             </p>
 
             <div className="w-full ">
+              {/* {data.image ? <img src={data.image} /> : null} */}
               {(data.content as unknown as Block[]).map((block, index) => (
                 <EditorBlock
                   block={block}

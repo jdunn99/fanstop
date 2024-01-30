@@ -25,7 +25,7 @@ interface PostComponentProps extends PostItem {
   includeAuthor?: boolean;
 }
 
-function OwnPostMenu({ id }: { id: string }) {
+export function OwnPostMenu({ id }: { id: string }) {
   const { isOpen, toggle, onClose } = useMenu();
   const { push } = useRouter();
 

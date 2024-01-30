@@ -16,6 +16,8 @@ import TextareaAutosize from "react-textarea-autosize";
 import { usePublishPostMutation } from "@/lib/mutations/usePublishPostMutation";
 import { Layout } from "../layout";
 import { Breadcrumbs } from "../ui/breadcrumbs";
+import { useRouter } from "next/router";
+import { useToast } from "../ui/toast";
 
 interface EditorProps {
   id: string;
@@ -41,11 +43,12 @@ export const BASE_EDITOR_TAG_CONFIG =
 
 export function Editor({ id, title, content, description }: EditorProps) {
   const [editorTitle, setEditorTitle] = React.useState<string>(title);
+  const editorTitleRef = React.useRef<HTMLTextAreaElement>(null);
   const [editorDescription, setEditorDescription] = React.useState<string>(
     description || ""
   );
+  const editorDescriptionRef = React.useRef<HTMLTextAreaElement>(null);
 
-  const cld = new Cloudinary({ cloud: { cloudName: "dw7064r1g " } });
   const blocks: Block[] = React.useMemo(() => {
     const parsedContent = content;
     if (parsedContent) {
@@ -70,26 +73,86 @@ export function Editor({ id, title, content, description }: EditorProps) {
   });
 
   const focusedRef = React.useRef<HTMLDivElement>();
-  const { mutate } = usePublishPostMutation(id);
+  const { mutateAsync, isError } = usePublishPostMutation(id);
+  const { toast } = useToast();
+  const router = useRouter();
 
-  function onClick() {
-    mutate({ title: editorTitle, description: editorDescription, editorState });
+  const handleSavePress = React.useCallback(async (event: KeyboardEvent) => {
+    if (event.ctrlKey && event.key === "s") {
+      event.preventDefault();
+
+      if (editorTitleRef.current && editorDescriptionRef.current) {
+        await mutateAsync({
+          title: editorTitleRef.current.value,
+          description: editorDescriptionRef.current.value,
+          editorState,
+        });
+
+        toast({
+          variant: "success",
+          title: `${editorTitle} saved`,
+          description:
+            "Your post was saved. For others to view it, be sure to publish it.",
+          timeout: 1000,
+        });
+      }
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.addEventListener("keydown", handleSavePress);
+
+      return () => {
+        window.removeEventListener("keydown", handleSavePress);
+      };
+    }
+  }, [window]);
+
+  async function onSave() {
+    await mutateAsync({
+      title: editorTitle,
+      description: editorDescription,
+      editorState,
+    });
+    toast({
+      variant: "success",
+      title: `${editorTitle} saved`,
+      description:
+        "Your post was saved. For others to view it, be sure to publish it.",
+      timeout: 1000,
+    });
+  }
+
+  async function onClick() {
+    await mutateAsync({
+      title: editorTitle,
+      description: editorDescription,
+      editorState,
+    });
+    router.push(`/editor/${id}/publish`);
   }
 
   return (
-    <EditorContext.Provider value={{ dispatch, editorState, cld }}>
+    <EditorContext.Provider value={{ dispatch, editorState }}>
       <Layout>
         <div>
           <div className="grid w-full gap-2 pt-4 px-8">
             <header className="sticky top-0 z-40 bg-slate-50 ">
               <div className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4">
                 <Breadcrumbs paths={[{ href: "/", value: "Home" }]} />
-                <Button onClick={onClick}>Publish</Button>
+                <div className="flex gap-2">
+                  <Button variant="secondary" onClick={onSave}>
+                    Save
+                  </Button>
+                  <Button onClick={onClick}>Publish</Button>
+                </div>
               </div>
             </header>
             <article className="prose mx-auto w-full max-w-screen-lg">
               <TextareaAutosize
                 autoFocus
+                ref={editorTitleRef}
                 defaultValue={title}
                 onChange={(e: any) => setEditorTitle(e.target.value)}
                 id="title"
@@ -98,6 +161,7 @@ export function Editor({ id, title, content, description }: EditorProps) {
               />
               <TextareaAutosize
                 id="description"
+                ref={editorDescriptionRef}
                 placeholder="Post description"
                 className="w-full resize-none appearance-none bg-transparent focus:outline-none font-semibold m-0"
                 defaultValue={description || ""}

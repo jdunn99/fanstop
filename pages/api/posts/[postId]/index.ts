@@ -18,6 +18,7 @@ export const PostPatchSchema = z.object({
   description: z.string().optional().nullable(),
   content: z.any().optional().nullable(),
   image: z.string().optional().nullable(),
+  isPublished: z.boolean().optional(),
 });
 
 type PostInputArgs = z.infer<typeof PostPatchSchema> & PostArgs;
@@ -53,6 +54,7 @@ async function updatePost({
   content,
   title,
   image,
+  isPublished,
   description,
 }: PostInputArgs) {
   return await db.post.update({
@@ -61,8 +63,10 @@ async function updatePost({
       title,
       description,
       content,
+      isPublished,
       image,
     },
+    include: { likes: true, community: { select: { slug: true } } },
   });
 }
 
@@ -84,16 +88,14 @@ export default async function handler(
       // TODO: Make this a middleware that I can reuse without having to retype
       const session = await getServerSession(req, res, authOptions);
       if (session === null) {
-        res.status(403).send({ message: "Not authorized" });
+        return res.status(403).send({ message: "Not authorized" });
       }
 
       const authorId = session!.user.id;
 
       if (method === "PUT") {
-        const { content, title, description, image } =
+        const { isPublished, content, title, description, image } =
           PostPatchSchema.parse(body);
-
-        console.log({ body, image });
 
         return res.status(200).json(
           await updatePost({
@@ -102,6 +104,7 @@ export default async function handler(
             title,
             image,
             description,
+            isPublished,
             authorId,
           })
         );
