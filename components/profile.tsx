@@ -108,6 +108,16 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
             </div>
           </DashboardItem>
         ) : null}
+        {data.unpublishedPosts.length > 0 ? (
+          <DashboardItem>
+            <DashboardItemHeading heading="Unpublished Posts" />
+            <div className="space-y-8">
+              {data.unpublishedPosts.map((post) => (
+                <PostComponent {...post} key={post.id} isOwn={data.isOwn} />
+              ))}
+            </div>
+          </DashboardItem>
+        ) : null}
       </Layout>
     </React.Fragment>
   );

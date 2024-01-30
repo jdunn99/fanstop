@@ -86,14 +86,16 @@ export default function PostPage({
 
             <div className="w-full ">
               {/* {data.image ? <img src={data.image} /> : null} */}
-              {(data.content as unknown as Block[]).map((block, index) => (
-                <EditorBlock
-                  block={block}
-                  key={index}
-                  index={index}
-                  isEditor={false}
-                />
-              ))}
+              {data.content
+                ? (data.content as unknown as Block[]).map((block, index) => (
+                    <EditorBlock
+                      block={block}
+                      key={index}
+                      index={index}
+                      isEditor={false}
+                    />
+                  ))
+                : null}
             </div>
           </article>
         </div>

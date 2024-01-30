@@ -31,6 +31,7 @@ const CommunityBYIDQuerySchema = z
     featuredPost: PostItemSchema.nullable().optional(),
     recentPosts: z.array(PostItemSchema),
     isOwn: z.boolean(),
+    unpublishedPosts: z.array(PostItemSchema),
   })
   .merge(CommunitySchema);
 export type CommunityProfile = z.infer<typeof CommunityBYIDQuerySchema>;
@@ -59,7 +60,12 @@ export async function getCommunityByID(communityId: string) {
       description: true,
       posts: {
         where: {
-          isPublished: true,
+          OR: [
+            { authorId: communityId },
+            {
+              isPublished: true,
+            },
+          ],
         },
         orderBy: {
           createdAt: "desc",
@@ -144,17 +150,27 @@ export default async function handler(
 
     if (method === "GET") {
       const result = await getCommunityByID(communityId);
-      console.log(result);
       let isOwn = false;
       let featuredPost: PostItem | null = null;
       let recentPosts: PostItem[] = [];
       let posts: PostItem[] = [];
 
+      const unpublished: PostItem[] = [];
+      const published: PostItem[] = [];
+
       if (session && result) {
+        for (const post of result.posts) {
+          if (!post.isPublished) {
+            unpublished.push(post);
+          } else {
+            published.push(post);
+          }
+        }
+
         isOwn = result.creatorId === session.user.id;
-        featuredPost = result.posts[0];
-        recentPosts = result.posts.slice(1, 4) || [];
-        posts = result.posts.slice(4) || [];
+        featuredPost = published[0];
+        recentPosts = published.slice(1, 4) || [];
+        posts = published.slice(4) || [];
       }
 
       return res.status(200).json(
@@ -164,6 +180,7 @@ export default async function handler(
           featuredPost,
           recentPosts,
           posts,
+          unpublishedPosts: unpublished,
         })
       );
     } else {

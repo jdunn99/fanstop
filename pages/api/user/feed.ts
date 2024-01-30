@@ -18,6 +18,7 @@ export const PostItemSchema = z.object({
   image: z.string().nullable(),
   title: z.string(),
   createdAt: z.date(),
+  isPublished: z.boolean(),
   views: z.number(),
   description: z.string().nullable(),
   _count: z.object({
