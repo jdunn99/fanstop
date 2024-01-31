@@ -7,29 +7,22 @@ import { PostBar } from "../post-bar";
 
 interface PostCommentSectionProps {
   postId: string;
-  session: Session | null;
   views: number;
-  likes: {
-    postId: string;
-    id: string;
-    userId: string;
-  }[];
 }
 
 export function PostCommentSection({
   postId,
-  session,
   views,
-  likes,
-}: PostCommentSectionProps) {
+}: // likes,
+PostCommentSectionProps) {
   const { data: comments } = useCommentForPostQuery(postId);
 
   return (
     <DashboardItem>
-      <PostBar postId={postId} views={views} likes={likes} />
+      {/* <PostBar postId={postId} views={views} likes={likes} /> */}
       <div className="w-full px-8">
         <h1 className="text-2xl font-bold text-slate-900">Comments</h1>
-        <CommentInput postId={postId} session={session} />
+        <CommentInput postId={postId} />
       </div>
       <div className="pb-4">
         {typeof comments !== "undefined"

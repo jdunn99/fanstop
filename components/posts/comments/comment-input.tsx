@@ -2,18 +2,19 @@ import { Avatar } from "@/components/ui/avatar";
 import Button from "@/components/ui/button";
 import Textarea from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/toast";
+import { CreateCommentArgs } from "@/lib/api/validators";
 import { useCreateCommentMutation } from "@/lib/mutations/useCreateCommentMutation";
-import { CreateCommentArgs } from "@/pages/api/comment";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import React from "react";
 
 interface CommentInputProps {
   postId: string;
-  session: Session | null;
 }
 
-export function CommentInput({ session, postId }: CommentInputProps) {
+export function CommentInput({ postId }: CommentInputProps) {
+  const { data: session } = useSession();
+
   const [comment, setComment] = React.useState<string>("");
   const { mutate: createComment } = useCreateCommentMutation();
 
@@ -29,7 +30,7 @@ export function CommentInput({ session, postId }: CommentInputProps) {
       });
     } else {
       createComment({
-        authorId: "",
+        userId: "",
         content: content || "",
         postId: postId || "",
       });

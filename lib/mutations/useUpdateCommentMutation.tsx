@@ -1,4 +1,4 @@
-import { Comment } from "@/pages/api/posts/[postId]/comment";
+import { Comment } from "@/lib/api/validators";
 import { useMutation, useQueryClient } from "react-query";
 
 export function useUpdateCommentMutation(id: string) {

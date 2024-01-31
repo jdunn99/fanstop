@@ -3,7 +3,7 @@ import Button from "@/components/ui/button";
 import Textarea from "@/components/ui/textarea";
 import { useDeleteCommentMutation } from "@/lib/mutations/useDeleteCommentMutation";
 import { useUpdateCommentMutation } from "@/lib/mutations/useUpdateCommentMutation";
-import { Comment } from "@/pages/api/posts/[postId]/comment";
+import { Comment } from "@/lib/api/validators";
 import { useSession } from "next-auth/react";
 import React from "react";
 import { BsPencilFill, BsTrashFill } from "react-icons/bs";

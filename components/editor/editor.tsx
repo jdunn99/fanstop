@@ -71,7 +71,7 @@ export function Editor({ id, title, content, description }: EditorProps) {
   const router = useRouter();
   const focusedRef = React.useRef<HTMLDivElement>();
 
-  const handleSavePress = React.useCallback(async (event: KeyboardEvent) => {
+  async function handleSavePress(event: KeyboardEvent) {
     if (event.ctrlKey && event.key === "s") {
       event.preventDefault();
 
@@ -91,7 +91,7 @@ export function Editor({ id, title, content, description }: EditorProps) {
         });
       }
     }
-  }, []);
+  }
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {

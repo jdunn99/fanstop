@@ -1,14 +1,19 @@
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
-import { useCommunitiesByIDQuery } from "@/lib/queries/useCommunities";
+import {
+  useCommunitiesByIDQuery,
+  useCommunitiesByParamQuery,
+} from "@/lib/queries/useCommunities";
 import { ProfileComponent } from "@/components/profile";
+import { useSession } from "next-auth/react";
 
 export default function Profile({
   user,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { data } = useCommunitiesByIDQuery(user.id);
+  const { data } = useCommunitiesByParamQuery(user.id);
   return <ProfileComponent slug={user.id} data={data} />;
+  // return <p>{JSON.stringify(data)}</p>;
 }
 
 export async function getServerSideProps({

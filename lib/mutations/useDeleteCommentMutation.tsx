@@ -1,4 +1,4 @@
-import { Comment } from "@/pages/api/posts/[postId]/comment";
+import { Comment } from "@/pages/api/posts/[postId]/comments";
 import { useMutation, useQueryClient } from "react-query";
 
 export function useDeleteCommentMutation(id: string) {

@@ -1,4 +1,4 @@
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { uploadImage } from "../file";
 import { Block } from "../useEditor";
 
@@ -10,12 +10,23 @@ interface PostPublishProps {
     src: string;
   };
   postContent: Block[];
+  subscribersOnly: boolean;
+  commentsVisible: boolean;
 }
 
 export function usePublishPostMutation(id: string) {
+  const queryClient = useQueryClient();
+
   return useMutation(
     ["post", id],
-    async ({ title, description, img, postContent }: PostPublishProps) => {
+    async ({
+      title,
+      description,
+      img,
+      postContent,
+      commentsVisible,
+      subscribersOnly,
+    }: PostPublishProps) => {
       let image: string | undefined = undefined;
 
       if (img) {
@@ -58,12 +69,21 @@ export function usePublishPostMutation(id: string) {
           description,
           image,
           content,
+          commentsVisible,
+          subscribersOnly,
           isPublished: true,
         }),
         method: "PUT",
       });
 
       return await result.json();
+    },
+    {
+      onSuccess(data) {
+        queryClient.setQueryData(["post-content", id], (oldData) => {
+          return data.content;
+        });
+      },
     }
   );
 }

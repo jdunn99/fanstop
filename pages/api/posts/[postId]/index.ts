@@ -1,74 +1,11 @@
-import { db } from "@/lib/db";
+import { getPostByID, updatePost } from "@/lib/api/post";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
-import { z } from "zod";
 import { authOptions } from "../../auth/[...nextauth]";
+import { z } from "zod";
+import { PostVailidators } from "@/lib/api/validators";
 
 const methods = ["GET", "PUT", "DELETE"];
-const QuerySchema = z.object({ postId: z.string() });
-
-const PostArgsSchema = z.object({
-  postId: z.string().cuid(),
-  authorId: z.string().cuid(),
-});
-type PostArgs = z.infer<typeof PostArgsSchema>;
-
-export const PostPatchSchema = z.object({
-  title: z.string().optional(),
-  description: z.string().optional().nullable(),
-  content: z.any().optional().nullable(),
-  image: z.string().optional().nullable(),
-  isPublished: z.boolean().optional(),
-});
-
-type PostInputArgs = z.infer<typeof PostPatchSchema> & PostArgs;
-
-async function getPostByID(postId: string, authorId?: string) {
-  const result = await db.post.findFirst({
-    where: { id: postId },
-    include: { likes: true, community: { select: { slug: true } } },
-  });
-  console.log(result);
-  return result;
-}
-
-export async function addViewToPost(postId: string) {
-  await db.post.update({
-    where: { id: postId },
-    data: {
-      views: {
-        increment: 1,
-      },
-    },
-  });
-}
-
-// Experimenting
-async function deletePost({ postId, authorId }: PostArgs) {
-  await db.post.delete({ where: { id: postId, authorId } });
-}
-
-async function updatePost({
-  postId,
-  authorId,
-  content,
-  title,
-  image,
-  isPublished,
-  description,
-}: PostInputArgs) {
-  return await db.post.update({
-    where: { id: postId, authorId },
-    data: {
-      title,
-      description,
-      content,
-      isPublished,
-      image,
-    },
-    include: { likes: true, community: { select: { slug: true } } },
-  });
-}
 
 export default async function handler(
   req: NextApiRequest,
@@ -76,44 +13,53 @@ export default async function handler(
 ) {
   try {
     const { method, body, query } = req;
-    const { postId } = QuerySchema.parse(query);
+    const { postId } = z.object({ postId: z.string() }).parse(query);
+    const session = await getServerSession(req, res, authOptions);
 
-    if (!methods.includes(method!)) {
-      return res.status(400).send({ message: "Invalid Method" });
+    if (!method || !methods.includes(method)) {
+      res.status(400).json({ message: "Invalid method" });
+      return;
     }
 
-    if (method === "GET") {
-      return res.status(200).json(await getPostByID(postId));
-    } else {
-      // TODO: Make this a middleware that I can reuse without having to retype
-      const session = await getServerSession(req, res, authOptions);
-      if (session === null) {
-        return res.status(403).send({ message: "Not authorized" });
+    switch (method) {
+      case "GET": {
+        const result = await getPostByID({
+          id: postId,
+          authorId: session?.user.id,
+        });
+        res.status(200).json(result);
+        return;
       }
+      case "PUT": {
+        if (session === null) {
+          res.status(401).json({ message: "Not logged in" });
+          return;
+        }
 
-      const authorId = session!.user.id;
+        const test = PostVailidators.PostUpdateSchema.parse({
+          ...body,
+          authorId: session.user.id,
+          id: postId,
+        });
 
-      if (method === "PUT") {
-        const { isPublished, content, title, description, image } =
-          PostPatchSchema.parse(body);
+        console.log(test);
 
-        return res.status(200).json(
-          await updatePost({
-            postId,
-            content,
-            title,
-            image,
-            description,
-            isPublished,
-            authorId,
-          })
-        );
-      } else {
-        return res.status(200).json(await deletePost({ postId, authorId }));
+        const result = await updatePost({
+          authorId: session.user.id,
+          id: postId,
+          ...body,
+        });
+        res.status(200).json(result);
+        return;
+      }
+      default: {
+        return;
       }
     }
   } catch (error) {
     console.error(error);
-    return res.status(500).send({ message: "Something went wrong!" });
+    res.status(400).json({ message: "Something went wrong" });
+
+    return;
   }
 }

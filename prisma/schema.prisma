@@ -89,15 +89,17 @@ model Subscriber {
 }
 
 model Post {
-  id          String   @id @default(cuid())
-  title       String   @db.Text
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  content     Json?
-  views       Int      @default(0)
-  image       String?
-  description String?  @db.Text
-  isPublished Boolean
+  id              String   @id @default(cuid())
+  title           String   @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  content         Json?
+  views           Int      @default(0)
+  image           String?
+  description     String?  @db.Text
+  isPublished     Boolean  @default(false)
+  subscribersOnly Boolean  @default(false)
+  commentsVisible Boolean  @default(true)
 
   community   Community @relation(fields: [communityId], references: [id])
   communityId String

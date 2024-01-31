@@ -1,138 +1,8 @@
-import { db } from "@/lib/db";
-import type { NextApiRequest, NextApiResponse } from "next";
-import { getSession } from "next-auth/react";
-import { z } from "zod";
-import { PostItem, PostItemSchema } from "../../user/feed";
-
-const methods = ["GET", "PUT", "DELETE"];
-
-const QuerySchema = z.object({
-  communityId: z.string(),
-});
-
-const CommunitySchema = z.object({
-  id: z.string().cuid(),
-  name: z.string(),
-  slug: z.string(),
-  creatorId: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-  description: z.string().optional().nullable(),
-  posts: z.array(PostItemSchema),
-  subscribers: z.array(
-    z.object({ id: z.string().cuid(), userId: z.string().cuid() })
-  ),
-});
-
-type CommunityArgs = { communityId: string; name?: string; userId: string };
-
-const CommunityBYIDQuerySchema = z
-  .object({
-    featuredPost: PostItemSchema.nullable().optional(),
-    recentPosts: z.array(PostItemSchema),
-    isOwn: z.boolean(),
-    unpublishedPosts: z.array(PostItemSchema),
-  })
-  .merge(CommunitySchema);
-export type CommunityProfile = z.infer<typeof CommunityBYIDQuerySchema>;
-
-export async function getCommunityByID(communityId: string) {
-  const result = await db.community.findFirst({
-    where: {
-      OR: [
-        { creatorId: { equals: communityId } },
-        { slug: { equals: communityId } },
-      ],
-    },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      createdAt: true,
-      subscribers: {
-        select: {
-          id: true,
-          userId: true,
-        },
-      },
-      creatorId: true,
-      updatedAt: true,
-      description: true,
-      posts: {
-        where: {
-          OR: [
-            { authorId: communityId },
-            {
-              isPublished: true,
-            },
-          ],
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        select: {
-          _count: {
-            select: {
-              comments: true,
-              likes: true,
-            },
-          },
-          image: true,
-          id: true,
-          isPublished: true,
-          description: true,
-          author: {
-            select: {
-              name: true,
-              community: {
-                select: {
-                  slug: true,
-                  name: true,
-                },
-              },
-              image: true,
-            },
-          },
-          title: true,
-          createdAt: true,
-          views: true,
-        },
-      },
-    },
-  });
-
-  return CommunitySchema.nullable().parse(result);
-}
-
-// async function updateCommunity({ communityId, name, userId }: CommunityArgs) {
-//     const result = await db.community.update({
-//         where: {
-//             id: communityId,
-//             creatorId: {
-//                 equals: userId,
-//             },
-//         },
-//         data: {
-//             name,
-//         },
-//     });
-
-//     if (result === null) throw new Error();
-
-//     return result;
-// }
-
-async function deleteCommunity({ communityId, userId }: CommunityArgs) {
-  const community = await db.community.findFirst({
-    where: { id: { equals: communityId }, creatorId: { equals: userId } },
-  });
-
-  if (community === null) throw new Error();
-
-  await db.community.delete({ where: { id: communityId } });
-
-  return { success: true };
-}
+import { checkSubscriber, getCommunityByParam } from "@/lib/api/community";
+import { CommunitiesValidators, CommunityResponse } from "@/lib/api/validators";
+import { NextApiRequest, NextApiResponse } from "next";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]";
 
 export default async function handler(
   req: NextApiRequest,
@@ -140,67 +10,40 @@ export default async function handler(
 ) {
   try {
     const { method, query } = req;
-    const { communityId } = QuerySchema.parse(query);
+    const { communityId } =
+      CommunitiesValidators.CommunityQuerySchema.parse(query);
+    const session = await getServerSession(req, res, authOptions);
 
-    const session = await getSession({ req });
-
-    if (!methods.includes(method!)) {
-      return res.status(400).send({ message: "Invalid Method" });
+    if (method !== "GET") {
+      res.status(400).json({ message: "Invalid method" });
+      return;
     }
 
-    if (method === "GET") {
-      const result = await getCommunityByID(communityId);
-      let isOwn = false;
-      let featuredPost: PostItem | null = null;
-      let recentPosts: PostItem[] = [];
-      let posts: PostItem[] = [];
+    let isOwn = false;
+    let isSubscriber = false;
+    const community = await getCommunityByParam({ communityId });
 
-      const unpublished: PostItem[] = [];
-      const published: PostItem[] = [];
-
-      if (session && result) {
-        for (const post of result.posts) {
-          if (!post.isPublished) {
-            unpublished.push(post);
-          } else {
-            published.push(post);
-          }
-        }
-
-        isOwn = result.creatorId === session.user.id;
-        featuredPost = published[0];
-        recentPosts = published.slice(1, 4) || [];
-        posts = published.slice(4) || [];
-      }
-
-      return res.status(200).json(
-        CommunityBYIDQuerySchema.parse({
-          ...result,
-          isOwn,
-          featuredPost,
-          recentPosts,
-          posts,
-          unpublishedPosts: unpublished,
-        })
-      );
-    } else {
-      if (session === null) res.status(403).send({ message: "Not authorized" });
-
-      const userId = session!.user.id;
-
-      if (method === "PUT") {
-        // const { name } = BodySchema.parse(body);
-        // return res
-        //     .status(200)
-        //     .json(await updateCommunity({ communityId, userId, name }));
-      } else {
-        return res
-          .status(200)
-          .json(await deleteCommunity({ communityId, userId }));
-      }
+    if (!community) {
+      throw new Error("Community not found");
     }
+
+    if (session) {
+      isOwn = community.creatorId === session.user.id;
+      isSubscriber = await checkSubscriber({
+        communityId,
+        userId: session.user.id,
+      });
+    }
+
+    const response = {
+      community,
+      isOwn,
+      isSubscriber,
+    };
+
+    res.status(200).json(response);
   } catch (error) {
     console.error(error);
-    return res.status(500).send({ message: "Something went wrong!" });
+    res.status(400).json({ message: "Something went wrong" });
   }
 }

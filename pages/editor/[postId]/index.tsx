@@ -1,5 +1,9 @@
 import { Editor } from "@/components/editor/editor";
-import { useEditingMutation, usePostQuery } from "@/lib/queries/usePostQuery";
+import {
+  useEditingMutation,
+  usePostContentQuery,
+  usePostQuery,
+} from "@/lib/queries/usePostQuery";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import React from "react";
 import { z } from "zod";
@@ -8,6 +12,9 @@ export default function PostEditorPage({
   postId,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data: post, mutate } = useEditingMutation(postId);
+  const { data } = usePostQuery(postId);
+  const { data: content } = usePostContentQuery(postId);
+
   const [isMounted, setIsMounted] = React.useState<boolean>(false);
 
   React.useEffect(() => {
@@ -17,9 +24,9 @@ export default function PostEditorPage({
     setIsMounted(true);
   }, [isMounted]);
 
-  if (!post) return null;
+  if (!data || !content) return null;
 
-  return <Editor {...post} />;
+  return <Editor {...data.post} content={content} />;
 }
 
 export async function getServerSideProps({ query }: GetServerSidePropsContext) {

@@ -1,15 +1,15 @@
-import { CreateCommentArgs } from "@/pages/api/comment";
 import { useMutation, useQueryClient } from "react-query";
+import { CreateCommentArgs } from "../api/validators";
 
 export function useCreateCommentMutation() {
   const queryClient = useQueryClient();
 
   return useMutation("comment", {
-    mutationFn: async ({ authorId, content, postId }: CreateCommentArgs) => {
+    mutationFn: async ({ userId, content, postId }: CreateCommentArgs) => {
       const result = await fetch("/api/comment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ authorId, content, postId }),
+        body: JSON.stringify({ userId, content, postId }),
       });
 
       return result.json();

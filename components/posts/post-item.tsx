@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 import { MdThumbUp } from "react-icons/md";
 import { BsEyeFill } from "react-icons/bs";
 import { truncateString } from "@/lib/truncate";
+import { useDeletePostMutation } from "@/lib/mutations/useDeletePostMutation";
 
 interface PostComponentProps extends PostItem {
   isOwn?: boolean;
@@ -33,6 +34,7 @@ export function OwnPostMenu({
 }) {
   const { isOpen, toggle, onClose } = useMenu();
   const { push } = useRouter();
+  const { mutateAsync: deletePostAsync } = useDeletePostMutation(id);
 
   function onEditClick() {
     push(`/editor/${id}`);
@@ -40,6 +42,11 @@ export function OwnPostMenu({
 
   function onPublishClick() {
     push(`/editor/${id}/publish`);
+  }
+
+  async function onDeleteClick() {
+    await deletePostAsync();
+    push(`/profile`);
   }
 
   return (
@@ -50,7 +57,7 @@ export function OwnPostMenu({
       {isOpen ? (
         <MenuList>
           <MenuItem onClick={onEditClick}>Edit</MenuItem>
-          <MenuItem>Delete</MenuItem>
+          <MenuItem onClick={onDeleteClick}>Delete</MenuItem>
           {!isPublished ? (
             <MenuItem onClick={onPublishClick}>Publish</MenuItem>
           ) : null}

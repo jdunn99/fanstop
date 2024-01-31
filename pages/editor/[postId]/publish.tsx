@@ -6,7 +6,7 @@ import Input from "@/components/ui/input";
 import Textarea from "@/components/ui/textarea";
 import { getFileData } from "@/lib/file";
 import { usePublishPostMutation } from "@/lib/mutations/usePublishPostMutation";
-import { usePostQuery } from "@/lib/queries/usePostQuery";
+import { usePostContentQuery, usePostQuery } from "@/lib/queries/usePostQuery";
 import { truncateString } from "@/lib/truncate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
@@ -19,14 +19,16 @@ import { z } from "zod";
 const schema = z.object({
   title: z.string(),
   description: z.string(),
+  visibility: z.union([z.literal("Subscribers only"), z.literal("Anyone")]),
+  comments: z.union([z.literal("Enable"), z.literal("Disable")]),
 });
-
 type FormD = z.infer<typeof schema>;
 
 export default function PostPublishPage({
   postId,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { data: post, isLoading } = usePostQuery(postId);
+  const { data, isLoading } = usePostQuery(postId);
+  const { data: content } = usePostContentQuery(postId);
   const { mutateAsync } = usePublishPostMutation(postId);
 
   const {
@@ -43,12 +45,14 @@ export default function PostPublishPage({
 
   const router = useRouter();
 
-  async function onSubmit({ title, description }: FormD) {
+  async function onSubmit({ title, description, comments, visibility }: FormD) {
     mutateAsync({
       title,
       description,
       img: coverImage,
-      postContent: post!.content,
+      postContent: content!,
+      commentsVisible: comments === "Enable",
+      subscribersOnly: visibility === "Subscribers only",
     });
     router.push(`/post/${postId}`);
   }
@@ -85,7 +89,10 @@ export default function PostPublishPage({
     }
   }, [isLoading]);
 
-  if (!post) return null;
+  if (!data) return null;
+  if (!content) return null;
+
+  const { post } = data;
 
   return (
     <Layout heading="Publish Post">
@@ -125,6 +132,50 @@ export default function PostPublishPage({
                     errors.description ? "border-red-500" : ""
                   } bg-white min-h-[64px]`}
                 />
+              </FormContainer>
+              <FormContainer label="Visiblity">
+                <div className="flex items-center gap-1">
+                  <input
+                    {...register("visibility")}
+                    type="radio"
+                    value="Anyone"
+                    className="accent-rose-500"
+                    defaultChecked
+                  />
+                  <label>Anyone</label>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <input
+                    {...register("visibility")}
+                    type="radio"
+                    value="Subscribers only"
+                    className="accent-rose-500"
+                  />
+                  <label>Subscribers only</label>
+                </div>
+              </FormContainer>
+              <FormContainer label="Enable Comments">
+                <div className="flex items-center gap-1">
+                  <input
+                    {...register("comments")}
+                    type="radio"
+                    value="Enable"
+                    className="accent-rose-500"
+                    defaultChecked
+                  />
+                  <label>Enable</label>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <input
+                    {...register("comments")}
+                    type="radio"
+                    value="Disable"
+                    className="accent-rose-500"
+                  />
+                  <label>Disable</label>
+                </div>
               </FormContainer>
               <FormContainer label="Cover Image">
                 <div

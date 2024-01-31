@@ -1,33 +1,8 @@
-import { db } from "@/lib/db";
+import { createComment } from "@/lib/api/comment";
+import { CommentValidators } from "@/lib/api/validators";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
-import { z } from "zod";
 import { authOptions } from "./auth/[...nextauth]";
-
-const methods = ["GET", "POST"];
-
-const CreateCommentSchema = z.object({
-  content: z.string(),
-  postId: z.string(),
-});
-export type CreateCommentArgs = z.infer<typeof CreateCommentSchema> & {
-  authorId: string;
-};
-
-async function getAllComments() {
-  return await db.comment.findMany();
-}
-
-async function createComment({ content, postId, authorId }: CreateCommentArgs) {
-  return await db.comment.create({
-    data: {
-      content,
-      postId,
-      userId: authorId,
-    },
-    include: { user: { select: { id: true, name: true } } },
-  });
-}
 
 export default async function handler(
   req: NextApiRequest,
@@ -35,28 +10,31 @@ export default async function handler(
 ) {
   try {
     const { method, body } = req;
-    if (!methods.includes(method!)) {
-      return res.status(400).send({ message: "Invalid Method" });
+    const session = await getServerSession(req, res, authOptions);
+
+    if (method !== "POST") {
+      res.status(400).json({ message: "Invalid method" });
+      return;
     }
 
-    if (method === "POST") {
-      const session = await getServerSession(req, res, authOptions);
-
-      if (session === null)
-        return res.status(403).send({ message: "Not authorized" });
-
-      const data = CreateCommentSchema.parse(body);
-      return res.status(200).json(
-        await createComment({
-          ...data,
-          authorId: session.user.id,
-        })
-      );
-    } else {
-      return res.status(200).json(await getAllComments());
+    if (!session) {
+      res.status(401).json({ message: "Not signed in" });
+      return;
     }
+
+    const { content, postId } = body;
+    const comment = await createComment(
+      CommentValidators.CreateCommentSchema.parse({
+        userId: session.user.id,
+        content,
+        postId,
+      })
+    );
+
+    res.status(200).json(comment);
   } catch (error) {
     console.error(error);
-    return res.status(500).send({ message: "Something went wrong!" });
+    res.status(400).json({ message: "Something went wrong" });
   }
+  return;
 }
