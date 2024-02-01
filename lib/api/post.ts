@@ -230,7 +230,9 @@ export async function getFeedForUser(userId: string) {
         communityId: {
           in: subscriptions.map(({ communityId }) => communityId),
         },
+        isPublished: true,
       },
+      include: DB_POST_INCLUDE,
       orderBy: {
         createdAt: "desc",
       },

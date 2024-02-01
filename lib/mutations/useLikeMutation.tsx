@@ -7,7 +7,7 @@ export function useLikeMutation(postId: string) {
   return useMutation(["likes", postId], {
     async mutationFn({ isDeletion }: { isDeletion: boolean }) {
       if (isDeletion) {
-        // return await fetch(`/api/likes/${likeId}`, { method: "DELETE" });
+        return await fetch(`/api/posts/${postId}/likes`, { method: "DELETE" });
       } else {
         const like = await fetch("/api/like", {
           headers: {
@@ -24,6 +24,7 @@ export function useLikeMutation(postId: string) {
         const temp = oldData as unknown as PostResponse;
         if (isDeletion) {
           temp.isLiked = false;
+          temp.post._count.likes--;
         } else {
           temp.isLiked = true;
           temp.post._count.likes++;

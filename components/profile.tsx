@@ -28,15 +28,11 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
   const { mutate } = useSubscribeMutation(slug);
   const { data: posts } = usePostsForCommunity(slug);
 
-  // function handleSubscription() {
-  //   mutate({
-  //     isDeletion: subscriptionIndex !== -1,
-  //     subscriptionId:
-  //       subscriptionIndex !== -1
-  //         ? data?.subscribers[subscriptionIndex].id
-  //         : undefined,
-  //   });
-  // }
+  function handleSubscription() {
+    mutate({
+      isDeletion: isSubscriber,
+    });
+  }
 
   if (!data) return null;
 
@@ -51,7 +47,7 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
           ) : (
             <Button
               variant={isSubscriber ? "primary" : "ghost"}
-              // onClick={handleSubscription}
+              onClick={handleSubscription}
             >
               {isSubscriber ? <BsHeartFill /> : <BsHeart />}
             </Button>

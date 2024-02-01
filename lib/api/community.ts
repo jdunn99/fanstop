@@ -70,10 +70,12 @@ export async function checkSubscriber({
 }) {
   const result = await db.subscriber.count({
     where: {
-      communityId,
+      OR: [{ communityId }, { community: { slug: communityId } }],
       userId,
     },
   });
+
+  console.log(result);
 
   return result > 0;
 }

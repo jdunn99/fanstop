@@ -4,12 +4,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
 import { z } from "zod";
 import { createLike } from "@/lib/api/like";
+import { subscribeToCommunity } from "@/lib/api/subscriptions";
 
 const methods = ["GET", "POST"];
-
-async function getAllLikes() {
-  return await db.likes.findMany();
-}
 
 export default async function handler(
   req: NextApiRequest,
@@ -24,16 +21,19 @@ export default async function handler(
     }
 
     if (method === "GET") {
-      res.status(200).json(await getAllLikes());
+      res.status(200).json({ message: "Not implemented" });
       return;
     }
 
     if (session === null)
       return res.status(403).send({ message: "Not authorized" });
 
-    const { postId } = z.object({ postId: z.string().cuid() }).parse(body);
+    const { communityId } = z.object({ communityId: z.string() }).parse(body);
 
-    const result = await createLike({ postId, userId: session.user.id });
+    const result = await subscribeToCommunity({
+      communityId,
+      userId: session.user.id,
+    });
     res.status(200).json(result);
     return;
   } catch (error) {
