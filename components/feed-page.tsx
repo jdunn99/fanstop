@@ -39,8 +39,8 @@ export function FeedPage() {
                 isSameDate(new Date(), new Date(group)) ? "Today" : group
               }
             />
-            {data[group].map((item) => (
-              <PostComponent key={item.id} {...item} includeAuthor />
+            {data[group].map(({ post }) => (
+              <PostComponent key={post.id} {...post} includeAuthor />
             ))}
           </DashboardItem>
         ))

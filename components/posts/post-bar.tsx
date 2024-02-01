@@ -8,7 +8,8 @@ import { useLikeMutation } from "@/lib/mutations/useLikeMutation";
 interface PostBarProps {
   views: number;
   postId: string;
-  likes: Like[];
+  likes: number;
+  isLiked: boolean;
 }
 
 interface IconButtonProps {
@@ -26,35 +27,29 @@ export function IconButton({ onClick, children }: IconButtonProps) {
   );
 }
 
-export function PostBar({ views, postId, likes }: PostBarProps) {
+export function PostBar({ views, postId, likes, isLiked }: PostBarProps) {
   const { data } = useSession();
-
-  const likeIndex = React.useMemo(
-    () => likes.findIndex((like) => like.userId === data?.user.id),
-    [likes]
-  );
   const { mutateAsync } = useLikeMutation(postId);
 
   async function onLikeClick() {
     await mutateAsync({
-      isDeletion: likeIndex !== -1,
-      likeId: likeIndex !== -1 ? likes[likeIndex].id : undefined,
+      isDeletion: isLiked,
     });
   }
 
   return (
     <div className="w-full flex gap-4 pt-2 px-8 text-sm">
       {data !== null ? (
-        <div className={likeIndex !== -1 ? "!text-rose-500" : ""}>
+        <div className={isLiked ? "!text-rose-500" : ""}>
           <IconButton onClick={onLikeClick}>
             <MdThumbUp />
-            <p>{likeIndex !== -1 ? `${likes.length} Likes` : "Like"}</p>
+            <p>{isLiked ? `${likes} Likes` : "Like"}</p>
           </IconButton>
         </div>
       ) : (
         <div className="flex gap-1 items-center">
           <MdThumbUp />
-          <p>{likes.length} Likes</p>
+          <p>{likes} Likes</p>
         </div>
       )}
       <div className="flex gap-1 items-center">

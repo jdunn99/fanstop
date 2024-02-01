@@ -1,14 +1,4 @@
-import { CommunityProfile } from "@/pages/api/communities/[communityId]";
-import { PostItem } from "@/pages/api/user/feed";
-import { usePathname } from "next/navigation";
-import {
-  Menu,
-  MenuButton,
-  MenuGroup,
-  MenuItem,
-  MenuList,
-  useMenu,
-} from "../ui/menu";
+import { Menu, MenuButton, MenuItem, MenuList, useMenu } from "../ui/menu";
 import { FaComment, FaEllipsisH } from "react-icons/fa";
 import React from "react";
 import Link from "next/link";
@@ -17,12 +7,13 @@ import { MdThumbUp } from "react-icons/md";
 import { BsEyeFill } from "react-icons/bs";
 import { truncateString } from "@/lib/truncate";
 import { useDeletePostMutation } from "@/lib/mutations/useDeletePostMutation";
+import { PostItem } from "@/lib/api/validators";
 
 interface PostComponentProps extends PostItem {
-  isOwn?: boolean;
   isCol?: boolean;
   isFeatured?: boolean;
   includeAuthor?: boolean;
+  isOwn?: boolean;
 }
 
 export function OwnPostMenu({
@@ -77,12 +68,12 @@ export function PostComponent({
   title,
   description,
   author,
-  isOwn,
   image,
   views,
   createdAt,
   isFeatured,
   includeAuthor,
+  isOwn,
   isCol,
   _count,
 }: PostComponentProps) {

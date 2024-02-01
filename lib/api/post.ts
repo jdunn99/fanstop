@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { db } from "../db";
 import {
+  FeedItem,
   PostArraySchema,
   PostContent,
   PostResponse,
@@ -9,10 +10,34 @@ import {
 } from "./validators";
 import { checkSubscriber } from "./community";
 import { Prisma } from "@prisma/client";
+import { checkPostLiked } from "./like";
+import { getSubscriptionsForUser } from "./subscriptions";
 
 export type PostQuery = {
   id: string;
   authorId?: string;
+};
+
+const DB_POST_INCLUDE = {
+  _count: {
+    select: {
+      likes: true,
+      comments: true,
+    },
+  },
+  author: {
+    select: {
+      id: true,
+      name: true,
+      community: {
+        select: {
+          slug: true,
+          name: true,
+        },
+      },
+      image: true,
+    },
+  },
 };
 
 export async function getPostsForCommunity({
@@ -46,27 +71,7 @@ export async function getPostsForCommunity({
       orderBy: {
         createdAt: "desc",
       },
-      include: {
-        _count: {
-          select: {
-            likes: true,
-            comments: true,
-          },
-        },
-        author: {
-          select: {
-            id: true,
-            name: true,
-            community: {
-              select: {
-                slug: true,
-                name: true,
-              },
-            },
-            image: true,
-          },
-        },
-      },
+      include: DB_POST_INCLUDE,
     });
 
     if (result === null) {
@@ -84,10 +89,16 @@ export async function getPostsForCommunity({
     for (const post of posts) {
       const isAuthor =
         typeof authorId !== "undefined" && authorId === post.author.id;
+
+      const isLiked =
+        typeof authorId !== "undefined" &&
+        (await checkPostLiked({ postId: post.id, userId: authorId }));
+
       response.push({
         post,
         isAuthor,
         isSubscriber,
+        isLiked,
       });
     }
 
@@ -105,27 +116,7 @@ export async function getPostByID({
   try {
     const result = await db.post.findFirst({
       where: { id },
-      include: {
-        _count: {
-          select: {
-            likes: true,
-            comments: true,
-          },
-        },
-        author: {
-          select: {
-            id: true,
-            name: true,
-            community: {
-              select: {
-                slug: true,
-                name: true,
-              },
-            },
-            image: true,
-          },
-        },
-      },
+      include: DB_POST_INCLUDE,
     });
 
     if (result === null) {
@@ -145,10 +136,18 @@ export async function getPostByID({
           userId: authorId,
         }));
 
+    const isLiked =
+      typeof authorId !== "undefined" &&
+      (await checkPostLiked({
+        postId: id,
+        userId: authorId,
+      }));
+
     return {
       post,
       isSubscriber,
       isAuthor,
+      isLiked,
     };
   } catch (error) {
     console.error(error);
@@ -201,8 +200,6 @@ export async function getPostContent({
 }
 
 export async function updatePost({ id, authorId, ...data }: PostUpdateArgs) {
-  console.log(`\n\n\n${JSON.stringify(data)}\n\n\n`);
-
   try {
     const result = await db.post.update({
       where: {
@@ -210,30 +207,61 @@ export async function updatePost({ id, authorId, ...data }: PostUpdateArgs) {
         authorId,
       },
       data,
-      include: {
-        _count: {
-          select: {
-            likes: true,
-            comments: true,
-          },
-        },
-        author: {
-          select: {
-            id: true,
-            name: true,
-            community: {
-              select: {
-                slug: true,
-                name: true,
-              },
-            },
-            image: true,
-          },
-        },
-      },
+      include: DB_POST_INCLUDE,
     });
 
     return result;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+export async function getFeedForUser(userId: string) {
+  try {
+    const subscriptions = await getSubscriptionsForUser(userId);
+
+    if (!subscriptions) {
+      throw new Error("Something went wrong fetching subscriptions");
+    }
+
+    const result = await db.post.findMany({
+      where: {
+        communityId: {
+          in: subscriptions.map(({ communityId }) => communityId),
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    const parsed = PostArraySchema.parse(result);
+    const feed: FeedItem = {};
+
+    const { format } = new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+
+    // parse the date and some post metadata
+    for (const post of parsed) {
+      const key = format(post.createdAt);
+
+      if (!feed[key]) {
+        feed[key] = [];
+      }
+
+      const isLiked = await checkPostLiked({
+        postId: post.id,
+        userId,
+      });
+
+      feed[key].push({ post, isAuthor: false, isSubscriber: true, isLiked });
+    }
+
+    return feed;
   } catch (error) {
     console.error(error);
     return null;

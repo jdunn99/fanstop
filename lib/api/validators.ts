@@ -143,5 +143,9 @@ export type PostResponse = {
   post: PostItem;
   isAuthor: boolean;
   isSubscriber: boolean;
+  isLiked: boolean;
 };
 export type CommunityPosts = z.infer<typeof CommunityPostsSchema>;
+
+// User
+export type FeedItem = Record<string, PostResponse[]>;

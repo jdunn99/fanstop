@@ -1,19 +1,13 @@
-import { PostWithLikes } from "@/pages/api/posts";
 import { useMutation, useQueryClient } from "react-query";
+import { PostResponse } from "../api/validators";
 
 export function useLikeMutation(postId: string) {
   const queryClient = useQueryClient();
 
   return useMutation(["likes", postId], {
-    async mutationFn({
-      isDeletion,
-      likeId,
-    }: {
-      isDeletion: boolean;
-      likeId?: string;
-    }) {
+    async mutationFn({ isDeletion }: { isDeletion: boolean }) {
       if (isDeletion) {
-        return await fetch(`/api/likes/${likeId}`, { method: "DELETE" });
+        // return await fetch(`/api/likes/${likeId}`, { method: "DELETE" });
       } else {
         const like = await fetch("/api/like", {
           headers: {
@@ -25,13 +19,14 @@ export function useLikeMutation(postId: string) {
         return await like.json();
       }
     },
-    onSuccess(data, { isDeletion, likeId }) {
+    onSuccess(data, { isDeletion }) {
       queryClient.setQueryData(["post", postId], (oldData) => {
-        const temp = oldData as unknown as PostWithLikes;
+        const temp = oldData as unknown as PostResponse;
         if (isDeletion) {
-          temp.likes = temp.likes.filter((like) => like.id !== likeId);
+          temp.isLiked = false;
         } else {
-          temp.likes = [...temp.likes, data];
+          temp.isLiked = true;
+          temp.post._count.likes++;
         }
 
         return temp;

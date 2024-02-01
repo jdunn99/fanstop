@@ -26,7 +26,7 @@ export default async function handler(
     }
 
     console.log("FETCHING: ", communityId, authorId);
-    const result = await getPostsForCommunity({ communityId, authorId });
+    const result = await getPostsForCommunity({ id: communityId, authorId });
 
     let featuredPost: PostItem | null = null;
     let recentPosts: PostItem[];

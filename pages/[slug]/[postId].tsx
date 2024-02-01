@@ -17,7 +17,7 @@ export default function PostPage({
 
   if (!data) return null;
 
-  const { post, isAuthor, isSubscriber } = data;
+  const { post, isAuthor, isSubscriber, isLiked } = data;
 
   return (
     <Layout>
@@ -77,7 +77,12 @@ export default function PostPage({
               Comments are avaiable for subscribers only.
             </p>
           ) : (
-            <PostCommentSection postId={postId} views={post.views} />
+            <PostCommentSection
+              postId={postId}
+              views={post.views}
+              likes={post._count.likes}
+              isLiked={isLiked}
+            />
           )
         ) : (
           <p className="text-center text-xs text-slate-600 font-medium">

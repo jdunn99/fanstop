@@ -1,5 +1,5 @@
-import { FeedItem, PostItem } from "@/pages/api/user/feed";
 import { useQuery } from "react-query";
+import { FeedItem } from "../api/validators";
 
 export function useFeedQuery() {
   return useQuery<FeedItem>("feed", () =>
