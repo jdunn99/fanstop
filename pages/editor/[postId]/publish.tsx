@@ -10,6 +10,7 @@ import { usePostContentQuery, usePostQuery } from "@/lib/queries/usePostQuery";
 import { truncateString } from "@/lib/truncate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
@@ -29,6 +30,7 @@ export default function PostPublishPage({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data, isLoading } = usePostQuery(postId);
   const { data: content } = usePostContentQuery(postId);
+  const { data: session } = useSession();
   const { mutateAsync } = usePublishPostMutation(postId);
 
   const {
@@ -54,7 +56,7 @@ export default function PostPublishPage({
       commentsVisible: comments === "Enable",
       subscribersOnly: visibility === "Subscribers only",
     });
-    router.push(`/post/${postId}`);
+    router.push(`/${session!.user.slug}/${postId}`);
   }
 
   function onFileChange(event: React.ChangeEvent<HTMLInputElement>) {

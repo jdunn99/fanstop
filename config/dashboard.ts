@@ -1,4 +1,5 @@
-import type { DashboardConfig } from "@/types";
+import type { DashboardConfig, NavConfig } from "@/types";
+import { useSession } from "next-auth/react";
 
 export const unAuthedConfig: DashboardConfig = {
   header: [],
@@ -39,3 +40,32 @@ export const dashboardConfig: DashboardConfig = {
     },
   ],
 };
+
+export function useSidebarRoutes(): NavConfig {
+  const { data: session } = useSession();
+
+  return session && session.user.slug
+    ? [
+        {
+          href: "/",
+          value: "Home",
+        },
+        {
+          href: "/explore",
+          value: "Explore",
+        },
+        {
+          href: "/profile/subscriptions",
+          value: "Subscriptions",
+        },
+        {
+          href: `/${session.user.slug}`,
+          value: "Profile",
+        },
+        {
+          href: "/settings",
+          value: "Settings",
+        },
+      ]
+    : unAuthedConfig.sidebar;
+}

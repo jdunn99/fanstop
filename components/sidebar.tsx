@@ -1,5 +1,9 @@
 import React from "react";
-import { dashboardConfig, unAuthedConfig } from "@/config/dashboard";
+import {
+  dashboardConfig,
+  unAuthedConfig,
+  useSidebarRoutes,
+} from "@/config/dashboard";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -7,14 +11,7 @@ import { usePathname } from "next/navigation";
 export function Sidebar() {
   const path = usePathname();
 
-  const { data } = useSession();
-  const items = React.useMemo(() => {
-    if (data?.user) {
-      return dashboardConfig.sidebar;
-    } else {
-      return unAuthedConfig.sidebar;
-    }
-  }, []);
+  const items = useSidebarRoutes();
 
   if (!items?.length) {
     return null;
