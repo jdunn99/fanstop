@@ -38,7 +38,9 @@ export default function PostPage({
                 },
               ]}
             />
-            {isAuthor ? <OwnPostMenu id={postId} /> : null}
+            {isAuthor ? (
+              <OwnPostMenu id={postId} isPublished={post.isPublished} />
+            ) : null}
           </header>
           <article className="prose px-0 mx-auto w-full max-w-screen-lg">
             <h1

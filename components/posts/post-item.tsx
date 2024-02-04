@@ -40,6 +40,8 @@ export function OwnPostMenu({
     push(`/profile`);
   }
 
+  console.log({ isPublished });
+
   return (
     <Menu onClose={onClose}>
       <MenuButton size="xs" variant="ghost" onClick={toggle}>
