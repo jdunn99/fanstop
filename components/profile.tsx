@@ -17,6 +17,7 @@ import { PostComponent } from "./posts/post-item";
 import Button from "./ui/button";
 import { CommunityResponse } from "@/lib/api/validators";
 import { usePostsForCommunity } from "@/lib/queries/usePostQuery";
+import { SubscribeButton } from "./subscribe-button";
 
 interface ProfileComponentProps {
   slug: string;
@@ -25,14 +26,7 @@ interface ProfileComponentProps {
 
 export function ProfileComponent({ data, slug }: ProfileComponentProps) {
   const { data: session } = useSession();
-  const { mutate } = useSubscribeMutation(slug);
   const { data: posts } = usePostsForCommunity(slug);
-
-  function handleSubscription() {
-    mutate({
-      isDeletion: isSubscriber,
-    });
-  }
 
   if (!data) return null;
 
@@ -45,12 +39,7 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
           {isOwn ? (
             <Button>Edit Profile</Button>
           ) : (
-            <Button
-              variant={isSubscriber ? "primary" : "ghost"}
-              onClick={handleSubscription}
-            >
-              {isSubscriber ? <BsHeartFill /> : <BsHeart />}
-            </Button>
+            <SubscribeButton isSubscriber={isSubscriber} slug={slug} />
           )}
         </Header>
         <p>{community.description}</p>

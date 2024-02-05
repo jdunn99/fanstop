@@ -1,10 +1,8 @@
-import { BaseTag } from "@/pages/api/tags";
 import { useQuery } from "react-query";
+import { Tag } from "../api/validators";
 
 export function usePopularTags(limit = 4) {
-    return useQuery<BaseTag[]>("tags", () =>
-        fetch(`/api/tags/popular?limit=${limit}`).then((result) =>
-            result.json()
-        )
-    );
+  return useQuery<Tag[]>("tags", () =>
+    fetch(`/api/tags`).then((result) => result.json())
+  );
 }

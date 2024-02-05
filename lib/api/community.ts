@@ -6,6 +6,7 @@ import {
   CommunityResponse,
   CreateCommunityArgs,
 } from "./validators";
+import { z } from "zod";
 
 export async function createCommunity({
   tags,
@@ -40,6 +41,11 @@ export async function getCommunityByParam({
       // THIS WHERE QUERY WILL EVENTUALLY CHANGE
       where: { OR: [{ id }, { slug: id }, { creatorId: id }] },
       include: {
+        _count: {
+          select: {
+            subscribers: true,
+          },
+        },
         creator: {
           select: {
             name: true,
@@ -78,4 +84,127 @@ export async function checkSubscriber({
   console.log(result);
 
   return result > 0;
+}
+
+export async function getCommunitiesByTag(tagName: string, userId?: string) {
+  try {
+    const result = await db.community.findMany({
+      where: {
+        tags: {
+          some: {
+            name: tagName,
+          },
+        },
+      },
+      include: {
+        _count: {
+          select: {
+            subscribers: true,
+          },
+        },
+        creator: {
+          select: {
+            name: true,
+            id: true,
+            image: true,
+          },
+        },
+      },
+      orderBy: {
+        subscribers: {
+          _count: "desc",
+        },
+      },
+    });
+
+    const validated = z
+      .array(CommunitiesValidators.CommunitySchema)
+      .parse(result);
+    const response: CommunityResponse[] = [];
+
+    for (const community of validated) {
+      const isOwn =
+        typeof userId !== "undefined" && community.creatorId === userId;
+
+      if (isOwn) {
+        continue;
+      }
+
+      response.push({
+        isSubscriber:
+          !isOwn &&
+          typeof userId !== "undefined" &&
+          (await checkSubscriber({ communityId: community.id, userId })),
+        community,
+        isOwn,
+      });
+    }
+
+    return response;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+export async function getPopularCommunities(query?: string, userId?: string) {
+  try {
+    const result = await db.community.findMany({
+      where:
+        typeof query !== "undefined"
+          ? {
+              name: {
+                contains: query,
+              },
+            }
+          : undefined,
+      include: {
+        _count: {
+          select: {
+            subscribers: true,
+          },
+        },
+        creator: {
+          select: {
+            name: true,
+            id: true,
+            image: true,
+          },
+        },
+      },
+      orderBy: {
+        subscribers: {
+          _count: "desc",
+        },
+      },
+    });
+
+    const validated = z
+      .array(CommunitiesValidators.CommunitySchema)
+      .parse(result);
+    const response: CommunityResponse[] = [];
+
+    for (const community of validated) {
+      const isOwn =
+        typeof userId !== "undefined" && community.creatorId === userId;
+
+      if (isOwn) {
+        continue;
+      }
+
+      response.push({
+        isSubscriber:
+          !isOwn &&
+          typeof userId !== "undefined" &&
+          (await checkSubscriber({ communityId: community.id, userId })),
+        community,
+        isOwn,
+      });
+    }
+
+    return response;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }

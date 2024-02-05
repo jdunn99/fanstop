@@ -42,6 +42,9 @@ export const CommunitiesValidators = {
       name: z.string(),
       image: z.string().nullable(),
     }),
+    _count: z.object({
+      subscribers: z.number(),
+    }),
   }),
   CreateCommunitySchema: z.object({
     name: z.string(),
@@ -58,6 +61,10 @@ export type Community = z.infer<typeof CommunitiesValidators.CommunitySchema>;
 export type CreateCommunityArgs = z.infer<
   typeof CommunitiesValidators.CreateCommunitySchema
 >;
+export type CommunitySearchResult = {
+  isTag: boolean;
+  result: CommunityResponse[];
+};
 export type CommunityResponse = {
   community: Community;
   isOwn: boolean;
@@ -149,3 +156,14 @@ export type CommunityPosts = z.infer<typeof CommunityPostsSchema>;
 
 // User
 export type FeedItem = Record<string, PostResponse[]>;
+
+// Tags
+export const TagsValidators = {
+  Tag: z.object({
+    id: z.string().cuid(),
+    name: z.string(),
+    description: z.string().nullable(),
+  }),
+};
+
+export type Tag = z.infer<typeof TagsValidators.Tag>;

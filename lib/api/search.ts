@@ -27,10 +27,26 @@ async function getCommunitiesByQuery(query: string) {
       },
     },
     ...SEARCH_OPTIONS,
+    select: {
+      ...SEARCH_OPTIONS["select"],
+      slug: true,
+    },
   });
 }
 
-export async function getSearchResult(query: string) {
+type SearchQueryResult = {
+  name: string;
+  id: string;
+};
+export type SearchResult = {
+  query: string;
+  tags: SearchQueryResult[];
+  communities: Array<SearchQueryResult & { slug: string }>;
+};
+
+export async function getSearchResult(
+  query: string
+): Promise<SearchResult | null> {
   try {
     const tags = await getTagsByQuery(query);
     const communities = await getCommunitiesByQuery(query);

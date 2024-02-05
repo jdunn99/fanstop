@@ -5,8 +5,8 @@ export function useSubscribeMutation(communityId: string) {
   const queryClient = useQueryClient();
 
   return useMutation(["subscribers", communityId], {
-    async mutationFn({ isDeletion }: { isDeletion: boolean }) {
-      if (isDeletion) {
+    async mutationFn({ isSubscriber }: { isSubscriber: boolean }) {
+      if (isSubscriber) {
         // return await fetch(`/api/subscriptions/`, {
         //   method: "DELETE",
         // });
@@ -21,11 +21,11 @@ export function useSubscribeMutation(communityId: string) {
         return await like.json();
       }
     },
-    onSuccess(data, { isDeletion }) {
+    onSuccess(data, { isSubscriber }) {
       queryClient.setQueryData(["community", communityId], (oldData) => {
         const temp = oldData as unknown as CommunityResponse;
 
-        if (isDeletion) {
+        if (isSubscriber) {
           temp.isSubscriber = false;
         } else {
           temp.isSubscriber = true;
