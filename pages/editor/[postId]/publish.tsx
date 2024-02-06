@@ -77,11 +77,11 @@ export default function PostPublishPage({
     }
   }
 
-  React.useEffect(() => {
-    if (!isLoading && !post) {
-      router.back();
-    }
-  }, [isLoading]);
+  // React.useEffect(() => {
+  //   if (!isLoading && !post) {
+  //     router.back();
+  //   }
+  // }, [isLoading]);
 
   React.useEffect(() => {
     if (!isLoading) {

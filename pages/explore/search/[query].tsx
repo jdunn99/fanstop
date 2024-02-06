@@ -22,24 +22,12 @@ import { z } from "zod";
 export default function SearchQuery({
   query,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { data: tags } = usePopularTags();
   const { data: communities } = useCommunitiesSearchResult(query);
 
   return (
     <Layout heading="Explore">
       <Search defaultValue={query} />
-      <div className="grid grid-cols-4 gap-2">
-        {typeof tags !== "undefined"
-          ? tags.map(({ id, name }) => (
-              <div
-                key={id}
-                className="rounded-lg bg-white p-4 border border-slate-300 text-slate-600 font-semibold"
-              >
-                {name}
-              </div>
-            ))
-          : null}
-      </div>
+
       {typeof communities !== "undefined" ? (
         <DashboardItem>
           {communities.result.length > 0 ? (

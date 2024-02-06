@@ -44,6 +44,7 @@ export const CommunitiesValidators = {
     }),
     _count: z.object({
       subscribers: z.number(),
+      posts: z.number(),
     }),
   }),
   CreateCommunitySchema: z.object({
@@ -125,11 +126,16 @@ export const PostVailidators = {
     authorId: z.string().cuid(),
     title: z.string().optional(),
     description: z.string().optional().nullable(),
-    content: z.array(ContentSchema).optional(),
+    content: z.array(ContentSchema.nullable()).optional(),
     image: z.string().optional().nullable(),
     isPublished: z.boolean().optional(),
     subscribersOnly: z.boolean().optional(),
     commentsVisible: z.boolean().optional(),
+  }),
+  CreatePostSchema: z.object({
+    title: z.string(),
+    authorId: z.string().cuid(),
+    description: z.string(),
   }),
   PostContentSchema: ContentSchema,
 };
@@ -152,6 +158,7 @@ export type PostResponse = {
   isSubscriber: boolean;
   isLiked: boolean;
 };
+export type CreatePostArgs = z.infer<typeof PostVailidators.CreatePostSchema>;
 export type CommunityPosts = z.infer<typeof CommunityPostsSchema>;
 
 // User

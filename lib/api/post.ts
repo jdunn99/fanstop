@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { db } from "../db";
 import {
+  CreatePostArgs,
   FeedItem,
   PostArraySchema,
   PostContent,
@@ -60,12 +61,6 @@ export async function getPostsForCommunity({
               },
             ],
           },
-          {
-            authorId,
-          },
-          {
-            isPublished: true,
-          },
         ],
       },
       orderBy: {
@@ -87,6 +82,7 @@ export async function getPostsForCommunity({
         : await checkSubscriber({ communityId: id, userId: authorId });
 
     for (const post of posts) {
+      console.log(post.author.name);
       const isAuthor =
         typeof authorId !== "undefined" && authorId === post.author.id;
 
@@ -264,6 +260,39 @@ export async function getFeedForUser(userId: string) {
     }
 
     return feed;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+export async function createPost({
+  title,
+  description,
+  authorId,
+}: CreatePostArgs) {
+  try {
+    const result = await db.post.create({
+      data: {
+        isPublished: false,
+        description,
+        title,
+        views: 0,
+        community: {
+          connect: {
+            creatorId: authorId,
+          },
+        },
+        author: {
+          connect: {
+            id: authorId,
+          },
+        },
+      },
+      include: DB_POST_INCLUDE,
+    });
+
+    return PostVailidators.PostSchema.parse(result);
   } catch (error) {
     console.error(error);
     return null;

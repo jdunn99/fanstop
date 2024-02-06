@@ -25,30 +25,28 @@ export function HomePage() {
             ) : (
               <React.Fragment>
                 <Link href="/login">
-                  <Button variant="ghost" size="sm">
-                    Login
-                  </Button>
+                  <Button variant="ghost">Login</Button>
                 </Link>
                 <Link href="/register">
-                  <Button size="sm">Sign Up</Button>
+                  <Button>Sign Up</Button>
                 </Link>
               </React.Fragment>
             )}
           </div>
         </div>
       </header>
-      <main className="flex-1 ">
-        <section className="space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-48 flex items-center flex-col">
-          <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center">
+      <main className="flex-1 max-w-screen-xl mx-auto prose space-y-8 mt-32">
+        <section className="mx-auto space-y-2">
+          <div>
             <h1 className="font-bold text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
               <span className="text-rose-500">FanStop.</span> Where Creativity
               Meets Community.
             </h1>
-            <p className="max-w-[42rem] leading-normal opacity-80 sm:text-xl sm:leading-8">
+            <p className="opacity-80 sm:text-xl sm:leading-8 max-w-[48rem]">
               Discover a dynamic writing platform for creators to publish
               directly to their audience and earn through subscriptions.
             </p>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 my-16">
               <Link href="/register">
                 <Button>Connect with your fans</Button>
               </Link>
@@ -58,7 +56,7 @@ export function HomePage() {
             </div>
           </div>
         </section>
-        <section className="space-y-6  max-w-screen-xl mx-auto bg-slate-50 py-8 dark:bg-transparent md:py-12 lg:py-24 px-16 rounded-lg">
+        <section className="">
           <div className="mx-auto flex flex-col items-center space-y-4 text-center">
             <h2 className="font-bold text-3xl sm:text-3xl md:text-4xl">
               Join a community built by independent creators.
@@ -68,19 +66,11 @@ export function HomePage() {
               visionaries, finding creative fulfillment and financial
               independence doing what they love.
             </p>
-            <div className="flex items-center text-center max-w-[64rem]">
-              <CreatorBar
-                keys={tags || []}
-                active={active}
-                setActive={setActive}
-              />
-            </div>
-          </div>
-          <div className="mx-auto space-y-2 max-w-screen-md">
-            <FeaturedCreator queryKey={active} />
           </div>
           <div className="mx-auto pt-8 text-center md:max-w-[58rem]">
-            <Button>See who else is on FanStop</Button>
+            <Link href="/explore">
+              <Button>See who is on FanStop</Button>
+            </Link>
           </div>
         </section>
         <section className="container py-8 md:py-12 lg:py-24">

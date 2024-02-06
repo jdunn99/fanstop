@@ -44,6 +44,7 @@ export async function getCommunityByParam({
         _count: {
           select: {
             subscribers: true,
+            posts: true,
           },
         },
         creator: {
@@ -76,7 +77,12 @@ export async function checkSubscriber({
 }) {
   const result = await db.subscriber.count({
     where: {
-      OR: [{ communityId }, { community: { slug: communityId } }],
+      OR: [
+        {
+          communityId,
+        },
+        { community: { slug: communityId } },
+      ],
       userId,
     },
   });
@@ -100,6 +106,7 @@ export async function getCommunitiesByTag(tagName: string, userId?: string) {
         _count: {
           select: {
             subscribers: true,
+            posts: true,
           },
         },
         creator: {
@@ -120,6 +127,8 @@ export async function getCommunitiesByTag(tagName: string, userId?: string) {
     const validated = z
       .array(CommunitiesValidators.CommunitySchema)
       .parse(result);
+
+    console.log(validated);
     const response: CommunityResponse[] = [];
 
     for (const community of validated) {
@@ -162,6 +171,7 @@ export async function getPopularCommunities(query?: string, userId?: string) {
         _count: {
           select: {
             subscribers: true,
+            posts: true,
           },
         },
         creator: {
@@ -182,6 +192,8 @@ export async function getPopularCommunities(query?: string, userId?: string) {
     const validated = z
       .array(CommunitiesValidators.CommunitySchema)
       .parse(result);
+
+    console.log({ result });
     const response: CommunityResponse[] = [];
 
     for (const community of validated) {
@@ -203,6 +215,44 @@ export async function getPopularCommunities(query?: string, userId?: string) {
     }
 
     return response;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+export async function updateCommunity({
+  name,
+  slug,
+  description,
+  id,
+}: Partial<CreateCommunityArgs> & { id: string }) {
+  try {
+    return await db.community.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+        slug,
+        description,
+      },
+      include: {
+        _count: {
+          select: {
+            subscribers: true,
+            posts: true,
+          },
+        },
+        creator: {
+          select: {
+            name: true,
+            id: true,
+            image: true,
+          },
+        },
+      },
+    });
   } catch (error) {
     console.error(error);
     return null;

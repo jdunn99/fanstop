@@ -9,36 +9,16 @@ import { authOptions } from "../api/auth/[...nextauth]";
 
 export default function ProfilePage({
   slug,
-  pasta,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data } = useCommunitiesByIDQuery(slug);
-  const router = useRouter();
 
-  React.useEffect(() => {
-    if (pasta && data) {
-      if (pasta.user.id === data.creatorId) {
-        router.push("/profile");
-      }
-    }
-    console.log(pasta, data?.creatorId);
-  }, [pasta, data?.creatorId]);
-
-  // console.log(session);
   return <ProfileComponent slug={slug} data={data} />;
 }
 
-export async function getServerSideProps({
-  req,
-  res,
-  query,
-}: GetServerSidePropsContext) {
-  const session = await getServerSession(req, res, authOptions);
-  console.log("SERVER SESSION: ", session);
-
+export async function getServerSideProps({ query }: GetServerSidePropsContext) {
   return {
     props: {
       slug: z.string().parse(query.slug),
-      pasta: session,
     },
   };
 }

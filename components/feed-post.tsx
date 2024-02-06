@@ -64,9 +64,6 @@ export function FeedPost({ id, author, title, createdAt, views }: PostItem) {
           >
             {title}
           </Link>
-          {/* <p className="text-slate-500 text-sm ">
-                        anchovies, capers, parsley; it's me
-                    </p> */}
           <div className="flex items-center font-medium text-rose-600 gap-2 mt-2">
             <Avatar />
             <div className="">

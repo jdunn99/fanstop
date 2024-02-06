@@ -24,7 +24,7 @@ export default function PostEditorPage({
     setIsMounted(true);
   }, [isMounted]);
 
-  if (!data || !content) return null;
+  if (!data) return null;
 
   return <Editor {...data.post} content={content} />;
 }

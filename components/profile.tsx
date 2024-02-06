@@ -25,7 +25,6 @@ interface ProfileComponentProps {
 }
 
 export function ProfileComponent({ data, slug }: ProfileComponentProps) {
-  const { data: session } = useSession();
   const { data: posts } = usePostsForCommunity(slug);
 
   if (!data) return null;

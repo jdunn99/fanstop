@@ -7,6 +7,7 @@ import {
 import { Search } from "@/components/search";
 import { usePopularCommunities } from "@/lib/queries/useCommunities";
 import { usePopularTags } from "@/lib/queries/usePopularTags";
+import Link from "next/link";
 import React from "react";
 
 export default function ExplorePage() {
@@ -20,12 +21,13 @@ export default function ExplorePage() {
       <div className="grid grid-cols-4 gap-2">
         {typeof tags !== "undefined"
           ? tags.map(({ id, name }) => (
-              <div
+              <Link
+                href={`/explore/search/${name}`}
                 key={id}
-                className="rounded-lg bg-white p-4 border border-slate-300 text-slate-600 font-semibold"
+                className=" w-full rounded-lg hover:border-rose-500 hover:text-rose-900 hover:bg-rose-50 bg-white p-4 border border-slate-300 text-slate-600 font-semibold"
               >
                 {name}
-              </div>
+              </Link>
             ))
           : null}
       </div>

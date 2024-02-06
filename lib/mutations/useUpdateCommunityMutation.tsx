@@ -1,18 +1,18 @@
 import { useMutation } from "react-query";
 import { CreateCommunityArgs } from "../api/validators";
 
-export function useCreateCommunityMutation() {
+export function useUpdateCommunityMutation() {
   return useMutation("community", {
     mutationFn: async ({
+      id,
       name,
       slug,
-      tags,
       description,
-    }: CreateCommunityArgs) => {
-      fetch("/api/communities", {
-        method: "POST",
+    }: Partial<CreateCommunityArgs> & { id: string }) => {
+      fetch(`/api/communities/${id}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, slug, tags, description }),
+        body: JSON.stringify({ name, slug, description }),
       }).then((res) => res.json());
     },
   });

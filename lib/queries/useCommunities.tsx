@@ -13,7 +13,7 @@ export function useCommunitiesQuery() {
 }
 
 export function useCommunitiesByIDQuery(slug: string) {
-  return useQuery<any>(["community", slug], () =>
+  return useQuery<CommunityResponse>(["community", slug], () =>
     fetch(`/api/communities/${slug}`).then((res) => res.json())
   );
 }

@@ -75,8 +75,9 @@ export function Layout({ children, heading }: LayoutProps) {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <header className="sticky top-0 z-40 bg-white border-b">
-        <div className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4">
-          <Navbar links={[]} />
+        <div className="flex h-16 items-center max-w-screen-xl mx-auto w-full justify-between py-4">
+          {/* <Navbar links={[]} /> */}
+          <div />
           <div className="flex items-center gap-2">
             {session?.user ? (
               <AuthedNav />
@@ -95,14 +96,9 @@ export function Layout({ children, heading }: LayoutProps) {
           </div>
         </div>
       </header>
-      <div
-        className="grid bg-white overflow-hidden h-screen"
-        style={{ gridTemplateColumns: "minmax(150px, 350px) 1fr" }}
-      >
-        <aside className="justify-self-end gap-8 px-8 pt-8 border-r overflow-hidden w-full sticky">
-          <Sidebar />
-        </aside>
-        <main className="h-full bg-slate-50 overflow-auto">
+      <div className="grid lg:grid-cols-6 bg-white overflow-hidden h-screen">
+        <Sidebar />
+        <main className="h-full bg-slate-50 overflow-auto col-span-3 lg:col-span-5 lg:border-l">
           <div className="max-w-screen-lg mx-auto px-8 space-y-8 py-8 ">
             {typeof heading === "undefined" ? null : (
               <Header heading={heading} />
