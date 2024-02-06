@@ -1,7 +1,6 @@
 import { MdThumbUp } from "react-icons/md";
 import { BsEyeFill } from "react-icons/bs";
 import React from "react";
-import { Like } from "@/pages/api/like";
 import { useSession } from "next-auth/react";
 import { useLikeMutation } from "@/lib/mutations/useLikeMutation";
 

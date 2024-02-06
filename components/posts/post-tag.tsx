@@ -1,8 +1,8 @@
 import React from "react";
 import { EditorHeader } from "../editor/editor-header";
 import { EditorParagraph } from "../editor/editor-paragraph";
-import { Block, EditorActionType, ValidTags, useEditor } from "@/lib/useEditor";
-import { EditorTagProps, EditorTag } from "../editor/editor-tag";
+import { Block, ValidTags, useEditor } from "@/lib/useEditor";
+import { EditorTag } from "../editor/editor-tag";
 
 interface PostTagProps {
   block: Block;

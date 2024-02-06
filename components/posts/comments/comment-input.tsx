@@ -4,7 +4,6 @@ import Textarea from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/toast";
 import { CreateCommentArgs } from "@/lib/api/validators";
 import { useCreateCommentMutation } from "@/lib/mutations/useCreateCommentMutation";
-import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import React from "react";
 
