@@ -1,5 +1,5 @@
 import { FormContainer } from "@/components/form-container";
-import { Layout } from "@/components/layout";
+import { DashboardItem, Layout } from "@/components/layout";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
@@ -15,6 +15,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { BsPlus, BsPlusCircle, BsPlusCircleFill } from "react-icons/bs";
+import { MdPlusOne } from "react-icons/md";
 import { z } from "zod";
 
 const schema = z.object({
@@ -84,7 +86,7 @@ export default function PostPublishPage({
   // }, [isLoading]);
 
   React.useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && typeof post !== "undefined") {
       if (typeof post?.image !== "undefined") {
         setCoverImage({ src: post.image! });
       }
@@ -98,7 +100,7 @@ export default function PostPublishPage({
 
   return (
     <Layout heading="Publish Post">
-      <div className="flex flex-col mx-auto">
+      <div className="lg:max-w-2xl space-y-8">
         <Breadcrumbs
           paths={[
             { href: "/", value: "Home" },
@@ -109,101 +111,114 @@ export default function PostPublishPage({
             { href: `/editor/${postId}/publish`, value: "Publish" },
           ]}
         />
-        <div className="mx-auto h-[calc(100vh-250px)] flex w-full flex-col justify-center space-y-6 sm:w-[450px]">
-          <div className="flex flex-col space-y-8 text-center">
-            <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
-              <FormContainer
-                label="Post Title"
-                errorMessage={errors.title?.message}
-              >
-                <Input
-                  {...register("title")}
-                  defaultValue={post.title}
-                  className={`${errors.title ? "border-red-500" : ""} bg-white`}
-                />
-              </FormContainer>
-              <FormContainer
-                label="Post Description"
-                errorMessage={errors.description?.message}
-              >
-                <Textarea
-                  {...register("description")}
-                  placeholder="Description"
-                  defaultValue={post.description}
-                  className={`${
-                    errors.description ? "border-red-500" : ""
-                  } bg-white min-h-[64px]`}
-                />
-              </FormContainer>
-              <FormContainer label="Visiblity">
-                <div className="flex items-center gap-1">
-                  <input
-                    {...register("visibility")}
-                    type="radio"
-                    value="Anyone"
-                    className="accent-rose-500"
-                    defaultChecked
-                  />
-                  <label>Anyone</label>
-                </div>
-
-                <div className="flex items-center gap-1">
-                  <input
-                    {...register("visibility")}
-                    type="radio"
-                    value="Subscribers only"
-                    className="accent-rose-500"
-                  />
-                  <label>Subscribers only</label>
-                </div>
-              </FormContainer>
-              <FormContainer label="Enable Comments">
-                <div className="flex items-center gap-1">
-                  <input
-                    {...register("comments")}
-                    type="radio"
-                    value="Enable"
-                    className="accent-rose-500"
-                    defaultChecked
-                  />
-                  <label>Enable</label>
-                </div>
-
-                <div className="flex items-center gap-1">
-                  <input
-                    {...register("comments")}
-                    type="radio"
-                    value="Disable"
-                    className="accent-rose-500"
-                  />
-                  <label>Disable</label>
-                </div>
-              </FormContainer>
-              <FormContainer label="Cover Image">
-                <div
-                  className="w-full border"
-                  onClick={() => {
-                    imageInputRef.current?.click();
-                  }}
-                >
-                  {coverImage ? <img src={coverImage.src} /> : null}
-                </div>
+        <DashboardItem>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            <FormContainer
+              label="Post Title"
+              errorMessage={errors.title?.message}
+            >
+              <Input
+                {...register("title")}
+                defaultValue={post.title}
+                className={`${errors.title ? "border-red-500" : ""} bg-white`}
+              />
+            </FormContainer>
+            <FormContainer
+              label="Description"
+              errorMessage={errors.description?.message}
+            >
+              <Textarea
+                {...register("description")}
+                placeholder="Description"
+                defaultValue={post.description}
+                className={`${
+                  errors.description ? "border-red-500" : ""
+                } bg-white min-h-[64px]`}
+              />
+            </FormContainer>
+            <FormContainer label="Visiblity">
+              <div className="flex items-center gap-1">
                 <input
-                  type="file"
-                  ref={imageInputRef}
-                  className="hidden"
-                  onChange={onFileChange}
+                  {...register("visibility")}
+                  type="radio"
+                  value="Anyone"
+                  className="accent-rose-500"
+                  defaultChecked
                 />
-              </FormContainer>
-              <div className="flex items-center gap-2 ml-auto">
-                <Link href={`/editor/${postId}`}>
-                  <Button variant="secondary">Cancel</Button>
-                </Link>
-                <Button type="submit">Publish</Button>
+                <label>Anyone</label>
               </div>
-            </form>
-          </div>
-        </div>
+
+              <div className="flex items-center gap-1">
+                <input
+                  {...register("visibility")}
+                  type="radio"
+                  value="Subscribers only"
+                  className="accent-rose-500"
+                />
+                <label className="text-sm font-semibold opacity-80">
+                  Subscribers only
+                </label>
+              </div>
+            </FormContainer>
+            <FormContainer label="Enable Comments">
+              <div className="flex items-center gap-1">
+                <input
+                  {...register("comments")}
+                  type="radio"
+                  value="Enable"
+                  className="accent-rose-500"
+                  defaultChecked
+                />
+                <label className="text-sm font-semibold opacity-80">
+                  Enable
+                </label>
+              </div>
+              <div className="flex items-center gap-1">
+                <input
+                  {...register("comments")}
+                  type="radio"
+                  value="Disable"
+                  className="accent-rose-500"
+                />
+                <label className="text-sm font-semibold opacity-80">
+                  Disable
+                </label>
+              </div>
+            </FormContainer>
+            <FormContainer label="Cover Image">
+              <div
+                className="w-full border min-h-[64px] rounded-xl cursor-pointer bg-white hover:bg-rose-50"
+                onClick={() => {
+                  imageInputRef.current?.click();
+                }}
+              >
+                {typeof coverImage !== "undefined" &&
+                coverImage.src !== null ? (
+                  <img
+                    src={coverImage.src}
+                    className="rounded-xl hover:opacity-50"
+                  />
+                ) : (
+                  <p className="flex justify-center items-center h-full gap-2 text-slate-600 font-semibold">
+                    <BsPlusCircleFill /> Add image
+                  </p>
+                )}
+              </div>
+              <input
+                type="file"
+                ref={imageInputRef}
+                className="hidden"
+                onChange={onFileChange}
+              />
+            </FormContainer>
+            <div className="flex items-center gap-2 ml-auto">
+              <Link href={`/editor/${postId}`}>
+                <Button variant="secondary">Cancel</Button>
+              </Link>
+              <Button type="submit">Publish</Button>
+            </div>
+          </form>
+        </DashboardItem>
       </div>
     </Layout>
   );

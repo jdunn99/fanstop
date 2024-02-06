@@ -8,7 +8,7 @@ export function useCreateCommunityMutation() {
       slug,
       tags,
       description,
-    }: CreateCommunityArgs) => {
+    }: Partial<CreateCommunityArgs>) => {
       fetch("/api/communities", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

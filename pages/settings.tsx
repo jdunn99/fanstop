@@ -51,6 +51,7 @@ export default function Settings({
       slug,
       description,
     });
+    router.reload();
     router.push("/");
   }
 
@@ -60,7 +61,7 @@ export default function Settings({
 
   return (
     <Layout heading="Settings">
-      <DashboardItem>
+      {/* <DashboardItem>
         <DashboardItemHeading heading="Your Community" />
         <div className="mx-auto h-[calc(100vh-350px)] flex w-full flex-col justify-center space-y-6 sm:w-[450px]">
           <div className="flex flex-col space-y-8 text-center">
@@ -105,6 +106,56 @@ export default function Settings({
               <Button type="submit">Update</Button>
             </form>
           </div>
+        </div>
+      </DashboardItem> */}
+      <DashboardItem>
+        <DashboardItemHeading heading="Your Community" />
+        <p className="font-medium text-sm opacity-60">
+          This is how others will see you on the site
+        </p>
+        <div className="lg:max-w-2xl">
+          <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
+            <div className="space-y-2">
+              <label className="text-left text-sm font-bold">Username</label>
+              <Input
+                {...register("slug")}
+                className="bg-white w-full"
+                defaultValue={data.community.slug}
+                placeholder="Username"
+              />
+              <p className="text-xs opacity-60">
+                This is your public username that users can use to find your
+                content.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <label className="text-left text-sm font-bold">
+                Community Name
+              </label>
+              <Input
+                {...register("name")}
+                className="bg-white w-full"
+                defaultValue={data.community.name}
+                placeholder="Community Name"
+              />
+              <p className="text-xs opacity-60">
+                This is your public community name.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-left text-sm font-bold">Description</label>
+              <Textarea
+                {...register("description")}
+                className="bg-white w-full min-h-[60px]"
+                defaultValue={data.community.description}
+                placeholder="Community Name"
+              />
+            </div>
+            <Button size="sm" type="submit">
+              Update Community
+            </Button>
+          </form>
         </div>
       </DashboardItem>
     </Layout>
