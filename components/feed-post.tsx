@@ -1,4 +1,4 @@
-import { PostItem } from "@/pages/api/user/feed";
+import { PostItem } from "@/lib/api/validators";
 import { Avatar } from "./ui/avatar";
 import Link from "next/link";
 
