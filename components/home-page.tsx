@@ -1,17 +1,11 @@
 import { mainNav } from "@/config/config";
-import { usePopularTags } from "@/lib/queries/usePopularTags";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
-import { CreatorBar } from "./creator-bar";
-import { FeaturedCreator } from "./featured-creators";
 import { Navbar, AuthedNav } from "./nav";
 import Button from "./ui/button";
 
 export function HomePage() {
-  const [active, setActive] = React.useState<string>("Technology");
-  const { data: tags } = usePopularTags();
-
   const { data } = useSession();
 
   return (
