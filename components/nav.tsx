@@ -5,6 +5,7 @@ import { Search } from "./search";
 import Button from "./ui/button";
 import { AvatarMenu } from "./avatar-menu";
 import { CreatePostButton } from "./create-post-button";
+import Image from "next/image";
 
 interface MainNavProps {
   children?: React.ReactNode;
@@ -25,9 +26,7 @@ export function Navbar({ links, children }: MainNavProps) {
   return (
     <div className="flex gap-6 md:gap-10">
       <Link href="/" className="hidden items-center space-x-1 md:flex">
-        <span className="hidden text-lg font-bold sm:inline-block ">
-          FanStop
-        </span>
+        <Image src={"/images/logo.svg"} alt="FanStop" width={32} height={32} />
       </Link>
 
       <nav className="hidden gap-6 md:flex">

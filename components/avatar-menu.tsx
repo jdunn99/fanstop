@@ -8,8 +8,12 @@ import {
   useMenu,
 } from "./ui/menu";
 import { Avatar } from "./ui/avatar";
-import { dashboardConfig } from "@/config/dashboard";
+import { dashboardConfig, useSidebarRoutes } from "@/config/dashboard";
 import Link from "next/link";
+import Image from "next/image";
+import Button from "./ui/button";
+import { BsDoorOpen, BsDoorOpenFill } from "react-icons/bs";
+import { MdDoorBack, MdDoorFront } from "react-icons/md";
 
 interface AvatarButtonProps {
   name: string;
@@ -18,25 +22,30 @@ interface AvatarButtonProps {
 }
 function AvatarButton({ name, image, onClick }: AvatarButtonProps) {
   return (
-    <Avatar
+    <div
       role="button"
       onClick={onClick}
-      className="inline-flex justify-center items-center text-white font-bold"
+      className="p-1 h-10 w-10 flex items-center justify-center rounded-full border object-cover"
     >
-      {name.at(0)}
-    </Avatar>
+      <Image alt="Avatar" src={image || ""} width={32} height={32} />
+    </div>
   );
 }
 
 export function AvatarMenu() {
   const { isOpen, toggle, onClose } = useMenu();
   const { data } = useSession();
+  const routes = useSidebarRoutes();
 
   if (!data) return null;
 
   return (
     <Menu onClose={onClose}>
-      <AvatarButton name={data.user.name || ""} onClick={toggle} />
+      <AvatarButton
+        name={data.user.name || ""}
+        onClick={toggle}
+        image={data.user.image || ""}
+      />
       {isOpen ? (
         <MenuList className="w-60">
           <MenuGroup border>
@@ -44,13 +53,24 @@ export function AvatarMenu() {
             <MenuText variant="sm">{data.user.email}</MenuText>
           </MenuGroup>
           <MenuGroup border>
-            {dashboardConfig.sidebar.map(({ href, value }) => (
+            {routes.map(({ href, image, value }) => (
               <Link href={href} key={href}>
-                <MenuItem>{value}</MenuItem>
+                <MenuItem className="inline-flex gap-2">
+                  <span className="text-xl">{image}</span>
+                  <span>{value}</span>
+                </MenuItem>
               </Link>
             ))}
           </MenuGroup>
-          <MenuItem onClick={() => void signOut()}>Sign Out</MenuItem>
+          <MenuItem
+            className="inline-flex gap-2"
+            onClick={() => void signOut()}
+          >
+            <span className="text-xl">
+              <BsDoorOpenFill />
+            </span>
+            <span>Sign Out</span>
+          </MenuItem>
         </MenuList>
       ) : null}
     </Menu>

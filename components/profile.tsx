@@ -5,7 +5,13 @@ import { InferGetServerSidePropsType } from "next";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React from "react";
-import { BsHeartFill, BsHeart } from "react-icons/bs";
+import {
+  BsHeartFill,
+  BsHeart,
+  BsPencil,
+  BsPencilFill,
+  BsGearFill,
+} from "react-icons/bs";
 import {
   Layout,
   Header,
@@ -18,6 +24,10 @@ import Button from "./ui/button";
 import { CommunityResponse } from "@/lib/api/validators";
 import { usePostsForCommunity } from "@/lib/queries/usePostQuery";
 import { SubscribeButton } from "./subscribe-button";
+import Image from "next/image";
+import { ProfileImage } from "./ui/profile-image";
+import { CreatePostButton } from "./create-post-button";
+import Link from "next/link";
 
 interface ProfileComponentProps {
   slug: string;
@@ -34,14 +44,41 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
   return (
     <React.Fragment>
       <Layout>
-        <Header heading={community.name}>
+        {/* <Header heading={community.name}>
           {isOwn ? (
             <Button>Edit Profile</Button>
           ) : (
             <SubscribeButton isSubscriber={isSubscriber} slug={slug} />
           )}
-        </Header>
-        <p>{community.description}</p>
+        </Header> */}
+        <div className="w-full space-y-8 mx-auto max-w-screen-md text-center py-16 border-b">
+          <div className="flex justify-end">
+            {isOwn ? (
+              <div className="flex items-center gap-2 font-semibold">
+                <Link href="/settings">
+                  <Button size="sm" variant="ghost">
+                    <BsGearFill />
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <SubscribeButton isSubscriber={isSubscriber} slug={slug} />
+            )}
+          </div>
+          {community.image ? <ProfileImage src={community.image} /> : null}
+          <h1 className="text-center text-4xl font-bold  text-slate-800">
+            {community.name}
+          </h1>
+          <p className="w-full text-center  font-regular text-slate-500 leading-loose">
+            {community.description}
+          </p>
+          <div className="flex justify-center">
+            <div className="flex items-center gap-2 font-semibold text-slate-600 text-sm sm:flex-row flex-col ">
+              <p>{community._count.subscribers} subscribers</p>
+              <p>{community._count.posts} posts</p>
+            </div>
+          </div>
+        </div>
         {typeof posts === "undefined" ? null : (
           <React.Fragment>
             <DashboardItem>
@@ -59,14 +96,14 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
                   </div>
                 </React.Fragment>
               ) : (
-                <EmptyCard heading="Post">
+                <div className="flex items-center justify-center flex-col space-y-2 pt-8">
                   <h3 className="text-slate-800 font-semibold text-sm">
                     No posts yet.
                   </h3>
                   <p className="text-xs">
                     {community.name} has not made any posts.
                   </p>
-                </EmptyCard>
+                </div>
               )}
             </DashboardItem>
 

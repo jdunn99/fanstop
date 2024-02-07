@@ -75,7 +75,7 @@ export function Layout({ children, heading }: LayoutProps) {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <header className="sticky top-0 z-40 bg-white border-b">
-        <div className="flex h-16 items-center max-w-screen-xl mx-auto w-full justify-between py-4">
+        <div className="flex  items-center max-w-screen-xl mx-auto w-full justify-between py-2">
           {/* <Navbar links={[]} /> */}
           <div />
           <div className="flex items-center gap-2">

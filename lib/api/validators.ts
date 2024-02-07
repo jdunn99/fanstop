@@ -37,6 +37,7 @@ export const CommunitiesValidators = {
     createdAt: z.date(),
     description: z.string(),
     updatedAt: z.date(),
+    image: z.string().optional().nullable(),
     creator: z.object({
       id: z.string().cuid(),
       name: z.string(),
@@ -48,6 +49,7 @@ export const CommunitiesValidators = {
     }),
   }),
   CreateCommunitySchema: z.object({
+    image: z.string(),
     name: z.string(),
     slug: z.string(),
     tags: z.array(z.string().cuid()),

@@ -28,10 +28,6 @@ export const dashboardConfig: DashboardConfig = {
       value: "Explore",
     },
     {
-      href: "/profile/subscriptions",
-      value: "Subscriptions",
-    },
-    {
       href: "/profile",
       value: "Profile",
     },

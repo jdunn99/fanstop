@@ -40,8 +40,6 @@ export function OwnPostMenu({
     push(`/profile`);
   }
 
-  console.log({ isPublished });
-
   return (
     <Menu onClose={onClose}>
       <MenuButton size="xs" variant="ghost" onClick={toggle}>
@@ -80,7 +78,11 @@ export function PostComponent({
   _count,
 }: PostComponentProps) {
   return (
-    <div className="flex">
+    <div
+      className={`${isFeatured && "p-8 "} ${
+        isCol && "p-2"
+      } bg-slate-100 rounded-lg`}
+    >
       <div
         className={`flex gap-8 flex-col w-full ${
           isFeatured ? "items-center" : ""

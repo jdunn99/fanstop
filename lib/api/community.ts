@@ -10,12 +10,16 @@ import { z } from "zod";
 
 export async function createCommunity({
   tags,
+  creatorId,
+  image,
   ...rest
 }: CreateCommunityArgs): Promise<Community | null> {
   try {
     const result = await db.community.create({
       data: {
         ...rest,
+        image,
+        creatorId,
         tags: {
           connect: tags.map((id) => ({ id })),
         },
@@ -25,6 +29,16 @@ export async function createCommunity({
     if (!result) {
       throw new Error("Result does not exist.");
     }
+
+    // update the user
+    await db.user.update({
+      where: {
+        id: creatorId,
+      },
+      data: {
+        image,
+      },
+    });
 
     return CommunitiesValidators.CommunitySchema.parse(result);
   } catch (error) {

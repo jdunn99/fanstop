@@ -4,6 +4,7 @@ import Link from "next/link";
 import Button from "./ui/button";
 import { SubscribeButton } from "./subscribe-button";
 import { Avatar } from "./ui/avatar";
+import { ProfileImage } from "./ui/profile-image";
 
 export function CommunityCard({
   community,
@@ -11,7 +12,7 @@ export function CommunityCard({
   isSubscriber,
 }: CommunityResponse) {
   const { data } = useSession();
-  const { name, creator, description, slug, _count } = community;
+  const { name, creator, description, slug, _count, image } = community;
   const { subscribers, posts } = _count;
 
   return (
@@ -20,9 +21,9 @@ export function CommunityCard({
       border bg-white p-6 items-start hover:border-rose-400 cursor-pointer 
       hover:bg-rose-50"
     >
-      <Avatar className="w-16 h-16 rounded-lg mr-4 bg-rose-500 inline-flex items-center justify-center text-white font-bold text-xl text-center">
-        {community.name.at(0)}
-      </Avatar>
+      <div className="mr-4">
+        <ProfileImage src={creator.image!} />
+      </div>
       <Link
         className="flex flex-1 flex-col justify-between rounded-md "
         href={`/${slug}`}

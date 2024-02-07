@@ -61,53 +61,6 @@ export default function Settings({
 
   return (
     <Layout heading="Settings">
-      {/* <DashboardItem>
-        <DashboardItemHeading heading="Your Community" />
-        <div className="mx-auto h-[calc(100vh-350px)] flex w-full flex-col justify-center space-y-6 sm:w-[450px]">
-          <div className="flex flex-col space-y-8 text-center">
-            <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
-              <div className="grid gap-1 text-left">
-                <label className="text-left text-sm font-bold">
-                  Community Name
-                </label>
-                <Input
-                  {...register("name")}
-                  placeholder="Community Name"
-                  defaultValue={data.community.name}
-                  className="bg-white"
-                />
-                <p className="text-sm text-red-500">{errors.name?.message}</p>
-              </div>
-              <div className="grid gap-1 text-left">
-                <label className="text-left text-sm font-bold">Username</label>
-                <Input
-                  {...register("slug")}
-                  placeholder="Username"
-                  defaultValue={data.community.slug}
-                  className="bg-white"
-                />
-                <p className="text-sm text-red-500">{errors.slug?.message}</p>
-              </div>
-              <div className="grid gap-1 text-left">
-                <label className="text-left text-sm font-bold">
-                  Descripton
-                </label>
-                <Textarea
-                  {...register("description")}
-                  placeholder="Description"
-                  defaultValue={data.community.description}
-                  className="bg-white"
-                  //   className={errors.description ? "border-red-500" : "h-18"}
-                />
-                <p className="text-sm text-red-500">
-                  {errors.description?.message}
-                </p>
-              </div>
-              <Button type="submit">Update</Button>
-            </form>
-          </div>
-        </div>
-      </DashboardItem> */}
       <DashboardItem>
         <DashboardItemHeading heading="Your Community" />
         <p className="font-medium text-sm opacity-60">

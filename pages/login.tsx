@@ -1,13 +1,23 @@
 import { InferGetServerSidePropsType } from "next";
 import React from "react";
-import { getProviders, signIn } from "next-auth/react";
+import { getProviders, signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { ProviderButtons } from "@/components/provider-buttons";
 import { LoginInput } from "@/components/login-input";
+import { useRouter } from "next/router";
 
 export default function Login({
   providers,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const router = useRouter();
+  const { data } = useSession();
+
+  React.useEffect(() => {
+    if (data) {
+      router.push("/");
+    }
+  }, [data]);
+
   return (
     <div className="px-8 flex h-screen w-screen flex-col items-center justify-center mx-auto">
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[385px]">
