@@ -1,4 +1,4 @@
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import Button from "@/components/ui/button";
 import Textarea from "@/components/ui/textarea";
 import { useDeleteCommentMutation } from "@/lib/mutations/useDeleteCommentMutation";
@@ -36,7 +36,9 @@ export function PostComment({
     <div className="w-full flex items-start py-4 px-8">
       <div className="space-y-2 flex-1">
         <div className="flex gap-4">
-          <Avatar />
+          <div className="flex-1">
+            <AvatarImage src={user.image!} />
+          </div>
           <div className="w-full">
             <h4 className="text-lg font-bold text-slate-900">{user.name}</h4>
             <p className="text-xs text-slate-500">
@@ -49,6 +51,7 @@ export function PostComment({
               <div className="w-full flex flex-col mt-2 gap-2">
                 <Textarea
                   defaultValue={editedText}
+                  className="bg-white"
                   onChange={(e: any) => setEditedText(e.target.value)}
                 />
                 <div className="flex items-center gap-2 self-end">
@@ -65,7 +68,7 @@ export function PostComment({
                 </div>
               </div>
             ) : (
-              <p className="text-sm pt-4 text-slate-800">{content}</p>
+              <p className="prose pt-1">{content}</p>
             )}
           </div>
         </div>

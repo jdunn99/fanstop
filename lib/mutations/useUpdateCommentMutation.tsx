@@ -6,7 +6,7 @@ export function useUpdateCommentMutation(id: string) {
 
   return useMutation(["comment", id], {
     async mutationFn({ content }: { content: string; postId: string }) {
-      const comment = await fetch(`/api/comments/${id}`, {
+      const comment = await fetch(`/api/comment/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -17,7 +17,7 @@ export function useUpdateCommentMutation(id: string) {
       });
       return await comment.json();
     },
-    onSuccess(data, { postId, content }) {
+    onSuccess(data, { postId }) {
       queryClient.setQueryData(["comments", postId], (oldData) => {
         const temp = oldData as unknown as Comment[];
         const index = temp.findIndex((item) => item.id === id);

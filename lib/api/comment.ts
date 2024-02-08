@@ -13,6 +13,7 @@ export async function createComment(
           select: {
             id: true,
             name: true,
+            image: true,
           },
         },
       },
@@ -36,11 +37,47 @@ export async function getCommentsForPost({ id }: Pick<PostQuery, "id">) {
           select: {
             name: true,
             id: true,
+            image: true,
           },
         },
       },
       orderBy: {
         createdAt: "desc",
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+export async function updateComment({
+  content,
+  userId,
+  id,
+}: Pick<CreateCommentArgs, "content" | "userId"> & { id: string }) {
+  try {
+    return await db.comment.update({
+      where: {
+        id,
+        userId,
+      },
+      data: {
+        content,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+export async function deleteComment(id: string, userId: string) {
+  try {
+    return await db.comment.delete({
+      where: {
+        id,
+        userId,
       },
     });
   } catch (error) {

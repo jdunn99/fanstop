@@ -11,7 +11,7 @@ interface SearchResultItemProps {
 }
 function SearchResultItem({ value, children }: SearchResultItemProps) {
   return (
-    <div className="py-2 px-4 text-sm flex flex-col text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-all cursor-pointer">
+    <div className="py-2 px-4 text-sm flex flex-col text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all cursor-pointer">
       {value}
       {children}
     </div>

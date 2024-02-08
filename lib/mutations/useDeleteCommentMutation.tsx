@@ -6,7 +6,7 @@ export function useDeleteCommentMutation(id: string) {
 
   return useMutation(["comment", id], {
     async mutationFn({ postId }: { postId: string }) {
-      await fetch(`/api/comments/${id}`, {
+      await fetch(`/api/comment/${id}`, {
         method: "DELETE",
       });
     },

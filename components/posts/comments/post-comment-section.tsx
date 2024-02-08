@@ -2,7 +2,6 @@ import { DashboardItem } from "@/components/layout";
 import { PostComment } from "./post-comment";
 import { CommentInput } from "./comment-input";
 import { useCommentForPostQuery } from "@/lib/queries/useCommentQuery";
-import { Session } from "next-auth";
 import { PostBar } from "../post-bar";
 
 interface PostCommentSectionProps {

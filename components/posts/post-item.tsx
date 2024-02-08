@@ -63,40 +63,150 @@ const FEATURED_CX =
 const BASE_CX =
   "object-fill border border-slate-200 rounded-lg w-[260px] h-[156px]";
 
-export function PostComponent({
+function FeaturedPost({
   id,
   title,
   description,
-  author,
-  image,
-  views,
-  createdAt,
-  isFeatured,
-  includeAuthor,
-  isOwn,
-  isCol,
   _count,
+  views,
+  image,
+  author,
+  createdAt,
 }: PostComponentProps) {
   return (
-    <div
-      className={`${isFeatured && "p-8 "} ${
-        isCol && "p-2"
-      } bg-slate-100 rounded-lg`}
+    <Link
+      href={`/${author.community.slug}/${id}`}
+      className="p-8 bg-slate-50 rounded-lg flex hover:underline"
     >
-      <div
-        className={`flex gap-8 flex-col w-full ${
-          isFeatured ? "items-center" : ""
-        } ${isCol ? "flex-col" : "md:flex-row"}`}
-      >
-        {image ? (
-          <img src={image} className={isFeatured ? FEATURED_CX : BASE_CX} />
-        ) : // <div className="w-[260px] h-[156px]" />
-        null}
-        <div
-          className={`flex items-start w-full ${
-            isFeatured ? "basis-1/2" : "flex-1"
-          }`}
-        >
+      <div className="flex gap-8 flex-col md:flex-row w-full items-center">
+        {image ? <img src={image} className={FEATURED_CX} /> : null}
+        <div className="flex items-start w-full basis-1/2">
+          <div className="flex-1 block w-full space-y-2">
+            <div className="flex items-center w-full">
+              <h1 className="text-base font-semibold flex-1 max-w-xs wrap text-slate-800">
+                {title}
+              </h1>
+            </div>
+            <p className="text-xs text-rose-500 ">
+              {new Date(createdAt).toLocaleString()}
+            </p>
+            <p className="text-sm text-slate-600">
+              {truncateString(description || "", 200)}
+            </p>
+            <div className="w-full flex gap-4 pt-2  text-xs text-slate-6 00">
+              <div className="flex gap-1 items-center">
+                <MdThumbUp />
+                <p>{_count.likes} Likes</p>
+              </div>
+              <div className="flex gap-1 items-center">
+                <FaComment />
+                <p>{_count.comments} Comments</p>
+              </div>
+              <div className="flex gap-1 items-center">
+                <BsEyeFill />
+                <p>{views} Views</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function GridPost({
+  id,
+  title,
+  description,
+  _count,
+  views,
+  image,
+  author,
+  includeAuthor,
+  createdAt,
+}: PostComponentProps) {
+  return (
+    <Link
+      className="flex bg-slate-50 rounded-lg p-4"
+      href={`/${author.community.slug}/${id}`}
+    >
+      <div className="flex gap-8 flex-col w-full">
+        <div className="flex items-center justify-center">
+          {image ? <img src={image} className={BASE_CX} /> : null}
+        </div>
+        <div className="flex items-start w-full">
+          <div className="space-y-2">
+            {includeAuthor ? (
+              <Link
+                href={`/${author.community.slug}`}
+                className="pt-4 flex items-center gap-2 opacity-80 hover:opacity-100"
+              >
+                <div>
+                  <p className="text-sm font-medium text-slate-600">
+                    {author.name}
+                  </p>
+                  <p className="text-xs font-semibold text-rose-500">
+                    @{author.community.slug}
+                  </p>
+                </div>
+              </Link>
+            ) : null}
+            <Link
+              href={`/${author.community.slug}/${id}`}
+              className="hover:underline flex-1 block w-full space-y-2"
+            >
+              <h1 className="text-base font-semibold max-w-xs wrap text-slate-800">
+                {title}
+              </h1>
+              <p className="text-xs text-rose-500 ">
+                {new Date(createdAt).toLocaleString()}
+              </p>
+              <p className="text-sm text-slate-600">
+                {truncateString(description || "", 200)}
+              </p>
+              <div className="w-full flex gap-4 pt-2  text-xs text-slate-6 00">
+                <div className="flex gap-1 items-center">
+                  <MdThumbUp />
+                  <p>{_count.likes}</p>
+                </div>
+                <div className="flex gap-1 items-center">
+                  <FaComment />
+                  <p>{_count.comments}</p>
+                </div>
+                <div className="flex gap-1 items-center">
+                  <BsEyeFill />
+                  <p>{views}</p>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function Post({
+  id,
+  title,
+  description,
+  _count,
+  views,
+  image,
+  author,
+  includeAuthor,
+  createdAt,
+}: PostComponentProps) {
+  return (
+    <Link
+      className="flex bg-slate-50 rounded-lg p-4"
+      href={`/${author.community.slug}/${id}`}
+    >
+      <div className="flex gap-8  w-full">
+        <div className="flex items-center justify-center">
+          {image ? <img src={image} className={BASE_CX} /> : null}
+        </div>
+        <div className="flex items-center w-full">
           <div className="space-y-2">
             {includeAuthor ? (
               <Link
@@ -144,11 +254,22 @@ export function PostComponent({
           </div>
         </div>
       </div>
-      {isOwn ? (
-        <div className="pl-4 justify-end">
-          <OwnPostMenu id={id} />
-        </div>
-      ) : null}
-    </div>
+    </Link>
   );
+}
+
+export function PostComponent({
+  isFeatured,
+  isCol,
+  ...rest
+}: PostComponentProps) {
+  if (isFeatured) {
+    return <FeaturedPost {...rest} />;
+  }
+
+  if (isCol) {
+    return <GridPost {...rest} />;
+  }
+
+  return <Post {...rest} />;
 }

@@ -61,7 +61,7 @@ export function EditorUpdateButton({ tag, index }: EditorCreateButtonProps) {
         <BsThreeDotsVertical />
       </Button>
       {isOpen ? (
-        <MenuList>
+        <MenuList className="w-32">
           <MenuGroup>
             <MenuItem disabled={index === 0} onClick={handleMoveUp}>
               Move Up
@@ -83,6 +83,7 @@ export function EditorUpdateButton({ tag, index }: EditorCreateButtonProps) {
                 key={tag}
                 tag={tag as ValidTags}
                 action={EditorActionType.ChangeBlockTag}
+                onClose={onClose}
                 index={index}
               >
                 {TAG_WITH_TEXT[tag as ValidTags]}

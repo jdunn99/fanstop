@@ -7,7 +7,7 @@ import {
   MenuItem,
   useMenu,
 } from "./ui/menu";
-import { Avatar } from "./ui/avatar";
+import { Avatar, AvatarImage } from "./ui/avatar";
 import { dashboardConfig, useSidebarRoutes } from "@/config/dashboard";
 import Link from "next/link";
 import Image from "next/image";
@@ -16,18 +16,13 @@ import { BsDoorOpen, BsDoorOpenFill } from "react-icons/bs";
 import { MdDoorBack, MdDoorFront } from "react-icons/md";
 
 interface AvatarButtonProps {
-  name: string;
   image?: string;
   onClick(): void;
 }
-function AvatarButton({ name, image, onClick }: AvatarButtonProps) {
+function AvatarButton({ image, onClick }: AvatarButtonProps) {
   return (
-    <div
-      role="button"
-      onClick={onClick}
-      className="p-1 h-10 w-10 flex items-center justify-center rounded-full border object-cover"
-    >
-      <Image alt="Avatar" src={image || ""} width={32} height={32} />
+    <div role="button" onClick={onClick}>
+      <AvatarImage src={image!} />
     </div>
   );
 }
@@ -41,11 +36,7 @@ export function AvatarMenu() {
 
   return (
     <Menu onClose={onClose}>
-      <AvatarButton
-        name={data.user.name || ""}
-        onClick={toggle}
-        image={data.user.image || ""}
-      />
+      <AvatarButton onClick={toggle} image={data.user.image || ""} />
       {isOpen ? (
         <MenuList className="w-60">
           <MenuGroup border>

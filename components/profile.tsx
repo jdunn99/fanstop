@@ -28,6 +28,7 @@ import Image from "next/image";
 import { ProfileImage } from "./ui/profile-image";
 import { CreatePostButton } from "./create-post-button";
 import Link from "next/link";
+import Input from "./ui/input";
 
 interface ProfileComponentProps {
   slug: string;
@@ -51,7 +52,7 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
             <SubscribeButton isSubscriber={isSubscriber} slug={slug} />
           )}
         </Header> */}
-        <div className="w-full space-y-8 mx-auto max-w-screen-md text-center py-16 border-b">
+        <div className="w-full space-y-8 mx-auto max-w-screen-md text-center">
           <div className="flex justify-end">
             {isOwn ? (
               <div className="flex items-center gap-2 font-semibold">
@@ -79,6 +80,13 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
             </div>
           </div>
         </div>
+        <Input
+          type="search"
+          className="w-full bg-white"
+          placeholder="Search posts"
+        />
+        <hr />
+
         {typeof posts === "undefined" ? null : (
           <React.Fragment>
             <DashboardItem>

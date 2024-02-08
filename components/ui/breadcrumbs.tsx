@@ -10,7 +10,7 @@ interface BreadcrumbProps {
   paths: Path[];
 }
 
-// ghost: "bg-transparent hover:bg-slate-100 opacity-80 hover:opacity-100",
+// ghost: "bg-transparent hover:bg-slate-50 opacity-80 hover:opacity-100",
 export function Breadcrumbs({ paths }: BreadcrumbProps) {
   return (
     <nav className="flex">

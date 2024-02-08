@@ -1,4 +1,4 @@
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import Button from "@/components/ui/button";
 import Textarea from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/toast";
@@ -38,14 +38,16 @@ export function CommentInput({ postId }: CommentInputProps) {
 
   return (
     <div className="flex gap-2 mt-4 w-full">
-      <Avatar />
+      <div className="flex-1">
+        <AvatarImage src={session?.user.image!} />
+      </div>
       <Textarea
         placeholder="Comment"
         value={comment}
         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
           setComment(e.target.value)
         }
-        className="w-full"
+        className="w-full min-h-[80px] bg-white"
       />
       <Button onClick={() => onClick({ postId, content: comment })}>
         Post

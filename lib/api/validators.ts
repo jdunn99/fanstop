@@ -12,6 +12,7 @@ export const CommentValidators = {
     user: z.object({
       id: z.string().cuid(),
       name: z.string(),
+      image: z.string().nullable(),
     }),
     createdAt: z.date(),
     updatedAt: z.date(),

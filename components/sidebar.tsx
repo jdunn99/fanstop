@@ -22,28 +22,47 @@ export function Sidebar() {
   }
 
   return (
-    <nav className="space-y-4">
-      <div className="space-y-4 py-4">
-        <div className="px-3 py-2">
-          <div className="space-y-1">
-            {items.map((item, index) => (
-              <Link key={index} href={item.href}>
-                <span
-                  className={`group transition-all gap-4 flex items-center rounded-md px-4 py-2 my-1 text-sm font-medium  hover:text-rose-600 ${
-                    path === item.href
-                      ? "text-rose-600"
-                      : "transparent text-slate-800"
-                  }`}
-                >
-                  <span className="text-xl">{item.image}</span>
-
-                  <span>{item.value}</span>
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
+    <nav className="lg:text-sm lg:leading-6 relative ">
+      <ul>
+        {items.map((item, index) => (
+          <li>
+            <Link
+              key={index}
+              href={item.href}
+              className={`group flex items-center lg:text-sm lg:leading-6 mb-4 font-medium hover:text-rose-500 ${
+                path === item.href ? "text-rose-500" : "text-slate-600"
+              }`}
+            >
+              <div className="mr-4 rounded-md ">{item.image}</div>
+              {item.value}
+            </Link>
+          </li>
+        ))}
         {typeof data !== "undefined" && !data.message ? (
+          <li className="mt-12 lg:mt-8">
+            <h5 className="mb-8 lg:mb-3 font-semibold text-slate-800">
+              Subscriptions
+            </h5>
+            <ul className="space-y-6 lg:space-y-2 border-l border-slate-100">
+              {data.map(({ community }: any) => (
+                <li key={community.id}>
+                  <Link
+                    href={community.slug}
+                    className={`group flex items-center lg:text-sm lg:leading-6 mb-4 font-medium hover:text-rose-500 ${
+                      path === community.slug
+                        ? "text-rose-500"
+                        : "text-slate-600"
+                    }`}
+                  >
+                    {community.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </li>
+        ) : null}
+      </ul>
+      {/* {typeof data !== "undefined" && !data.message ? (
           <div className="py-2">
             <h2 className="mb-2 px-7  font-bold">Subscriptions</h2>
             <div className="relative overflow-auto h-[400px] ">
@@ -63,7 +82,7 @@ export function Sidebar() {
             </div>
           </div>
         ) : null}
-      </div>
+      </div> */}
     </nav>
   );
 }

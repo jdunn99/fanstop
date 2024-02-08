@@ -132,7 +132,7 @@ export function Editor({ id, title, content, description }: EditorProps) {
       <Layout>
         <div>
           <div className="grid w-full gap-2 pt-4 px-8">
-            <header className="sticky top-0 z-40 bg-slate-50 ">
+            <header className="sticky top-0 z-40 ">
               <div className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4">
                 <Breadcrumbs paths={[{ href: "/", value: "Home" }]} />
                 <div className="flex gap-2">

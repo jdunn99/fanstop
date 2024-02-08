@@ -39,19 +39,23 @@ export function PostBar({ views, postId, likes, isLiked }: PostBarProps) {
   return (
     <div className="w-full flex gap-4 pt-2 px-8 text-sm">
       {data !== null ? (
-        <div className={isLiked ? "!text-rose-500" : ""}>
+        <div
+          className={`${
+            isLiked && "!text-rose-500"
+          } font-semibold text-sm text-slate-600`}
+        >
           <IconButton onClick={onLikeClick}>
             <MdThumbUp />
             <p>{isLiked ? `${likes} Likes` : "Like"}</p>
           </IconButton>
         </div>
       ) : (
-        <div className="flex gap-1 items-center">
+        <div className="flex gap-1 items-center font-semibold text-sm text-slate-600">
           <MdThumbUp />
           <p>{likes} Likes</p>
         </div>
       )}
-      <div className="flex gap-1 items-center">
+      <div className="flex gap-1 items-center font-semibold text-sm text-slate-600">
         <BsEyeFill />
         <p>{views} Views</p>
       </div>

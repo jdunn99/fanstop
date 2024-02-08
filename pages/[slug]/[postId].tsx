@@ -8,11 +8,13 @@ import { EditorBlock } from "@/components/editor/editor-block";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { OwnPostMenu } from "@/components/posts/post-item";
 import { PostCommentSection } from "@/components/posts/comments/post-comment-section";
+import { useSession } from "next-auth/react";
 
 export default function PostPage({
   postId,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data } = usePostQuery(postId);
+  const { data: session } = useSession();
   const { data: content } = usePostContentQuery(postId);
 
   if (!data) return null;
@@ -23,7 +25,7 @@ export default function PostPage({
     <Layout>
       <DashboardItem>
         <div className="grid w-full gap-2 py-4 px-8 border-b">
-          <header className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4 bg-slate-50">
+          <header className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4 ">
             <Breadcrumbs
               paths={[
                 { href: "/", value: "Home" },
@@ -78,13 +80,17 @@ export default function PostPage({
             <p className="text-xs text-slate-600 font-medium">
               Comments are avaiable for subscribers only.
             </p>
-          ) : (
+          ) : session !== null ? (
             <PostCommentSection
               postId={postId}
               views={post.views}
               likes={post._count.likes}
               isLiked={isLiked}
             />
+          ) : (
+            <p className="text-xs text-slate-600 font-medium text-center">
+              You must be signed in to interact with this post.
+            </p>
           )
         ) : (
           <p className="text-center text-xs text-slate-600 font-medium">

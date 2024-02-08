@@ -8,6 +8,7 @@ import { BsArrowRight } from "react-icons/bs";
 import { AuthedNav, Navbar } from "./nav";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {}
 export function Container({ children, className, ...rest }: ContainerProps) {
@@ -73,32 +74,62 @@ export function Layout({ children, heading }: LayoutProps) {
   const { data: session } = useSession();
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
-      <header className="sticky top-0 z-40 bg-white border-b">
-        <div className="flex  items-center max-w-screen-xl mx-auto w-full justify-between py-2">
-          {/* <Navbar links={[]} /> */}
-          <div />
-          <div className="flex items-center gap-2">
-            {session?.user ? (
-              <AuthedNav />
-            ) : (
-              <React.Fragment>
-                <Link href="/login">
-                  <Button variant="ghost" size="sm">
-                    Login
-                  </Button>
-                </Link>
-                <Link href="/register">
-                  <Button size="sm">Sign Up</Button>
-                </Link>
-              </React.Fragment>
-            )}
+    <div className="antialiased">
+      <header className="sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 bg-white ">
+        <div className="max-w-[84rem] mx-auto">
+          <div className="py-4 border-b border-slate-100 lg:px-8 lg:border-0 mx-4 lg:mx-0">
+            <div className="relative flex items-center">
+              <Link href="/" className="hidden items-center space-x-1 md:flex">
+                <Image
+                  src={"/images/logo.svg"}
+                  alt="FanStop"
+                  width={32}
+                  height={32}
+                />
+              </Link>
+
+              <div className="relative hidden lg:flex items-center ml-auto gap-2">
+                {session?.user ? (
+                  <AuthedNav />
+                ) : (
+                  <React.Fragment>
+                    <Link href="/login">
+                      <Button variant="ghost" size="sm">
+                        Login
+                      </Button>
+                    </Link>
+                    <Link href="/register">
+                      <Button size="sm">Sign Up</Button>
+                    </Link>
+                  </React.Fragment>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </header>
-      <div className="grid lg:grid-cols-6 bg-white overflow-hidden h-screen">
+
+      <div>
+        <div className="max-w-[84rem] mx-auto px-4 sm:px-6 md:px-8">
+          <div className="hidden lg:block fixed z-20 inset-0 top-[7rem] left-[max(0px,calc(50%-42rem))] right-auto w-[19rem] pb-10 pl-8 pr-6 overflow-y-auto">
+            <Sidebar />
+          </div>
+          <div className="lg:pl-[10.5rem] ml-[12rem] border-l min-h-[calc(100vh-73px)]">
+            <main className="">
+              <div className="space-y-8 py-8 ">
+                {typeof heading === "undefined" ? null : (
+                  <Header heading={heading} />
+                )}
+                {children}
+              </div>
+            </main>
+          </div>
+        </div>
+      </div>
+      {/* <div className="grid lg:grid-cols-8 bg-white overflow-hidden h-screen">
+        <div className="lg:col-span-1 hidden lg:block" />
         <Sidebar />
-        <main className="h-full bg-slate-50 overflow-auto col-span-3 lg:col-span-5 lg:border-l">
+        <main className="h-full bg-slate-50 overflow-auto col-span-3 lg:col-span-6 lg:border-l">
           <div className="max-w-screen-lg mx-auto px-8 space-y-8 py-8 ">
             {typeof heading === "undefined" ? null : (
               <Header heading={heading} />
@@ -106,7 +137,7 @@ export function Layout({ children, heading }: LayoutProps) {
             {children}
           </div>
         </main>
-      </div>
+      </div> */}
     </div>
   );
 }

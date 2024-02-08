@@ -15,8 +15,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { BsPlus, BsPlusCircle, BsPlusCircleFill } from "react-icons/bs";
-import { MdPlusOne } from "react-icons/md";
+import { BsPlusCircleFill } from "react-icons/bs";
 import { z } from "zod";
 
 const schema = z.object({
@@ -86,9 +85,9 @@ export default function PostPublishPage({
   // }, [isLoading]);
 
   React.useEffect(() => {
-    if (!isLoading && typeof post !== "undefined") {
-      if (typeof post?.image !== "undefined") {
-        setCoverImage({ src: post.image! });
+    if (!isLoading && typeof data !== "undefined") {
+      if (typeof data.post.image !== "undefined") {
+        setCoverImage({ src: data.post.image! });
       }
     }
   }, [isLoading]);

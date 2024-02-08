@@ -23,7 +23,7 @@ export function EditorCreateButton({ index }: EditorCreateButtonProps) {
         <BsPlus />
       </Button>
       {isOpen ? (
-        <MenuList>
+        <MenuList className="w-32">
           <MenuGroup>
             {Object.keys(TAG_WITH_TEXT).map((tag) => (
               <EditorControlItem
