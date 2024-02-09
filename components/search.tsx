@@ -37,7 +37,6 @@ export function Search({ defaultValue }: SearchProps) {
 
   function onSubmit(event: any) {
     event.preventDefault();
-    console.log(searchQuery);
     push(`/explore/search/${searchQuery}`);
   }
 

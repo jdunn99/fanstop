@@ -37,10 +37,7 @@ export function CommentInput({ postId }: CommentInputProps) {
   }
 
   return (
-    <div className="flex gap-2 mt-4 w-full">
-      <div className="flex-1">
-        <AvatarImage src={session?.user.image!} />
-      </div>
+    <div className="flex items-start gap-2 mt-4 w-full">
       <Textarea
         placeholder="Comment"
         value={comment}
@@ -49,7 +46,10 @@ export function CommentInput({ postId }: CommentInputProps) {
         }
         className="w-full min-h-[80px] bg-white"
       />
-      <Button onClick={() => onClick({ postId, content: comment })}>
+      <Button
+        onClick={() => onClick({ postId, content: comment })}
+        className="relative"
+      >
         Post
       </Button>
     </div>
