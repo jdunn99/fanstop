@@ -201,9 +201,12 @@ function Post({
       className="flex bg-slate-50 rounded-lg p-4"
       href={`/${author.community.slug}/${id}`}
     >
-      <div className="flex gap-8  w-ful flex-col md:flex-row">
+      <div className="flex gap-8 w-full flex-col md:flex-row">
         {image ? (
-          <img src={image} className={BASE_CX && "sm:justify-center"} />
+          <img
+            src={image}
+            className={`${BASE_CX} max-sm:mx-auto max-sm:my-auto`}
+          />
         ) : null}
         <div className="flex items-center w-full">
           <div className="space-y-2">

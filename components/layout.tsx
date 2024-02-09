@@ -89,7 +89,7 @@ export function Layout({ children, heading }: LayoutProps) {
         >
           x
         </Button>
-        <div className="mt-6 px-8">
+        <div className="mt-6 pl-8 pr-32">
           <Sidebar />
         </div>
       </div>
@@ -135,11 +135,11 @@ export function Layout({ children, heading }: LayoutProps) {
       </header>
 
       <div>
-        <div className="max-w-[84rem] mx-auto px-4 sm:px-6 md:px-8">
+        <div className="max-w-[84rem] mx-auto px-4  md:px-8">
           <div className="hidden lg:block fixed z-20 inset-0 top-[7rem] left-[max(0px,calc(50%-42rem))] right-auto w-[19rem] pb-10 pl-8 pr-6 overflow-y-auto">
             <Sidebar />
           </div>
-          <div className="lg:pl-[10.5rem]  min-h-[calc(100vh-73px)]">
+          <div className="lg:pl-[10.5rem] min-h-[calc(100vh-73px)]">
             <main className="lg:px-10 px-1 lg:border-l">
               <div className="space-y-8 py-8 ">
                 {typeof heading === "undefined" ? null : (
