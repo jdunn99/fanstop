@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useQuery } from "react-query";
+import { truncateString } from "@/lib/truncate";
 
 export function Sidebar() {
   const path = usePathname();
@@ -49,12 +50,12 @@ export function Sidebar() {
                   <Link
                     href={community.slug}
                     className={`group flex items-center lg:text-sm lg:leading-6 mb-4 font-medium hover:text-rose-500 ${
-                      path === community.slug
+                      path === "/" + community.slug
                         ? "text-rose-500"
                         : "text-slate-600"
                     }`}
                   >
-                    {community.name}
+                    {truncateString(community.name, 25)}
                   </Link>
                 </li>
               ))}

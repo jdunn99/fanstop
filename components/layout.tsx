@@ -77,9 +77,9 @@ export function Layout({ children, heading }: LayoutProps) {
     <div className="antialiased">
       <header className="sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 bg-white ">
         <div className="max-w-[84rem] mx-auto">
-          <div className="py-4 border-b border-slate-100 lg:px-8 lg:border-0 mx-4 lg:mx-0">
+          <div className="py-4 border-b lg:px-8 lg:border-0 px-4">
             <div className="relative flex items-center">
-              <Link href="/" className="hidden items-center space-x-1 md:flex">
+              <Link href="/" className="flex">
                 <Image
                   src={"/images/logo.svg"}
                   alt="FanStop"
@@ -114,8 +114,8 @@ export function Layout({ children, heading }: LayoutProps) {
           <div className="hidden lg:block fixed z-20 inset-0 top-[7rem] left-[max(0px,calc(50%-42rem))] right-auto w-[19rem] pb-10 pl-8 pr-6 overflow-y-auto">
             <Sidebar />
           </div>
-          <div className="lg:pl-[10.5rem] ml-[12rem] border-l min-h-[calc(100vh-73px)]">
-            <main className="">
+          <div className="lg:pl-[10.5rem]  min-h-[calc(100vh-73px)]">
+            <main className="px-10 lg:border-l">
               <div className="space-y-8 py-8 ">
                 {typeof heading === "undefined" ? null : (
                   <Header heading={heading} />

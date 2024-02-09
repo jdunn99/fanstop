@@ -59,9 +59,9 @@ export function OwnPostMenu({
 }
 
 const FEATURED_CX =
-  "flex-shrink !basis-1/2 object-cover aspect-video overflow-hidden border border-slate-100 rounded-lg shadow-sm";
+  "flex-shrink !basis-1/2 object-fill lg:object-cover max-sm:w-[260px] max-sm:h-[156px]  md:aspect-video overflow-hidden border border-slate-100 rounded-lg shadow-sm";
 const BASE_CX =
-  "object-fill border border-slate-200 rounded-lg w-[260px] h-[156px]";
+  "object-fill border border-slate-200 rounded-lg w-[260px] h-[156px] ";
 
 function FeaturedPost({
   id,
@@ -76,7 +76,7 @@ function FeaturedPost({
   return (
     <Link
       href={`/${author.community.slug}/${id}`}
-      className="p-8 bg-slate-50 rounded-lg flex hover:underline"
+      className="p-4 lg:p-8 bg-slate-50 rounded-lg flex hover:underline"
     >
       <div className="flex gap-8 flex-col md:flex-row w-full items-center">
         {image ? <img src={image} className={FEATURED_CX} /> : null}
@@ -202,10 +202,8 @@ function Post({
       className="flex bg-slate-50 rounded-lg p-4"
       href={`/${author.community.slug}/${id}`}
     >
-      <div className="flex gap-8  w-full">
-        <div className="flex items-center justify-center">
-          {image ? <img src={image} className={BASE_CX} /> : null}
-        </div>
+      <div className="flex gap-8  w-ful flex-col md:flex-row">
+        {image ? <img src={image} className={BASE_CX} /> : null}
         <div className="flex items-center w-full">
           <div className="space-y-2">
             {includeAuthor ? (

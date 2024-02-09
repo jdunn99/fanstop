@@ -118,7 +118,7 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
             {posts.recentPosts.length > 0 ? (
               <DashboardItem>
                 <DashboardItemHeading heading="Recent Posts" />
-                <div className="grid gap-4 grid-cols-3 mb-8">
+                <div className="grid gap-4 md:grid-cols-3 mb-8">
                   {posts.recentPosts.map((post) => (
                     <PostComponent {...post} isCol isOwn={isOwn} />
                   ))}
