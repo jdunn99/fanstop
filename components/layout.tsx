@@ -9,6 +9,7 @@ import { AuthedNav, Navbar } from "./nav";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import { FaBars } from "react-icons/fa";
 
 interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {}
 export function Container({ children, className, ...rest }: ContainerProps) {
@@ -72,12 +73,29 @@ interface LayoutProps {
 }
 export function Layout({ children, heading }: LayoutProps) {
   const { data: session } = useSession();
+  const [isOpen, setIsOpen] = React.useState<boolean>(false);
 
   return (
     <div className="antialiased">
-      <header className="sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 bg-white ">
+      <div
+        className={`transform top-0 w-full fixed bg-white h-screen overflow-auto z-50 p-1 ${
+          isOpen ? "translate-y-0" : "-translate-y-full"
+        } transition-all duration-500`}
+      >
+        <Button
+          variant="ghost"
+          className="absolute right-6 top-4"
+          onClick={() => setIsOpen(false)}
+        >
+          x
+        </Button>
+        <div className="mt-6 px-8">
+          <Sidebar />
+        </div>
+      </div>
+      <header className="sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 border-b border-slate-200 bg-white ">
         <div className="max-w-[84rem] mx-auto">
-          <div className="py-4 border-b lg:px-8 lg:border-0 px-4">
+          <div className="py-4 lg:px-8 px-1 mx-4">
             <div className="relative flex items-center">
               <Link href="/" className="flex">
                 <Image
@@ -88,7 +106,7 @@ export function Layout({ children, heading }: LayoutProps) {
                 />
               </Link>
 
-              <div className="relative hidden lg:flex items-center ml-auto gap-2">
+              <div className="flex items-center ml-auto gap-2">
                 {session?.user ? (
                   <AuthedNav />
                 ) : (
@@ -103,6 +121,13 @@ export function Layout({ children, heading }: LayoutProps) {
                     </Link>
                   </React.Fragment>
                 )}
+                <Button
+                  variant="ghost"
+                  className="relative flex lg:hidden ml-auto"
+                  onClick={() => setIsOpen(true)}
+                >
+                  <FaBars />
+                </Button>
               </div>
             </div>
           </div>
@@ -115,7 +140,7 @@ export function Layout({ children, heading }: LayoutProps) {
             <Sidebar />
           </div>
           <div className="lg:pl-[10.5rem]  min-h-[calc(100vh-73px)]">
-            <main className="px-10 lg:border-l">
+            <main className="lg:px-10 px-1 lg:border-l">
               <div className="space-y-8 py-8 ">
                 {typeof heading === "undefined" ? null : (
                   <Header heading={heading} />

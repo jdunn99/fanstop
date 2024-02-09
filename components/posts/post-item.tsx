@@ -60,8 +60,7 @@ export function OwnPostMenu({
 
 const FEATURED_CX =
   "flex-shrink !basis-1/2 object-fill lg:object-cover max-sm:w-[260px] max-sm:h-[156px]  md:aspect-video overflow-hidden border border-slate-100 rounded-lg shadow-sm";
-const BASE_CX =
-  "object-fill border border-slate-200 rounded-lg w-[260px] h-[156px] ";
+const BASE_CX = "object-fill rounded-lg w-[260px] h-[156px] ";
 
 function FeaturedPost({
   id,
@@ -203,7 +202,9 @@ function Post({
       href={`/${author.community.slug}/${id}`}
     >
       <div className="flex gap-8  w-ful flex-col md:flex-row">
-        {image ? <img src={image} className={BASE_CX} /> : null}
+        {image ? (
+          <img src={image} className={BASE_CX && "sm:justify-center"} />
+        ) : null}
         <div className="flex items-center w-full">
           <div className="space-y-2">
             {includeAuthor ? (

@@ -14,7 +14,7 @@ export function Sidebar() {
   const path = usePathname();
   const items = useSidebarRoutes();
 
-  const { data, isError } = useQuery<any>(["subscriptions"], () =>
+  const { data } = useQuery<any>(["subscriptions"], () =>
     fetch("/api/user/subscriptions").then((res) => res.json())
   );
 
