@@ -11,7 +11,7 @@ export const BUTTON_VARIANTS = {
     ghost: "bg-transparent hover:bg-slate-50 opacity-80 hover:opacity-100",
   },
   size: {
-    base: "h-10 py-2 px-4 rounded-xl",
+    base: "min-h-10 py-2 px-4 rounded-xl",
     sm: "h-9 px-3 rounded-xl",
     xs: " py-1 px-2 rounded-lg text-xs",
     lg: "h-10 px-8 rounded-2xl",

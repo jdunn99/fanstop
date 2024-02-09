@@ -37,7 +37,7 @@ export function HomePage() {
       <main className="flex-1 max-w-screen-xl mx-auto space-y-32 p-4 md:p-0">
         <section className="space-y-16 py-32">
           <div className="relative px-6 g:px-8 space-y-16">
-            <h1 className="font-bold text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
+            <h1 className="font-bold text-5xl md:text-6xl lg:text-7xl">
               <span className="text-rose-500">FanStop.</span> Where Creativity
               Meets Community.
             </h1>
@@ -47,10 +47,12 @@ export function HomePage() {
             </p>
             <div className="flex items-center space-x-2 my-16">
               <Link href="/register">
-                <Button>Connect with your fans</Button>
+                <Button className="!font-bold">Connect with your fans</Button>
               </Link>
               <Link href="/explore">
-                <Button variant="outline">Explore Creators</Button>
+                <Button variant="outline" className="!font-bold">
+                  Explore Creators
+                </Button>
               </Link>
             </div>
           </div>
@@ -77,10 +79,10 @@ export function HomePage() {
                 <Link
                   key={community.id}
                   className="flex sm:flex-row flex-col w-full sm:items-start text-center items-center justify-center sm:text-left sm:justify-normal hover:underline"
-                  href={""}
+                  href={community.slug}
                 >
                   <div className="flex flex-col sm:flex-row gap-2 flex-1 items-center sm:items-start">
-                    <div className="mr-4">
+                    <div className="lg:mr-4">
                       <ProfileImage src={community.image!} />
                     </div>
 
