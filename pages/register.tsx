@@ -4,7 +4,6 @@ import { getProviders } from "next-auth/react";
 import Link from "next/link";
 import { RegisterButtons } from "@/components/register-buttons";
 import { RegisterEmailInput } from "@/components/register-email-input";
-import { Navbar } from "@/components/nav";
 
 export default function Register({
   providers,
