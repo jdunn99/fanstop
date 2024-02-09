@@ -45,13 +45,6 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
   return (
     <React.Fragment>
       <Layout>
-        {/* <Header heading={community.name}>
-          {isOwn ? (
-            <Button>Edit Profile</Button>
-          ) : (
-            <SubscribeButton isSubscriber={isSubscriber} slug={slug} />
-          )}
-        </Header> */}
         <div className="w-full space-y-8 mx-auto max-w-screen-md text-center">
           <div className="flex justify-end">
             {isOwn ? (

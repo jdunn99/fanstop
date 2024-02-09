@@ -2,7 +2,7 @@ import { mainNav } from "@/config/config";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
-import { Navbar, AuthedNav } from "./nav";
+import { Navbar, AuthedNav, ProfileNav } from "./nav";
 import Button from "./ui/button";
 import { usePopularCommunities } from "@/lib/queries/useCommunities";
 import { Avatar } from "./ui/avatar";
@@ -14,29 +14,21 @@ export function HomePage() {
   const { data: communities } = usePopularCommunities();
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="container mx-auto z-40 w-full">
-        <div className="flex h-20 items-center justify-between py-6 max-w-screen-xl mx-auto ">
-          <Navbar links={mainNav} />
-          <div className="flex items-center gap-2">
-            {data?.user ? (
-              <AuthedNav />
-            ) : (
-              <React.Fragment>
-                <Link href="/login">
-                  <Button variant="ghost">Login</Button>
-                </Link>
-                <Link href="/register">
-                  <Button>Sign Up</Button>
-                </Link>
-              </React.Fragment>
-            )}
-          </div>
-        </div>{" "}
-      </header>
-      <main className="flex-1 max-w-screen-xl mx-auto space-y-32 p-4 md:p-0">
+    <div className="flex min-h-screen flex-col" id="root">
+      <ProfileNav>
+        <Link
+          href="/explore"
+          className="items-center pl-4 text-lg font-medium hidden lg:flex transition-colors opacity-80 hover:opacity-100 hover:text-rose-500 sm:text-sm"
+        >
+          Explore
+        </Link>
+        <div className=" items-center pl-4 text-lg font-medium hidden lg:flex transition-colors opacity-60 sm:text-sm">
+          Features
+        </div>
+      </ProfileNav>
+      <main className="flex-1 max-w-[84rem] mx-auto space-y-32 px-4 md:px-8">
         <section className="space-y-16 py-32">
-          <div className="relative px-6 g:px-8 space-y-16">
+          <div className="relative space-y-16">
             <h1 className="font-bold text-5xl md:text-6xl lg:text-7xl">
               <span className="text-rose-500">FanStop.</span> Where Creativity
               Meets Community.

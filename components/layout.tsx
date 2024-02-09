@@ -5,11 +5,12 @@ import { MdAdd } from "react-icons/md";
 import Button from "./ui/button";
 import Link from "next/link";
 import { BsArrowRight } from "react-icons/bs";
-import { AuthedNav, Navbar } from "./nav";
+import { AuthedNav, Navbar, ProfileNav } from "./nav";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { FaBars } from "react-icons/fa";
+import { NavDrawerOpenButton } from "./nav-drawer";
 
 interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {}
 export function Container({ children, className, ...rest }: ContainerProps) {
@@ -72,68 +73,9 @@ interface LayoutProps {
   heading?: string;
 }
 export function Layout({ children, heading }: LayoutProps) {
-  const { data: session } = useSession();
-  const [isOpen, setIsOpen] = React.useState<boolean>(false);
-
   return (
-    <div className="antialiased">
-      <div
-        className={`transform top-0 w-full fixed bg-white h-screen overflow-auto z-50 p-1 ${
-          isOpen ? "translate-y-0" : "-translate-y-full"
-        } transition-all duration-500`}
-      >
-        <Button
-          variant="ghost"
-          className="absolute right-6 top-4"
-          onClick={() => setIsOpen(false)}
-        >
-          x
-        </Button>
-        <div className="mt-6 pl-8 pr-32">
-          <Sidebar />
-        </div>
-      </div>
-      <header className="sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 border-b border-slate-200 bg-white ">
-        <div className="max-w-[84rem] mx-auto">
-          <div className="py-4 lg:px-8 px-1 mx-4">
-            <div className="relative flex items-center">
-              <Link href="/" className="flex">
-                <Image
-                  src={"/images/logo.svg"}
-                  alt="FanStop"
-                  width={32}
-                  height={32}
-                />
-              </Link>
-
-              <div className="flex items-center ml-auto gap-2">
-                {session?.user ? (
-                  <AuthedNav />
-                ) : (
-                  <React.Fragment>
-                    <Link href="/login">
-                      <Button variant="ghost" size="sm">
-                        Login
-                      </Button>
-                    </Link>
-                    <Link href="/register">
-                      <Button size="sm">Sign Up</Button>
-                    </Link>
-                  </React.Fragment>
-                )}
-                <Button
-                  variant="ghost"
-                  className="relative flex lg:hidden ml-auto"
-                  onClick={() => setIsOpen(true)}
-                >
-                  <FaBars />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="antialiased" id="root">
+      <ProfileNav />
       <div>
         <div className="max-w-[84rem] mx-auto px-4  md:px-8">
           <div className="hidden lg:block fixed z-20 inset-0 top-[7rem] left-[max(0px,calc(50%-42rem))] right-auto w-[19rem] pb-10 pl-8 pr-6 overflow-y-auto">
@@ -151,18 +93,6 @@ export function Layout({ children, heading }: LayoutProps) {
           </div>
         </div>
       </div>
-      {/* <div className="grid lg:grid-cols-8 bg-white overflow-hidden h-screen">
-        <div className="lg:col-span-1 hidden lg:block" />
-        <Sidebar />
-        <main className="h-full bg-slate-50 overflow-auto col-span-3 lg:col-span-6 lg:border-l">
-          <div className="max-w-screen-lg mx-auto px-8 space-y-8 py-8 ">
-            {typeof heading === "undefined" ? null : (
-              <Header heading={heading} />
-            )}
-            {children}
-          </div>
-        </main>
-      </div> */}
     </div>
   );
 }
