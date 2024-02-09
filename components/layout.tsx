@@ -1,16 +1,6 @@
-import React, { ChangeEvent } from "react";
+import React from "react";
 import { Sidebar } from "./sidebar";
-import Input from "./ui/input";
-import { MdAdd } from "react-icons/md";
-import Button from "./ui/button";
-import Link from "next/link";
-import { BsArrowRight } from "react-icons/bs";
-import { AuthedNav, Navbar, ProfileNav } from "./nav";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import Image from "next/image";
-import { FaBars } from "react-icons/fa";
-import { NavDrawerOpenButton } from "./nav-drawer";
+import { ProfileNav } from "./nav";
 
 interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {}
 export function Container({ children, className, ...rest }: ContainerProps) {

@@ -1,11 +1,9 @@
-import { mainNav } from "@/config/config";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
-import { Navbar, AuthedNav, ProfileNav } from "./nav";
+import { ProfileNav } from "./nav";
 import Button from "./ui/button";
 import { usePopularCommunities } from "@/lib/queries/useCommunities";
-import { Avatar } from "./ui/avatar";
 import Image from "next/image";
 import { ProfileImage } from "./ui/profile-image";
 
