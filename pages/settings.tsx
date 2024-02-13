@@ -23,28 +23,27 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
 import { useUpdateCommunityMutation } from "@/lib/mutations/useUpdateCommunityMutation";
-
-const schema = z.object({
-  name: z.string(),
-  slug: z.string(),
-  description: z.string(),
-});
-type FormData = z.infer<typeof schema>;
+import { useCreateCommunityForm } from "@/lib/useCreateCommunityForm";
+import { CreateCommunityForm, Form } from "@/components/create-community-form";
 
 export default function Settings({
   slug,
+  defaultImage,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data } = useCommunitiesByIDQuery(slug);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
   const { mutateAsync } = useUpdateCommunityMutation();
   const router = useRouter();
 
-  async function onSubmit({ name, slug, description }: FormData) {
+  const { selected, setSelected, profileImage, setProfileImage } =
+    useCreateCommunityForm({
+      defaultProfileImage: {
+        src: defaultImage,
+      },
+      defaultSelected: {},
+    });
+
+  async function onSubmit({ name, slug, description }: Form) {
     await mutateAsync({
       id: data!.community.id,
       name,
@@ -67,48 +66,20 @@ export default function Settings({
           This is how others will see you on the site
         </p>
         <div className="lg:max-w-2xl">
-          <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
-            <div className="space-y-2">
-              <label className="text-left text-sm font-bold">Username</label>
-              <Input
-                {...register("slug")}
-                className="bg-white w-full"
-                defaultValue={data.community.slug}
-                placeholder="Username"
-              />
-              <p className="text-xs opacity-60">
-                This is your public username that users can use to find your
-                content.
-              </p>
-            </div>
-            <div className="space-y-2">
-              <label className="text-left text-sm font-bold">
-                Community Name
-              </label>
-              <Input
-                {...register("name")}
-                className="bg-white w-full"
-                defaultValue={data.community.name}
-                placeholder="Community Name"
-              />
-              <p className="text-xs opacity-60">
-                This is your public community name.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-left text-sm font-bold">Description</label>
-              <Textarea
-                {...register("description")}
-                className="bg-white w-full min-h-[60px]"
-                defaultValue={data.community.description}
-                placeholder="Community Name"
-              />
-            </div>
-            <Button size="sm" type="submit">
-              Update Community
-            </Button>
-          </form>
+          <CreateCommunityForm
+            profileImage={profileImage}
+            setProfileImage={setProfileImage}
+            onSubmit={onSubmit}
+            selected={selected}
+            setSelected={setSelected}
+            defaultValues={{
+              description: data.community.description,
+              name: data.community.name,
+              slug: data.community.slug,
+            }}
+          >
+            <Button type="submit">Update</Button>
+          </CreateCommunityForm>
         </div>
       </DashboardItem>
     </Layout>
@@ -130,6 +101,7 @@ export async function getServerSideProps({
   return {
     props: {
       slug: session.user.slug,
+      defaultImage: session.user.image || "",
     },
   };
 }

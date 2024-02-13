@@ -69,7 +69,7 @@ export function Layout({ children, heading }: LayoutProps) {
       <ProfileNav />
       <div>
         <div className="max-w-[84rem] mx-auto px-4  md:px-8">
-          <div className="hidden lg:block fixed z-20 inset-0 top-[7rem] left-[max(0px,calc(50%-42rem))] right-auto w-[19rem] pb-10 pl-8 pr-6 overflow-y-auto">
+          <div className="hidden lg:block fixed z-20 inset-0 top-[7rem] left-[max(0px,calc(50%-42rem))] right-auto pb-10 pl-8 pr-6 overflow-y-auto">
             <Sidebar />
           </div>
           <div className="lg:pl-[10.5rem] min-h-[calc(100vh-73px)]">

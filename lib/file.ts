@@ -8,6 +8,11 @@ export function getFileData(file: File) {
   return { reader, formData };
 }
 
+export type FileImage = {
+  src: string;
+  formData?: FormData;
+};
+
 export async function uploadImage(formData: FormData) {
   const result = await fetch(
     "https://api.cloudinary.com/v1_1/dw7064r1g/upload",
