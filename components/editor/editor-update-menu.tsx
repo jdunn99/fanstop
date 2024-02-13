@@ -10,50 +10,17 @@ import React from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { EditorControlItem } from "./editor-control";
 import { TAG_WITH_TEXT } from "./editor-tag";
+import {
+  DeleteButton,
+  MoveDownButton,
+  MoveUpButton,
+} from "./editor-update-buttons";
 
-interface EditorCreateButtonProps {
+export interface EditorCreateButtonProps {
   index: number;
-  tag: ValidTags;
 }
-export function EditorUpdateButton({ tag, index }: EditorCreateButtonProps) {
+export function EditorUpdateButton({ index }: EditorCreateButtonProps) {
   const { isOpen, toggle, onClose } = useMenu();
-  const { editorState, dispatch } = useEditor();
-
-  function handleDelete() {
-    if (index === 0 && editorState.blocks.length === 1) return;
-
-    dispatch({
-      type: EditorActionType.DeleteBlock,
-      payload: { index },
-    });
-    toggle();
-  }
-
-  function handleMoveUp() {
-    if (index > 0) {
-      dispatch({
-        type: EditorActionType.ChangeBlockOrder,
-        payload: {
-          oldIndex: index,
-          newIndex: index - 1,
-        },
-      });
-    }
-    toggle();
-  }
-
-  function handleMoveDown() {
-    if (index < editorState.blocks.length - 1) {
-      dispatch({
-        type: EditorActionType.ChangeBlockOrder,
-        payload: {
-          oldIndex: index,
-          newIndex: index + 1,
-        },
-      });
-    }
-    toggle();
-  }
 
   return (
     <Menu onClose={onClose}>
@@ -63,21 +30,9 @@ export function EditorUpdateButton({ tag, index }: EditorCreateButtonProps) {
       {isOpen ? (
         <MenuList className="w-32">
           <MenuGroup>
-            <MenuItem disabled={index === 0} onClick={handleMoveUp}>
-              Move Up
-            </MenuItem>
-            <MenuItem
-              onClick={handleDelete}
-              disabled={index === 0 && editorState.blocks.length === 1}
-            >
-              Delete
-            </MenuItem>
-            <MenuItem
-              onClick={handleMoveDown}
-              disabled={index === editorState.blocks.length - 1}
-            >
-              Move Down
-            </MenuItem>
+            <MoveUpButton index={index} toggle={toggle} />
+            <MoveDownButton index={index} toggle={toggle} />
+            <DeleteButton index={index} toggle={toggle} />
             {Object.keys(TAG_WITH_TEXT).map((tag) => (
               <EditorControlItem
                 key={tag}

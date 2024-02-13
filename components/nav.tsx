@@ -16,7 +16,7 @@ export function ProfileNav({ children }: ProfileNavProps) {
   const { data: session } = useSession();
 
   return (
-    <header className="sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 border-b border-slate-200 bg-white ">
+    <header className="sticky top-0 z-50 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 border-b border-slate-200 bg-white ">
       <div className="max-w-[84rem] mx-auto">
         <div className="py-4 lg:px-8 px-1 mx-4">
           <div className="relative flex items-center">

@@ -131,7 +131,7 @@ export function Editor({ id, title, content, description }: EditorProps) {
     <EditorContext.Provider value={{ dispatch, editorState }}>
       <Layout>
         <div>
-          <div className="grid w-full gap-2 pt-4 px-8">
+          <div className="grid w-full gap-2 pt-4 pl-16 ">
             <header className="sticky top-0 z-40 ">
               <div className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4">
                 <Breadcrumbs paths={[{ href: "/", value: "Home" }]} />

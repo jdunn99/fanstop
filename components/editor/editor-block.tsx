@@ -6,6 +6,10 @@ import Button from "../ui/button";
 import { EditorCreateButton } from "./editor-create-button";
 import { EditorUpdateButton } from "./editor-update-menu";
 import { PostTag } from "../posts/post-tag";
+import {
+  EditorDrawerCreateButton,
+  EditorDrawerUpdateButton,
+} from "./editor-control-drawer";
 
 interface EditorBlockProps extends React.HTMLAttributes<HTMLDivElement> {
   index: number;
@@ -21,10 +25,17 @@ export const EditorBlock = React.forwardRef(
     return (
       <div className="flex items-center my-4 relative">
         {isEditor ? (
-          <div className="absolute right-[100%] flex mr-2 gap-1">
-            <EditorCreateButton index={index} />
-            <EditorUpdateButton index={index} tag={block.tag} />
-          </div>
+          <React.Fragment>
+            <div className="absolute right-[100%] mr-2 gap-1 hidden md:flex">
+              <EditorCreateButton index={index} />
+              <EditorUpdateButton index={index} />
+            </div>
+
+            <div className="absolute right-[100%] md:hidden flex">
+              <EditorDrawerCreateButton index={index} />
+              <EditorDrawerUpdateButton index={index} />
+            </div>
+          </React.Fragment>
         ) : null}
         {isEditor ? (
           <EditorTag ref={ref} tag={block.tag} index={index} {...rest} />
