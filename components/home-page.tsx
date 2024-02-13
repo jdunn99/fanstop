@@ -6,6 +6,7 @@ import Button from "./ui/button";
 import { usePopularCommunities } from "@/lib/queries/useCommunities";
 import Image from "next/image";
 import { ProfileImage } from "./ui/profile-image";
+import { ProfileFooter } from "./footer";
 
 export function HomePage() {
   const { data } = useSession();
@@ -183,6 +184,7 @@ export function HomePage() {
           </div>
         </section>
       </main>
+      <ProfileFooter />
     </div>
   );
 }

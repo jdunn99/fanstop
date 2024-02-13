@@ -26,7 +26,7 @@ export function Sidebar() {
     <nav className="lg:text-sm lg:leading-6 relative ">
       <ul>
         {items.map((item, index) => (
-          <li>
+          <li key={index}>
             <Link
               key={index}
               href={item.href}

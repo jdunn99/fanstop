@@ -9,21 +9,6 @@ import Image from "next/image";
 import { NavDrawerOpenButton } from "./nav-drawer";
 import { useSession } from "next-auth/react";
 
-interface MainNavProps {
-  children?: React.ReactNode;
-  links: NavLink[];
-}
-
-export function AuthedNav() {
-  return (
-    <React.Fragment>
-      {/* <Search /> */}
-      <CreatePostButton />
-      <AvatarMenu />
-    </React.Fragment>
-  );
-}
-
 interface ProfileNavProps {
   children?: React.ReactNode;
 }

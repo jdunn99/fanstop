@@ -73,11 +73,7 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
             </div>
           </div>
         </div>
-        <Input
-          type="search"
-          className="w-full bg-white"
-          placeholder="Search posts"
-        />
+
         <hr />
 
         {typeof posts === "undefined" ? null : (

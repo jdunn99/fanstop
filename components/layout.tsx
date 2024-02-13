@@ -1,6 +1,7 @@
 import React from "react";
 import { Sidebar } from "./sidebar";
 import { ProfileNav } from "./nav";
+import { ProfileFooter } from "./footer";
 
 interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {}
 export function Container({ children, className, ...rest }: ContainerProps) {
@@ -72,7 +73,7 @@ export function Layout({ children, heading }: LayoutProps) {
             <Sidebar />
           </div>
           <div className="lg:pl-[10.5rem] min-h-[calc(100vh-73px)]">
-            <main className="lg:px-10 px-1 lg:border-l">
+            <main className="lg:px-10 px-1 lg:border-l min-h-[calc(100vh-73px)]">
               <div className="space-y-8 py-8 ">
                 {typeof heading === "undefined" ? null : (
                   <Header heading={heading} />
@@ -83,6 +84,7 @@ export function Layout({ children, heading }: LayoutProps) {
           </div>
         </div>
       </div>
+      <ProfileFooter />
     </div>
   );
 }
@@ -94,7 +96,7 @@ interface EmptyCardProps {
 }
 export function EmptyCard({ heading, children }: EmptyCardProps) {
   return (
-    <div className="w-full min-h-[400px] flex items-center flex-col justify-center bg-white border rounded-lg">
+    <div className="w-full min-h-[400px] flex items-center flex-col justify-center bg-slate-50 border rounded-lg">
       {React.Children.count(children) === 0 ? (
         <React.Fragment>
           <h3 className="font-semibold text-sm">{heading}</h3>
