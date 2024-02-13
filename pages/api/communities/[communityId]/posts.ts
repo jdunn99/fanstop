@@ -25,7 +25,6 @@ export default async function handler(
       authorId = session.user.id;
     }
 
-    console.log("FETCHING: ", communityId);
     const result = await getPostsForCommunity({ id: communityId, authorId });
 
     let featuredPost: PostItem | null = null;

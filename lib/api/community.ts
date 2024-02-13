@@ -82,6 +82,28 @@ export async function getCommunityByParam({
   }
 }
 
+export async function getSocialsForCommunity({
+  communityId: id,
+}: CommunityByIDQuery) {
+  try {
+    const result = await db.community.findFirst({
+      where: { OR: [{ id }, { slug: id }, { creatorId: id }] },
+      select: {
+        facebook: true,
+        instagram: true,
+        tiktok: true,
+        twitter: true,
+        website: true,
+      },
+    });
+
+    return CommunitiesValidators.CommunitySocialsSchema.parse(result);
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
 export async function checkSubscriber({
   communityId,
   userId,
@@ -142,7 +164,6 @@ export async function getCommunitiesByTag(tagName: string, userId?: string) {
       .array(CommunitiesValidators.CommunitySchema)
       .parse(result);
 
-    console.log(validated);
     const response: CommunityResponse[] = [];
 
     for (const community of validated) {

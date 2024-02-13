@@ -11,6 +11,7 @@ import Textarea from "./ui/textarea";
 import { useRouter } from "next/router";
 import { getFileData } from "@/lib/file";
 import { image } from "@cloudinary/url-gen/qualifiers/source";
+import { ProfileNav } from "./nav";
 
 const schema = z.object({
   name: z.string(),
@@ -27,6 +28,11 @@ const schema = z.object({
     );
   }, "Invalid username"),
   description: z.string(),
+  facebook: z.string().optional(),
+  twitter: z.string().optional(),
+  instagram: z.string().optional(),
+  tiktok: z.string().optional(),
+  website: z.string().optional(),
 });
 type Form = z.infer<typeof schema>;
 
@@ -62,13 +68,11 @@ export function CreateCommunity() {
     }
   }
 
-  async function onSubmit({ name, slug, description }: Form) {
+  async function onSubmit({ ...rest }: Form) {
     await mutateAsync({
-      name,
-      slug,
       img: profileImage,
-      description,
       tags: Object.values(selected),
+      ...rest,
     });
     router.push("/");
   }
@@ -77,7 +81,8 @@ export function CreateCommunity() {
   const [selected, setSelected] = React.useState<Record<string, string>>({});
 
   return (
-    <div className="px-8 flex min-h-screen w-screen flex-col items-center bg-slate-50 justify-center mx-auto">
+    <div className="flex min-h-screen  flex-col items-center py-16 bg-slate-50 justify-center mx-auto">
+      {/* <ProfileNav /> */}
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[385px]">
         <div className="flex flex-col space-y-8 ">
           <h1 className="text-2xl font-semibold text-center">
@@ -119,6 +124,7 @@ export function CreateCommunity() {
                 <Input
                   {...register("slug")}
                   className="bg-white w-full"
+                  required
                   placeholder="Username"
                 />
                 {errors.slug ? (
@@ -154,13 +160,59 @@ export function CreateCommunity() {
                 />
               </div>
               <div className="space-y-2">
+                <label className="text-left text-sm font-bold">
+                  Socials (Optional)
+                </label>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold">Facebook</label>
+                  <Input
+                    {...register("facebook")}
+                    className="bg-white w-full"
+                    placeholder="Facebook"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold">Twitter</label>
+                  <Input
+                    {...register("twitter")}
+                    className="bg-white w-full"
+                    placeholder="Twitter"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold">Instagram</label>
+                  <Input
+                    {...register("instagram")}
+                    className="bg-white w-full"
+                    placeholder="Instagram"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold">Facebook</label>
+                  <Input
+                    {...register("tiktok")}
+                    className="bg-white w-full"
+                    placeholder="Tiktok"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold">Website</label>
+                  <Input
+                    {...register("website")}
+                    className="bg-white w-full"
+                    placeholder="Website"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
                 <label className="text-left text-sm font-bold">Tags</label>
                 <div className="flex flex-wrap items-center gap-2">
                   {tags &&
                     tags.map(({ name, id }) => (
                       <Button
                         type="button"
-                        variant={selected[name] ? "primary" : "secondary"}
+                        variant={selected[name] ? "primary" : "outline"}
                         size="sm"
                         key={name}
                         onClick={() => {
@@ -192,82 +244,6 @@ export function CreateCommunity() {
               </div>
             </form>
           </div>
-          {/* <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
-            <div className="grid gap-1 text-left">
-              <label className="text-left text-sm font-bold">
-                Community Name
-              </label>
-              <Input
-                {...register("name")}
-                placeholder="Community Name"
-                className={errors.name ? "border-red-500" : ""}
-              />
-              <p className="text-sm text-red-500">{errors.name?.message}</p>
-            </div>
-            <div className="grid gap-1 text-left">
-              <label className="text-left text-sm font-bold">
-                Community Name
-              </label>
-              <Input
-                {...register("name")}
-                placeholder="Community Name"
-                className={errors.name ? "border-red-500" : ""}
-              />
-              <p className="text-sm text-red-500">{errors.name?.message}</p>
-            </div>
-            <div className="grid gap-1 text-left">
-              <label className="text-left text-sm font-bold">Username</label>
-              <Input
-                {...register("slug")}
-                placeholder="Username"
-                className={errors.slug ? "border-red-500" : ""}
-              />
-              <p className="text-sm text-red-500">{errors.slug?.message}</p>
-            </div>
-            <div className="grid gap-1 text-left">
-              <label className="text-left text-sm font-bold">Descripton</label>
-              <Textarea
-                {...register("description")}
-                placeholder="Description"
-                className={errors.description ? "border-red-500" : "h-18"}
-              />
-              <p className="text-sm text-red-500">
-                {errors.description?.message}
-              </p>
-            </div>
-            <label className="text-left text-sm font-bold">Tags</label>
-            <div className="flex flex-wrap items-center gap-2">
-              {tags &&
-                tags.map(({ name, id }) => (
-                  <Button
-                    type="button"
-                    variant={selected[name] ? "primary" : "secondary"}
-                    size="sm"
-                    key={name}
-                    onClick={() => {
-                      setSelected((selected) => {
-                        const temp = {
-                          ...selected,
-                        };
-
-                        if (!temp[name]) {
-                          temp[name] = id;
-                        } else {
-                          delete temp[name];
-                        }
-
-                        return temp;
-                      });
-                    }}
-                  >
-                    {selected[name] ? <MdClose className="mr-1" /> : null}{" "}
-                    {name}
-                  </Button>
-                ))}
-            </div>
-
-            <Button type="submit">Create</Button>
-          </form> */}
         </div>
       </div>
     </div>

@@ -29,6 +29,8 @@ import { ProfileImage } from "./ui/profile-image";
 import { CreatePostButton } from "./create-post-button";
 import Link from "next/link";
 import Input from "./ui/input";
+import { Socials } from "./socials";
+import { useCommunitySocialsQuery } from "@/lib/queries/useCommunitySocialsQuery";
 
 interface ProfileComponentProps {
   slug: string;
@@ -37,6 +39,7 @@ interface ProfileComponentProps {
 
 export function ProfileComponent({ data, slug }: ProfileComponentProps) {
   const { data: posts } = usePostsForCommunity(slug);
+  const { data: socials } = useCommunitySocialsQuery(slug);
 
   if (!data) return null;
 
@@ -72,6 +75,7 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
               <p>{community._count.posts} posts</p>
             </div>
           </div>
+          {typeof socials !== "undefined" ? <Socials {...socials} /> : null}
         </div>
 
         <hr />
@@ -136,60 +140,6 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
             ) : null}
           </React.Fragment>
         )}
-        {/* <DashboardItem>
-          {data.featuredPost ? (
-            <React.Fragment>
-              <DashboardItemHeading heading="Featured Post" />
-              <div className="space-y-8 mb-8">
-                {data.featuredPost ? (
-                  <PostComponent
-                    {...data.featuredPost}
-                    isFeatured
-                    isOwn={data.isOwn}
-                  />
-                ) : null}
-              </div>
-            </React.Fragment>
-          ) : (
-            <EmptyCard heading="Post">
-              <h3 className="text-slate-800 font-semibold text-sm">
-                No posts yet.
-              </h3>
-              <p className="text-xs">{data.name} has not made any posts.</p>
-            </EmptyCard>
-          )}
-        </DashboardItem>
-
-        {data.recentPosts.length > 0 ? (
-          <DashboardItem>
-            <DashboardItemHeading heading="Recent Posts" />
-            <div className="grid gap-4 grid-cols-3 mb-8">
-              {data.recentPosts.map((post) => (
-                <PostComponent {...post} isCol isOwn={data.isOwn} />
-              ))}
-            </div>
-          </DashboardItem>
-        ) : null}
-        {data.posts.length > 0 ? (
-          <DashboardItem>
-            <DashboardItemHeading heading="All Posts" />
-            <div className="space-y-8">
-              {data.posts.map((post) => (
-                <PostComponent {...post} key={post.id} isOwn={data.isOwn} />
-              ))}
-            </div>
-          </DashboardItem>
-        ) : null}
-        {data.unpublishedPosts.length > 0 ? (
-          <DashboardItem>
-            <DashboardItemHeading heading="Unpublished Posts" />
-            <div className="space-y-8">
-              {data.unpublishedPosts.map((post) => (
-                <PostComponent {...post} key={post.id} isOwn={data.isOwn} />
-              ))}
-            </div>
-          </DashboardItem>
-        ) : null} */}
       </Layout>
     </React.Fragment>
   );

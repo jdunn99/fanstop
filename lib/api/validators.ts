@@ -49,6 +49,13 @@ export const CommunitiesValidators = {
       posts: z.number(),
     }),
   }),
+  CommunitySocialsSchema: z.object({
+    facebook: z.string().optional(),
+    instagram: z.string().optional(),
+    twitter: z.string().optional(),
+    tiktok: z.string().optional(),
+    website: z.string().optional(),
+  }),
   CreateCommunitySchema: z.object({
     image: z.string(),
     name: z.string(),
@@ -56,6 +63,11 @@ export const CommunitiesValidators = {
     tags: z.array(z.string().cuid()),
     description: z.string().default(""),
     creatorId: z.string().cuid(),
+    facebook: z.string().optional(),
+    instagram: z.string().optional(),
+    twitter: z.string().optional(),
+    tiktok: z.string().optional(),
+    website: z.string().optional(),
   }),
   CommunityQuerySchema: z.object({
     communityId: z.string(),
@@ -76,6 +88,9 @@ export type CommunityResponse = {
 };
 export type CommunityByIDQuery = z.infer<
   typeof CommunitiesValidators.CommunityQuerySchema
+>;
+export type Socials = z.infer<
+  typeof CommunitiesValidators.CommunitySocialsSchema
 >;
 
 // Posts

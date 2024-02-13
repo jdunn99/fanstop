@@ -10,6 +10,7 @@ export function useCreateCommunityMutation() {
       tags,
       description,
       img,
+      ...rest
     }: Partial<CreateCommunityArgs> & {
       img?: {
         formData?: FormData;
@@ -32,7 +33,7 @@ export function useCreateCommunityMutation() {
       const result = await fetch("/api/communities", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, slug, tags, description, image }),
+        body: JSON.stringify({ name, slug, tags, description, image, ...rest }),
       });
 
       return await result.json();

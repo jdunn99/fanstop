@@ -74,7 +74,12 @@ model Community {
   subscribers Subscriber[]
   posts       Post[]
   tags        Tags[]
-  socials     Socials[]
+  facebook    String?
+  instagram   String?
+  website     String?
+  twitter     String?
+  youtube     String?
+  tiktok      String?
 
   @@index([creatorId])
 }
@@ -159,18 +164,4 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verificationtokens")
-}
-
-model Socials {
-  id          String     @id @unique @default(cuid())
-  facebook    String?
-  instagram   String?
-  website     String?
-  twitter     String?
-  youtube     String?
-  tiktok      String?
-  community   Community? @relation(fields: [communityId], references: [id])
-  communityId String?
-
-  @@index([communityId])
 }
