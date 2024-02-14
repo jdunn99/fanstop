@@ -6,9 +6,7 @@ export async function getPopularTags(take = 4) {
   try {
     const result = await db.tags.findMany({
       orderBy: {
-        communities: {
-          _count: "asc",
-        },
+        name: "asc",
       },
       take,
     });
@@ -27,4 +25,26 @@ export async function isTag(name: string) {
       },
     },
   });
+}
+
+export async function getTagsForCommunity(communityId: string) {
+  try {
+    const result = await db.community.findFirst({
+      where: {
+        slug: communityId,
+      },
+      select: {
+        tags: true,
+      },
+    });
+
+    if (result === null) {
+      throw new Error("communtiy not found");
+    }
+
+    return result.tags;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }

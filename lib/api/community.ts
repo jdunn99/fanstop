@@ -257,20 +257,40 @@ export async function getPopularCommunities(query?: string, userId?: string) {
 }
 
 export async function updateCommunity({
-  name,
-  slug,
-  description,
+  tags,
   id,
+  creatorId,
+  image,
+  ...rest
 }: Partial<CreateCommunityArgs> & { id: string }) {
   try {
+    const { success } = z.object({ id: z.string().cuid() }).safeParse(id);
+    const where = success
+      ? {
+          id,
+        }
+      : {
+          slug: id,
+        };
+
+    let parsedTags: any | undefined = undefined;
+    if (tags) {
+      parsedTags = {
+        set: tags.map((id) => ({ id })),
+      };
+    }
+
     return await db.community.update({
-      where: {
-        id,
-      },
+      where,
       data: {
-        name,
-        slug,
-        description,
+        tags: parsedTags,
+        creator: {
+          update: {
+            image,
+          },
+        },
+        image,
+        ...rest,
       },
       include: {
         _count: {

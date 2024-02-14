@@ -65,5 +65,16 @@ export function useSidebarRoutes(): NavConfig {
           image: <MdSettings />,
         },
       ]
-    : unAuthedConfig.sidebar;
+    : [
+        {
+          href: "/",
+          value: "Home",
+          image: <MdHome />,
+        },
+        {
+          href: "/explore",
+          value: "Explore",
+          image: <MdSearch />,
+        },
+      ];
 }

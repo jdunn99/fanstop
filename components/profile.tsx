@@ -1,34 +1,13 @@
-import { useSubscribeMutation } from "@/lib/mutations/useSubscribeMutation";
-import { useCommunitiesByIDQuery } from "@/lib/queries/useCommunities";
-import { getServerSideProps } from "@/pages";
-import { InferGetServerSidePropsType } from "next";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
 import React from "react";
-import {
-  BsHeartFill,
-  BsHeart,
-  BsPencil,
-  BsPencilFill,
-  BsGearFill,
-} from "react-icons/bs";
-import {
-  Layout,
-  Header,
-  DashboardItem,
-  DashboardItemHeading,
-  EmptyCard,
-} from "./layout";
+import { BsGearFill } from "react-icons/bs";
+import { Layout, DashboardItem, DashboardItemHeading } from "./layout";
 import { PostComponent } from "./posts/post-item";
 import Button from "./ui/button";
 import { CommunityResponse } from "@/lib/api/validators";
 import { usePostsForCommunity } from "@/lib/queries/usePostQuery";
 import { SubscribeButton } from "./subscribe-button";
-import Image from "next/image";
 import { ProfileImage } from "./ui/profile-image";
-import { CreatePostButton } from "./create-post-button";
 import Link from "next/link";
-import Input from "./ui/input";
 import { Socials } from "./socials";
 import { useCommunitySocialsQuery } from "@/lib/queries/useCommunitySocialsQuery";
 

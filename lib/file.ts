@@ -13,7 +13,7 @@ export type FileImage = {
   formData?: FormData;
 };
 
-export async function uploadImage(formData: FormData) {
+export async function uploadImage(formData: FormData): Promise<string> {
   const result = await fetch(
     "https://api.cloudinary.com/v1_1/dw7064r1g/upload",
     {

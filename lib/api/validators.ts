@@ -48,6 +48,14 @@ export const CommunitiesValidators = {
       subscribers: z.number(),
       posts: z.number(),
     }),
+    tags: z
+      .array(
+        z.object({
+          id: z.string().cuid(),
+          name: z.string(),
+        })
+      )
+      .optional(),
   }),
   CommunitySocialsSchema: z.object({
     facebook: z.string().optional(),

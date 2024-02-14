@@ -25,9 +25,11 @@ import { authOptions } from "./api/auth/[...nextauth]";
 import { useUpdateCommunityMutation } from "@/lib/mutations/useUpdateCommunityMutation";
 import { useCreateCommunityForm } from "@/lib/useCreateCommunityForm";
 import { CreateCommunityForm, Form } from "@/components/create-community-form";
+import { getTagsForCommunity } from "@/lib/api/tags";
 
 export default function Settings({
   slug,
+  tags,
   defaultImage,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data } = useCommunitiesByIDQuery(slug);
@@ -35,20 +37,32 @@ export default function Settings({
   const { mutateAsync } = useUpdateCommunityMutation();
   const router = useRouter();
 
+  const defaultSelected = React.useMemo(() => {
+    const selected: Record<string, string> = {};
+
+    for (const tag of tags) {
+      selected[tag.name] = tag.id;
+    }
+
+    return selected;
+  }, []);
+
   const { selected, setSelected, profileImage, setProfileImage } =
     useCreateCommunityForm({
       defaultProfileImage: {
         src: defaultImage,
       },
-      defaultSelected: {},
+      defaultSelected,
     });
 
-  async function onSubmit({ name, slug, description }: Form) {
+  console.log(selected);
+
+  async function onSubmit(data: Form) {
     await mutateAsync({
-      id: data!.community.id,
-      name,
-      slug,
-      description,
+      id: slug,
+      img: profileImage,
+      tags: Object.values(selected),
+      ...data,
     });
     router.reload();
     router.push("/");
@@ -98,9 +112,18 @@ export async function getServerSideProps({
     };
   }
 
+  const tags = await getTagsForCommunity(session.user.slug);
+
+  if (tags === null) {
+    return {
+      redirect: "/",
+    };
+  }
+
   return {
     props: {
       slug: session.user.slug,
+      tags,
       defaultImage: session.user.image || "",
     },
   };

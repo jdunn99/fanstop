@@ -11,8 +11,12 @@ import { useQuery } from "react-query";
 import { truncateString } from "@/lib/truncate";
 
 export function Sidebar() {
-  const path = usePathname();
+  const pathname = usePathname();
   const items = useSidebarRoutes();
+
+  const path = React.useMemo(() => {
+    return "/" + pathname.split("/")[1];
+  }, [pathname]);
 
   const { data } = useQuery<any>(["subscriptions"], () =>
     fetch("/api/user/subscriptions").then((res) => res.json())
@@ -63,27 +67,6 @@ export function Sidebar() {
           </li>
         ) : null}
       </ul>
-      {/* {typeof data !== "undefined" && !data.message ? (
-          <div className="py-2">
-            <h2 className="mb-2 px-7  font-bold">Subscriptions</h2>
-            <div className="relative overflow-auto h-[400px] ">
-              {data.map(({ community }: any) => (
-                <Link key={community.id} href={`/${community.slug}`}>
-                  <span
-                    className={`group transition-all flex items-center rounded-md ml-4 mr-3 px-4 py-2 my-1 text-sm   hover:text-rose-600 ${
-                      path === "/" + community.slug
-                        ? " text-rose-600"
-                        : "transparent text-slate-600"
-                    }`}
-                  >
-                    <span>{community.name}</span>
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        ) : null}
-      </div> */}
     </nav>
   );
 }

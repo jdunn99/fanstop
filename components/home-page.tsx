@@ -25,7 +25,7 @@ export function HomePage() {
           Features
         </div>
       </ProfileNav>
-      <main className="flex-1 max-w-[84rem] mx-auto space-y-32 px-4 md:px-8">
+      <main className="flex-1 max-w-[84rem] mx-auto space-y-32 px-4 md:px-8 pb-16">
         <section className="space-y-16 py-32">
           <div className="relative space-y-16">
             <h1 className="font-bold text-5xl md:text-6xl lg:text-7xl">
