@@ -24,14 +24,11 @@ export function CommunityAvatar({ name }: { name: string }) {
 
 export function AvatarImage({ src }: { src: string }) {
   return (
-    <div role="button" className=" h-10 w-10 flex rounded-full border ">
-      <Image
-        alt="Avatar"
-        src={src}
-        width={128}
-        height={128}
-        className="rounded-full"
-      />
-    </div>
+    <img
+      alt="Avatar"
+      src={src}
+      className="rounded-full border p-1 w-10 h-10"
+      role="button"
+    />
   );
 }

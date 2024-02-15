@@ -58,7 +58,11 @@ export async function getCommunityByParam({
         _count: {
           select: {
             subscribers: true,
-            posts: true,
+            posts: {
+              where: {
+                isPublished: true,
+              },
+            },
           },
         },
         creator: {
@@ -142,7 +146,11 @@ export async function getCommunitiesByTag(tagName: string, userId?: string) {
         _count: {
           select: {
             subscribers: true,
-            posts: true,
+            posts: {
+              where: {
+                isPublished: true,
+              },
+            },
           },
         },
         creator: {
@@ -206,7 +214,11 @@ export async function getPopularCommunities(query?: string, userId?: string) {
         _count: {
           select: {
             subscribers: true,
-            posts: true,
+            posts: {
+              where: {
+                isPublished: true,
+              },
+            },
           },
         },
         creator: {
@@ -296,7 +308,11 @@ export async function updateCommunity({
         _count: {
           select: {
             subscribers: true,
-            posts: true,
+            posts: {
+              where: {
+                isPublished: true,
+              },
+            },
           },
         },
         creator: {
