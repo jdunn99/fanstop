@@ -4,9 +4,13 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
 import { z } from "zod";
 import { createLike } from "@/lib/api/like";
-import { subscribeToCommunity } from "@/lib/api/subscriptions";
+import {
+  deleteSubscriber,
+  subscribeToCommunity,
+} from "@/lib/api/subscriptions";
+import { unsubscribe } from "diagnostics_channel";
 
-const methods = ["GET", "POST"];
+const methods = ["GET", "POST", "DELETE"];
 
 export default async function handler(
   req: NextApiRequest,
@@ -30,11 +34,16 @@ export default async function handler(
 
     const { communityId } = z.object({ communityId: z.string() }).parse(body);
 
-    const result = await subscribeToCommunity({
-      communityId,
-      user: session.user,
-    });
-    res.status(200).json(result);
+    if (method === "POST") {
+      const result = await subscribeToCommunity({
+        communityId,
+        user: session.user,
+      });
+      res.status(200).json(result);
+    } else {
+      await deleteSubscriber(communityId, session.user.id);
+      res.status(200).json({ success: true });
+    }
     return;
   } catch (error) {
     console.error(error);

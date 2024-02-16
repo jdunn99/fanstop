@@ -82,3 +82,37 @@ export async function subscribeToCommunity({
     return null;
   }
 }
+
+export async function deleteSubscriber(communityId: string, userId: string) {
+  try {
+    console.log(communityId, userId);
+    const subscription = await db.subscriber.findFirst({
+      where: {
+        userId,
+        community: {
+          OR: [
+            {
+              slug: communityId,
+            },
+            {
+              id: communityId,
+            },
+          ],
+        },
+      },
+    });
+
+    if (!subscription) {
+      throw new Error("Not found");
+    }
+
+    await db.subscriber.delete({
+      where: {
+        id: subscription.id,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
