@@ -27,7 +27,7 @@ export function AvatarImage({ src }: { src: string }) {
     <img
       alt="Avatar"
       src={src}
-      className="rounded-full border p-1 w-10 h-10"
+      className="rounded-full border w-10 h-10 object-cover"
       role="button"
     />
   );

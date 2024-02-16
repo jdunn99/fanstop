@@ -63,7 +63,6 @@ export default function ToastProvider({ children }: ToastProps) {
     setToasts((toasts) => [...toasts, { id, title, variant, description }]);
 
     if (timeout) {
-      console.log("CLOSING IN: ", timeout);
       setTimeout(() => close(id), timeout);
     }
   }

@@ -127,8 +127,6 @@ export async function checkSubscriber({
     },
   });
 
-  console.log(result);
-
   return result > 0;
 }
 
@@ -240,7 +238,6 @@ export async function getPopularCommunities(query?: string, userId?: string) {
       .array(CommunitiesValidators.CommunitySchema)
       .parse(result);
 
-    console.log({ result });
     const response: CommunityResponse[] = [];
 
     for (const community of validated) {

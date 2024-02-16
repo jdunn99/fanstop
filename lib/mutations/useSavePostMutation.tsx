@@ -13,7 +13,6 @@ export function useSavePostMutation(id: string) {
 
   return useMutation(["post", id], {
     async mutationFn({ title, description, editorState }: PostSaveProps) {
-      console.log("Processing content");
       const content = await Promise.all(
         editorState.blocks.map(async (block) => {
           const temp = { ...block };
@@ -34,7 +33,6 @@ export function useSavePostMutation(id: string) {
         isPublished: false,
       };
 
-      console.log("Fetching");
       const result = await fetch(`/api/posts/${id}`, {
         method: "PUT",
         headers: {

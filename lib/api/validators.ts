@@ -200,3 +200,22 @@ export const TagsValidators = {
 };
 
 export type Tag = z.infer<typeof TagsValidators.Tag>;
+
+// Notifications
+export const NotificationsValidators = {
+  NotifcationSchema: z.object({
+    id: z.string().cuid(),
+    path: z.string(),
+    message: z.string(),
+    creatorId: z.string().cuid(),
+    receiverId: z.string().cuid(),
+    creator: z.object({
+      image: z.string(),
+      name: z.string(),
+    }),
+  }),
+};
+
+export type Notifcation = z.infer<
+  typeof NotificationsValidators.NotifcationSchema
+>;

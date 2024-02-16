@@ -8,6 +8,7 @@ import { CreatePostButton } from "./create-post-button";
 import Image from "next/image";
 import { NavDrawerOpenButton } from "./nav-drawer";
 import { useSession } from "next-auth/react";
+import { NotificationMenu } from "./notification-menu";
 
 interface ProfileNavProps {
   children?: React.ReactNode;
@@ -34,6 +35,7 @@ export function ProfileNav({ children }: ProfileNavProps) {
               {session?.user ? (
                 <React.Fragment>
                   <CreatePostButton />
+                  <NotificationMenu userId={session.user.id} />
                   <AvatarMenu />
                 </React.Fragment>
               ) : (

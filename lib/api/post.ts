@@ -82,7 +82,6 @@ export async function getPostsForCommunity({
         : await checkSubscriber({ communityId: id, userId: authorId });
 
     for (const post of posts) {
-      console.log(post.author.name);
       const isAuthor =
         typeof authorId !== "undefined" && authorId === post.author.id;
 

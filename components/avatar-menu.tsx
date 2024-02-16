@@ -7,13 +7,10 @@ import {
   MenuItem,
   useMenu,
 } from "./ui/menu";
-import { Avatar, AvatarImage } from "./ui/avatar";
-import { dashboardConfig, useSidebarRoutes } from "@/config/dashboard";
+import { AvatarImage } from "./ui/avatar";
+import { useSidebarRoutes } from "@/config/dashboard";
 import Link from "next/link";
-import Image from "next/image";
-import Button from "./ui/button";
-import { BsDoorOpen, BsDoorOpenFill } from "react-icons/bs";
-import { MdDoorBack, MdDoorFront } from "react-icons/md";
+import { BsDoorOpenFill } from "react-icons/bs";
 
 interface AvatarButtonProps {
   image?: string;

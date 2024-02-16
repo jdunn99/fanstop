@@ -36,14 +36,6 @@ export default async function handler(
           return;
         }
 
-        const test = PostVailidators.PostUpdateSchema.parse({
-          ...body,
-          authorId: session.user.id,
-          id: postId,
-        });
-
-        console.log(test);
-
         const result = await updatePost({
           authorId: session.user.id,
           id: postId,

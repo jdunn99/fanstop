@@ -32,7 +32,7 @@ export default async function handler(
 
     const result = await subscribeToCommunity({
       communityId,
-      userId: session.user.id,
+      user: session.user,
     });
     res.status(200).json(result);
     return;

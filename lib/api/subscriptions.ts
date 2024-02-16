@@ -1,7 +1,11 @@
+import { DefaultUser, User } from "next-auth";
 import { db } from "../db";
 
 type SubscriberQuery = {
-  userId: string;
+  user: User & {
+    id: string;
+    slug: string;
+  };
   communityId: string;
 };
 
@@ -13,7 +17,6 @@ export async function getSubscriptionsForUser(userId: string) {
       },
     });
 
-    console.log(result);
     return result;
   } catch (error) {
     console.error(error);
@@ -22,15 +25,16 @@ export async function getSubscriptionsForUser(userId: string) {
 }
 
 export async function subscribeToCommunity({
-  userId,
+  user,
   communityId,
 }: SubscriberQuery) {
   try {
-    return await db.subscriber.create({
+    console.log(user);
+    const subscription = await db.subscriber.create({
       data: {
         user: {
           connect: {
-            id: userId,
+            id: user.id,
           },
         },
         community: {
@@ -39,7 +43,40 @@ export async function subscribeToCommunity({
           },
         },
       },
+      include: {
+        community: {
+          select: {
+            creatorId: true,
+          },
+        },
+        user: {
+          select: {
+            community: {
+              select: {
+                slug: true,
+              },
+            },
+          },
+        },
+      },
     });
+
+    if (subscription === null) {
+      throw new Error("Something went wrong creating the subscription");
+    }
+
+    const n = await db.notification.create({
+      data: {
+        message: `${user.name} subscribed to your community`,
+        path: `/${subscription.user.community!.slug}`,
+        creatorId: user.id,
+        receiverId: subscription.community.creatorId,
+      },
+    });
+
+    console.log(n);
+
+    return subscription;
   } catch (error) {
     console.error(error);
     return null;
