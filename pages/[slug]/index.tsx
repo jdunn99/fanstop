@@ -4,8 +4,6 @@ import React from "react";
 import { z } from "zod";
 import { useCommunitiesByIDQuery } from "@/lib/queries/useCommunities";
 import { ProfileComponent } from "@/components/profile";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]";
 
 export default function ProfilePage({
   slug,

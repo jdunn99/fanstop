@@ -11,7 +11,7 @@ export function ProfileFooter() {
   const items = useSidebarRoutes();
   const path = usePathname();
   return (
-    <footer className="py-8 w-full border-t border-slate-200 bg-slate-50">
+    <footer className="py-8 w-full border-t border-slate-200 bg-white">
       <div className="space-y-4 flex flex-col items-center justify-center">
         <div className="flex gap-2 items-center text-slate-500 text-sm">
           <p>© 2024 FanStop</p>

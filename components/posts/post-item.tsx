@@ -75,7 +75,7 @@ function FeaturedPost({
   return (
     <Link
       href={`/${author.community.slug}/${id}`}
-      className="p-4 lg:p-8 bg-slate-50 rounded-lg flex hover:underline"
+      className="p-4 lg:p-8 bg-white  rounded-lg flex hover:underline"
     >
       <div className="flex gap-8 flex-col md:flex-row w-full items-center">
         {image ? <img src={image} className={FEATURED_CX} /> : null}
@@ -126,7 +126,7 @@ function GridPost({
 }: PostComponentProps) {
   return (
     <Link
-      className="flex bg-slate-50 rounded-lg p-4"
+      className="flex bg-white rounded-lg p-4"
       href={`/${author.community.slug}/${id}`}
     >
       <div className="flex gap-8 flex-col w-full">
@@ -198,7 +198,7 @@ function Post({
 }: PostComponentProps) {
   return (
     <Link
-      className="flex bg-slate-50 rounded-lg p-4"
+      className="flex bg-white rounded-lg p-4"
       href={`/${author.community.slug}/${id}`}
     >
       <div className="flex gap-8 w-full flex-col md:flex-row">

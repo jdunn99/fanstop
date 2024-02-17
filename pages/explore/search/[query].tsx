@@ -5,6 +5,7 @@ import {
   DashboardItemHeading,
 } from "@/components/layout";
 import { Search } from "@/components/search";
+import Button from "@/components/ui/button";
 import { CommunitySearchResult } from "@/lib/api/validators";
 import {
   useCommunitiesSearchResult,
@@ -26,25 +27,27 @@ export default function SearchQuery({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data: communities } = useCommunitiesSearchResult(query);
   const { data: tags } = usePopularTags();
+
   const path = usePathname();
+  const variantPath = React.useMemo(() => {
+    const split = path.split("/");
+    return decodeURI(split[split.length - 1]);
+  }, [path]);
 
   return (
     <Layout heading="Explore">
       <Search defaultValue={query} />
-      {JSON.stringify(path.split("/")[1])}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+      <div className="flex items-center justify-center gap-2">
         {typeof tags !== "undefined"
           ? tags.map(({ id, name }) => (
-              <Link
-                href={`/explore/search/${name}`}
-                key={id}
-                className={` w-full rounded-lg ${
-                  name === query
-                    ? "border-rose-500 text-rose-500 bg-rose-50"
-                    : "bg-white text-slate-600 border-slate-300"
-                } hover:border-rose-500 hover:text-rose-900 hover:bg-rose-50 p-4 border font-semibold`}
-              >
-                {name}
+              <Link href={`/explore/search/${name}`} key={id}>
+                <Button
+                  type="button"
+                  variant={variantPath === name ? "primary" : "secondary"}
+                  size="sm"
+                >
+                  {name}
+                </Button>
               </Link>
             ))
           : null}

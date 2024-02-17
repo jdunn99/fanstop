@@ -1,6 +1,12 @@
 import type { DashboardConfig, NavConfig } from "@/types";
 import { useSession } from "next-auth/react";
-import { MdHome, MdPerson, MdSearch, MdSettings } from "react-icons/md";
+import {
+  MdHome,
+  MdMessage,
+  MdPerson,
+  MdSearch,
+  MdSettings,
+} from "react-icons/md";
 
 export const unAuthedConfig: DashboardConfig = {
   header: [],
@@ -58,6 +64,11 @@ export function useSidebarRoutes(): NavConfig {
           href: `/${session.user.slug}`,
           value: "Profile",
           image: <MdPerson />,
+        },
+        {
+          href: "/messages",
+          value: "Messages",
+          image: <MdMessage />,
         },
         {
           href: "/settings",

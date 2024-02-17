@@ -19,12 +19,7 @@ export function CreatePostButton() {
   }
 
   return (
-    <Button
-      className="whitespace-nowrap"
-      size="sm"
-      onClick={onClick}
-      variant="outline"
-    >
+    <Button className="whitespace-nowrap" onClick={onClick}>
       Create post
     </Button>
   );

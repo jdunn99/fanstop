@@ -51,6 +51,24 @@ export function useSubscribeMutation(communityId: string) {
         temp[index].isSubscriber = !isSubscriber;
         return temp;
       });
+      queryClient.setQueryData(["popular-communities"], (oldData) => {
+        const temp = oldData as unknown as CommunityResponse[];
+        if (!temp) {
+          return temp;
+        }
+
+        console.log(temp);
+        const index = temp.findIndex(
+          ({ community }) => community.slug === communityId
+        );
+
+        if (index === -1) {
+          return temp;
+        }
+
+        temp[index].isSubscriber = !isSubscriber;
+        return temp;
+      });
     },
   });
 }

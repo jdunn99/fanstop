@@ -10,6 +10,7 @@ import { ProfileImage } from "./ui/profile-image";
 import Link from "next/link";
 import { Socials } from "./socials";
 import { useCommunitySocialsQuery } from "@/lib/queries/useCommunitySocialsQuery";
+import { ProfileControls } from "./profile-controls";
 
 interface ProfileComponentProps {
   slug: string;
@@ -57,8 +58,7 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
           {typeof socials !== "undefined" ? <Socials {...socials} /> : null}
         </div>
 
-        <hr />
-
+        <ProfileControls isOwn={isOwn} slug={slug} />
         {typeof posts === "undefined" ? null : (
           <React.Fragment>
             <DashboardItem>

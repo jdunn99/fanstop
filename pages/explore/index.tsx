@@ -5,6 +5,7 @@ import {
   Layout,
 } from "@/components/layout";
 import { Search } from "@/components/search";
+import Button from "@/components/ui/button";
 import { usePopularCommunities } from "@/lib/queries/useCommunities";
 import { usePopularTags } from "@/lib/queries/usePopularTags";
 import Link from "next/link";
@@ -17,15 +18,13 @@ export default function ExplorePage() {
   return (
     <Layout heading="Explore">
       <Search />
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+      <div className="flex mx-auto items-center gap-2 justify-center w-full">
         {typeof tags !== "undefined"
           ? tags.map(({ id, name }) => (
-              <Link
-                href={`/explore/search/${name}`}
-                key={id}
-                className=" w-full rounded-lg hover:border-rose-500 hover:text-rose-900 hover:bg-rose-50 bg-white p-4 border border-slate-300 text-slate-600 font-semibold"
-              >
-                {name}
+              <Link href={`/explore/search/${name}`} key={id}>
+                <Button type="button" variant="secondary" size="sm">
+                  {name}
+                </Button>
               </Link>
             ))
           : null}

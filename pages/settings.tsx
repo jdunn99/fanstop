@@ -1,24 +1,12 @@
-import { useCreateCommunityMutation } from "@/lib/mutations/useCreateCommunityMutation";
-import { usePopularTags } from "@/lib/queries/usePopularTags";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Input from "@/components/ui/input";
 import React from "react";
-import { useForm } from "react-hook-form";
-import { MdClose } from "react-icons/md";
-import { z } from "zod";
 import { useRouter } from "next/router";
-import Textarea from "@/components/ui/textarea";
 import Button from "@/components/ui/button";
 import {
   DashboardItem,
   DashboardItemHeading,
   Layout,
 } from "@/components/layout";
-import {
-  useCommunitiesByIDQuery,
-  useCommunitiesQuery,
-} from "@/lib/queries/useCommunities";
-import { useSession } from "next-auth/react";
+import { useCommunitiesByIDQuery } from "@/lib/queries/useCommunities";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
