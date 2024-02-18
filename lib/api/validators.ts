@@ -219,3 +219,41 @@ export const NotificationsValidators = {
 export type Notifcation = z.infer<
   typeof NotificationsValidators.NotifcationSchema
 >;
+
+// Conversations
+export const ConversationValidators = {
+  ConversationSchema: z.object({
+    id: z.string().cuid(),
+    createdAt: z.date(),
+    updatedAt: z.date(),
+    users: z.array(
+      z.object({
+        id: z.string().cuid(),
+        community: z.object({
+          slug: z.string(),
+        }),
+        image: z.string(),
+        name: z.string(),
+      })
+    ),
+    messages: z.array(z.object({ content: z.string() })),
+  }),
+};
+export type Conversation = z.infer<
+  typeof ConversationValidators.ConversationSchema
+>;
+
+// Messages
+export const MessagesValidators = {
+  MessageSchema: z.object({
+    id: z.string().cuid(),
+    content: z.string(),
+    conversationId: z.string().cuid(),
+    userId: z.string().cuid(),
+    user: z.object({
+      image: z.string(),
+      name: z.string(),
+    }),
+  }),
+};
+export type Message = z.infer<typeof MessagesValidators.MessageSchema>;

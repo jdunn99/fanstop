@@ -22,7 +22,7 @@ export default function ExplorePage() {
         {typeof tags !== "undefined"
           ? tags.map(({ id, name }) => (
               <Link href={`/explore/search/${name}`} key={id}>
-                <Button type="button" variant="secondary" size="sm">
+                <Button type="button" variant="white" size="sm">
                   {name}
                 </Button>
               </Link>

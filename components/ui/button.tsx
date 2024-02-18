@@ -6,6 +6,7 @@ export const BUTTON_BASE_STYLE =
 export const BUTTON_VARIANTS = {
   variant: {
     primary: "bg-rose-500 text-white hover:bg-rose-600",
+    white: "bg-white text-slate-800 hover:bg-slate-100 border",
     outline: "border border-rose-500 text-rose-500 bg-white hover:bg-slate-50",
     secondary: "bg-slate-50 hover:bg-slate-200",
     ghost: "bg-transparent hover:bg-slate-50 opacity-80 hover:opacity-100",

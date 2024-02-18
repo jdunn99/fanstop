@@ -43,7 +43,7 @@ export default function SearchQuery({
               <Link href={`/explore/search/${name}`} key={id}>
                 <Button
                   type="button"
-                  variant={variantPath === name ? "primary" : "secondary"}
+                  variant={variantPath === name ? "primary" : "white"}
                   size="sm"
                 >
                   {name}

@@ -28,18 +28,20 @@ export function Sidebar() {
   }
 
   return (
-    <nav className="lg:text-sm lg:leading-6 relative top-8 pl-8">
+    <nav className="lg:text-sm lg:leading-6 relative top-8 px-8">
       <ul>
         {items.map((item, index) => (
           <li key={index}>
             <Link
               key={index}
               href={item.href}
-              className={`group flex items-center lg:text-sm lg:leading-6 mb-4 font-medium hover:text-rose-500 ${
-                path === item.href ? "text-rose-500" : "text-slate-600"
+              className={`group flex items-center lg:text-sm p-1 rounded lg:leading-6 mb-4 font-medium hover:text-rose-500 ${
+                path === item.href
+                  ? "text-rose-500 bg-rose-50"
+                  : "text-slate-600"
               }`}
             >
-              <div className="mr-4 rounded-md ">{item.image}</div>
+              <div className="mr-2 rounded-md text-xl">{item.image}</div>
               {item.value}
             </Link>
           </li>

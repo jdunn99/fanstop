@@ -59,33 +59,26 @@ export function DashboardItem({ children }: DashboardItemProps) {
   );
 }
 
+export function LayoutContent({ children, heading }: LayoutProps) {
+  return (
+    <div className="flex-1 space-y-6 pt-8 flex flex-col z-10 min-h-[calc(100vh-73px)] overflow-auto bg-slate-50">
+      <main className="lg:px-10 px-1  max-w-screen-lg mx-auto h-full w-full">
+        <div className="space-y-8 py-8 h-full">
+          {typeof heading === "undefined" ? null : <Header heading={heading} />}
+          {children}
+        </div>
+      </main>
+      <ProfileFooter />
+    </div>
+  );
+}
+
 interface LayoutProps {
   children?: React.ReactNode;
   heading?: string;
 }
 export function Layout({ children, heading }: LayoutProps) {
   return (
-    // <div className="antialiased" id="root">
-    //   <ProfileNav />
-    //   <div>
-    //     <div className="max-w-[84rem] mx-auto px-4  md:px-8">
-    //       <div className="hidden lg:block fixed z-20 inset-0 top-[7rem] left-[max(0px,calc(50%-42rem))] right-auto pb-10 pl-8 pr-6 overflow-y-auto">
-    //         <Sidebar />
-    //       </div>
-    //       <div className="lg:pl-[10.5rem] min-h-[calc(100vh-73px)]">
-    //         <main className="lg:px-10 px-1 lg:border-l min-h-[calc(100vh-73px)]">
-    //           <div className="space-y-8 py-8 ">
-    //             {typeof heading === "undefined" ? null : (
-    //               <Header heading={heading} />
-    //             )}
-    //             {children}
-    //           </div>
-    //         </main>
-    //       </div>
-    //     </div>
-    //   </div>
-    //   <ProfileFooter />
-    // </div>
     <div className="antialised" id="root">
       <ProfileNav />
       <div className="flex overflow-hidden">
@@ -93,17 +86,7 @@ export function Layout({ children, heading }: LayoutProps) {
           <Sidebar />
         </aside>
 
-        <div className="flex-1 space-y-6 pt-8 flex flex-col z-10 min-h-[calc(100vh-73px)] overflow-auto bg-slate-50">
-          <main className="lg:px-10 px-1  max-w-screen-lg mx-auto h-full w-full">
-            <div className="space-y-8 py-8 ">
-              {typeof heading === "undefined" ? null : (
-                <Header heading={heading} />
-              )}
-              {children}
-            </div>
-          </main>
-          <ProfileFooter />
-        </div>
+        <LayoutContent heading={heading}>{children}</LayoutContent>
       </div>
     </div>
   );
