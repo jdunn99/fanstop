@@ -58,7 +58,7 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
           {typeof socials !== "undefined" ? <Socials {...socials} /> : null}
         </div>
 
-        <ProfileControls isOwn={isOwn} slug={slug} />
+        {/* <ProfileControls isOwn={isOwn} slug={slug} /> */}
         {typeof posts === "undefined" ? null : (
           <React.Fragment>
             <DashboardItem>
