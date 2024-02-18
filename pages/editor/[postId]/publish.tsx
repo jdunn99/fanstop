@@ -129,7 +129,7 @@ export default function PostPublishPage({
               <Textarea
                 {...register("description")}
                 placeholder="Description"
-                defaultValue={post.description}
+                defaultValue={post.description || ""}
                 className={`${
                   errors.description ? "border-red-500" : ""
                 } bg-white min-h-[64px]`}
