@@ -69,7 +69,7 @@ const MenuList = React.forwardRef<
     <div
       {...rest}
       ref={ref}
-      className={`${className} z-50 absolute right-0 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5`}
+      className={`${className} z-[99] absolute right-0 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5`}
     >
       <div
         className="py-1"

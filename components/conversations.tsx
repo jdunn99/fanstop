@@ -9,6 +9,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { CreateConversationButton } from "./create-conversation";
+import {
+  CreateConversationDrawer,
+  CreateConversationDrawerButton,
+} from "./conversations/create-conversation-drawer";
 
 function ConversationItem({ id, users, messages }: Conversation) {
   const [user] = users;
@@ -73,7 +77,7 @@ export function ConversationContainer() {
             className="w-full px-4"
             placeholder="Search messages"
           />
-          <CreateConversationButton variant="small" />
+          <CreateConversationDrawerButton />
         </div>
         {typeof data !== "undefined"
           ? data.map((conversation) => (

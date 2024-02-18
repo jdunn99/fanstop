@@ -55,10 +55,41 @@ export async function getConversationsForUser(userId: string) {
 }
 
 export async function createConversation(userIds: string[]) {
+  const userId = userIds[userIds.length - 1];
   return await db.conversation.create({
     data: {
       users: {
         connect: userIds.map((id) => ({ id })),
+      },
+    },
+    include: {
+      messages: {
+        select: {
+          content: true,
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 1,
+      },
+      users: {
+        where: {
+          NOT: {
+            id: userId,
+          },
+        },
+        select: {
+          id: true,
+          community: {
+            select: {
+              slug: true,
+            },
+          },
+          image: true,
+          name: true,
+        },
+        take: 1,
       },
     },
   });

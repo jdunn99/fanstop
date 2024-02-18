@@ -62,7 +62,7 @@ export function DashboardItem({ children }: DashboardItemProps) {
 export function LayoutContent({ children, heading }: LayoutProps) {
   return (
     <div className="flex-1 space-y-6 pt-8 flex flex-col z-10 min-h-[calc(100vh-73px)] overflow-auto bg-slate-50">
-      <main className="lg:px-10 px-1  max-w-screen-lg mx-auto h-full w-full">
+      <main className="lg:px-10 px-2  max-w-screen-lg mx-auto h-full w-full">
         <div className="space-y-8 py-8 h-full">
           {typeof heading === "undefined" ? null : <Header heading={heading} />}
           {children}
