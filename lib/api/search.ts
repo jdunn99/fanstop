@@ -57,3 +57,47 @@ export async function getSearchResult(
     return null;
   }
 }
+
+export async function getUserSearchResult(name: string, userId?: string) {
+  try {
+    const result = await db.user.findMany({
+      where: {
+        NOT: {
+          id: userId,
+        },
+        name: {
+          contains: name,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        community: {
+          select: {
+            slug: true,
+          },
+        },
+        image: true,
+        conversations: {
+          where: {
+            users: {
+              some: {
+                name: {
+                  contains: name,
+                },
+              },
+            },
+          },
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    return result;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}

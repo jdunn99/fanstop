@@ -8,8 +8,9 @@ import { Conversation } from "@/lib/api/validators";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { CreateConversationButton } from "./create-conversation";
 
-function ConversationItem({ id, updatedAt, users, messages }: Conversation) {
+function ConversationItem({ id, users, messages }: Conversation) {
   const [user] = users;
   const message = messages[0];
 
@@ -42,7 +43,7 @@ function ConversationItem({ id, updatedAt, users, messages }: Conversation) {
               {truncateString(message?.content, 40)}
             </p>
             <p className="text-xs text-slate-500">
-              {new Date(updatedAt).toDateString()}
+              {new Date(message?.createdAt).toDateString()}
             </p>
           </div>
         ) : (
@@ -55,19 +56,24 @@ function ConversationItem({ id, updatedAt, users, messages }: Conversation) {
 
 export function ConversationContainer() {
   const { data } = useConversationQuery();
+  const path = usePathname();
+
+  const isConversationPage = path === "/messages";
 
   return (
-    <aside className="hidden inset-y-0 z-10 flex-shrink-0 w-96 bg-white border-r md:static lg:block">
-      <div className="relative pt-4 ">
+    <aside
+      className={`inset-y-0 z-10 flex-shrink-0 w-full lg:w-96 bg-white border-r lg:flex  max-sm:flex-1 ${
+        isConversationPage ? "flex" : "hidden"
+      }`}
+    >
+      <div className="max-sm:flex-1 relative pt-4 w-full">
         <div className="px-2 pb-4 flex items-center gap-2">
           <Input
             type="search"
             className="w-full px-4"
             placeholder="Search messages"
           />
-          <Button size="sm" title="New message">
-            <BsPlus className="text-xl" />
-          </Button>
+          <CreateConversationButton variant="small" />
         </div>
         {typeof data !== "undefined"
           ? data.map((conversation) => (

@@ -188,6 +188,22 @@ export type CreatePostArgs = z.infer<typeof PostVailidators.CreatePostSchema>;
 export type CommunityPosts = z.infer<typeof CommunityPostsSchema>;
 
 // User
+export const UsersValidators = {
+  UserSearchResult: z.object({
+    id: z.string().cuid(),
+    name: z.string(),
+    community: z.object({
+      slug: z.string(),
+    }),
+    image: z.string(),
+    conversations: z.array(
+      z.object({
+        id: z.string().cuid(),
+      })
+    ),
+  }),
+};
+export type UserSearchResult = z.infer<typeof UsersValidators.UserSearchResult>;
 export type FeedItem = Record<string, PostResponse[]>;
 
 // Tags
@@ -236,7 +252,7 @@ export const ConversationValidators = {
         name: z.string(),
       })
     ),
-    messages: z.array(z.object({ content: z.string() })),
+    messages: z.array(z.object({ content: z.string(), createdAt: z.date() })),
   }),
 };
 export type Conversation = z.infer<
@@ -254,6 +270,7 @@ export const MessagesValidators = {
       image: z.string(),
       name: z.string(),
     }),
+    createdAt: z.date(),
   }),
 };
 export type Message = z.infer<typeof MessagesValidators.MessageSchema>;

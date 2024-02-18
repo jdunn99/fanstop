@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "react-query";
-import { Message } from "../api/validators";
+import { Conversation, Message } from "../api/validators";
 
 export function useCreateMessageMutation(id: string) {
   const queryClient = useQueryClient();
@@ -20,7 +20,23 @@ export function useCreateMessageMutation(id: string) {
       onSuccess(data, variables, context) {
         queryClient.setQueryData(["messages", id], (oldData) => {
           const temp = oldData as unknown as Message[];
-          temp.push(data);
+          temp.unshift(data);
+
+          return temp;
+        });
+
+        queryClient.setQueryData(["conversations"], (oldData) => {
+          const temp = oldData as unknown as Conversation[];
+          const index = temp.findIndex((id) => id);
+
+          if (index === -1) {
+            return temp;
+          }
+
+          temp[index].messages[0] = {
+            content: data.content,
+            createdAt: data.createdAt,
+          };
 
           return temp;
         });

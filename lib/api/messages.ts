@@ -22,6 +22,9 @@ export async function getMessagesForConversation(id: string, userId: string) {
         },
       },
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 }
 

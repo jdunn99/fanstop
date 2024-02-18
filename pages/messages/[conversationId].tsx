@@ -4,13 +4,13 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { z } from "zod";
 import { MessagesLayout } from ".";
 import { MessagesContainer } from "@/components/messages";
+import React from "react";
+import { useCreateConversationMutation } from "@/lib/mutations/useCreateConversationMutation";
 
 export default function MessagesWithConversation({
   conversationId,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data } = useConversationByIDQuery(conversationId);
-
-  console.log(data);
 
   if (typeof data === "undefined") {
     return null;

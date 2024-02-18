@@ -15,9 +15,10 @@ export async function getConversationsForUser(userId: string) {
         messages: {
           select: {
             content: true,
+            createdAt: true,
           },
           orderBy: {
-            createdAt: "asc",
+            createdAt: "desc",
           },
           take: 1,
         },
@@ -78,6 +79,20 @@ export async function getConversationById(id: string, userId: string) {
         select: {
           image: true,
           name: true,
+        },
+      },
+    },
+  });
+}
+
+export async function getConversationByParticipantIds(participants: string[]) {
+  return await db.conversation.findFirst({
+    where: {
+      users: {
+        every: {
+          id: {
+            in: participants,
+          },
         },
       },
     },
