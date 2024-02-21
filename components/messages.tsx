@@ -161,7 +161,7 @@ export function MessagesContainer({ id, name }: { id: string; name: string }) {
     <div className=" w-full bg-slate-50" ref={ref}>
       <div className="fixed w-full lg:w-[calc(100vw-40rem)] px-6 py-[1.62rem]  bg-white border-b z-50 right-0">
         <div className="flex items-center p-0 gap-4">
-          <Link href="/messages" shallow>
+          <Link href="/messages">
             <BsArrowLeft />
           </Link>
           <p className="text-sm font-semibold text-slate-800">{name}</p>

@@ -20,7 +20,6 @@ function ConversationSearchResult({
     if (conversation === null) {
       const data = await mutateAsync([id]);
 
-      console.log(data);
       if (typeof data !== "undefined") {
         router.push(`/messages/${data.id}`);
       }

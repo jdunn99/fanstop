@@ -36,9 +36,7 @@ export function PostComment({
     <div className="w-full flex items-start py-4 px-8">
       <div className="space-y-2 flex-1">
         <div className="flex gap-4">
-          <div className="flex-1">
-            <AvatarImage src={user.image!} />
-          </div>
+          <AvatarImage src={user.image!} />
           <div className="w-full">
             <h4 className="text-lg font-bold text-slate-900">{user.name}</h4>
             <p className="text-xs text-slate-500">

@@ -27,13 +27,16 @@ export function useCreateMessageMutation(id: string) {
 
         queryClient.setQueryData(["conversations"], (oldData) => {
           const temp = oldData as unknown as Conversation[];
-          const index = temp.findIndex((id) => id);
+          console.log({ temp, id });
+          const item = temp.find(
+            ({ id: conversationId }) => id === conversationId
+          );
 
-          if (index === -1) {
+          if (typeof item === "undefined") {
             return temp;
           }
 
-          temp[index].messages[0] = {
+          item.messages[0] = {
             content: data.content,
             createdAt: data.createdAt,
           };

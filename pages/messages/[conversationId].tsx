@@ -11,6 +11,7 @@ export default function MessagesWithConversation({
   conversationId,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data } = useConversationByIDQuery(conversationId);
+  console.log(data);
 
   if (typeof data === "undefined") {
     return null;

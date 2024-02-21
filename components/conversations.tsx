@@ -27,7 +27,6 @@ function ConversationItem({ id, users, messages }: Conversation) {
   return (
     <Link
       href={`/messages/${id}`}
-      shallow
       className={`flex items-center gap-2 border-y px-4 py-4 cursor-pointer hover:bg-slate-50 ${
         endPath === id ? "bg-rose-50" : ""
       }`}

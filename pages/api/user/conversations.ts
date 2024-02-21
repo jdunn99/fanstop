@@ -51,8 +51,9 @@ export default async function handler(
         return;
       }
     } else {
+      console.log(method, body);
       const { userIds } = body;
-      console.log(userIds);
+      console.log({ userIds });
       const result = await createConversation([...userIds, session.user.id]);
       res.status(200).json(result);
       return;
