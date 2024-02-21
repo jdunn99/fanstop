@@ -65,9 +65,20 @@ export async function getUserSearchResult(name: string, userId?: string) {
         NOT: {
           id: userId,
         },
-        name: {
-          contains: name,
-        },
+        OR: [
+          {
+            name: {
+              contains: name,
+            },
+          },
+          {
+            community: {
+              slug: {
+                contains: name,
+              },
+            },
+          },
+        ],
       },
       select: {
         id: true,

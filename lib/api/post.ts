@@ -44,7 +44,10 @@ const DB_POST_INCLUDE = {
 export async function getPostsForCommunity({
   id,
   authorId,
-}: PostQuery): Promise<PostResponse[] | null> {
+  take,
+}: PostQuery & {
+  take?: number;
+}): Promise<PostResponse[] | null> {
   try {
     const result = await db.post.findMany({
       where: {
@@ -67,6 +70,7 @@ export async function getPostsForCommunity({
         createdAt: "desc",
       },
       include: DB_POST_INCLUDE,
+      take,
     });
 
     if (result === null) {

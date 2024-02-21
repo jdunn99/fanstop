@@ -18,14 +18,23 @@ export default async function handler(
     }
 
     let authorId: string | undefined;
-    const { communityId } =
+    const { communityId, take } =
       CommunitiesValidators.CommunityQuerySchema.parse(query);
 
     if (session) {
       authorId = session.user.id;
     }
 
-    const result = await getPostsForCommunity({ id: communityId, authorId });
+    const result = await getPostsForCommunity({
+      id: communityId,
+      authorId,
+      take: take ? parseInt(take) : undefined,
+    });
+
+    if (take) {
+      res.status(200).json(result);
+      return;
+    }
 
     let featuredPost: PostItem | null = null;
     let recentPosts: PostItem[];

@@ -79,6 +79,7 @@ export const CommunitiesValidators = {
   }),
   CommunityQuerySchema: z.object({
     communityId: z.string(),
+    take: z.string().optional(),
   }),
 };
 export type Community = z.infer<typeof CommunitiesValidators.CommunitySchema>;
