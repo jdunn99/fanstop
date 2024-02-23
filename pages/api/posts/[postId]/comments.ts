@@ -1,26 +1,48 @@
-import { getCommentsForPost } from "@/lib/api/comment";
-import { NextApiRequest, NextApiResponse } from "next";
+import { allowMethods } from "@/lib/middleware/methods-middleware";
+import { getServerErrors } from "@/lib/middleware/server-error-middleware";
+import {
+  NextApiRequestWithSession,
+  useServerAuth,
+} from "@/lib/middleware/session-middleware";
+import {
+  NextApiRequestWithValidatedSession,
+  validate,
+} from "@/lib/middleware/validation-middleware";
+import { PaginationCursor } from "@/lib/pagination";
+import { CommentService } from "@/lib/services/comment-service";
+import { NextApiResponse } from "next";
+import { use } from "next-api-route-middleware";
 import { z } from "zod";
 
-export default async function handler(
-  req: NextApiRequest,
+const methods = ["GET"];
+const QuerySchema = z.object({ postId: z.string() }).merge(PaginationCursor);
+
+async function handler(
+  req: NextApiRequestWithValidatedSession<z.infer<typeof QuerySchema>>,
   res: NextApiResponse
 ) {
-  try {
-    const { method, query } = req;
-    const { postId } = z.object({ postId: z.string() }).parse(query);
+  const { validatedQuery } = req;
+  const { postId, cursor } = validatedQuery;
 
-    if (method !== "GET") {
-      res.status(400).json({ message: "Invalid message" });
-      return;
-    }
+  const result = await CommentService.getCommentsForPost({
+    id: postId,
+    cursor,
+    take: -1,
+  });
 
-    const result = await getCommentsForPost({ id: postId });
-    res.status(200).json(result);
-
-    return;
-  } catch (error) {
-    res.status(400).json({ message: "Something went wrong" });
-    return;
-  }
+  res.status(200).json(result);
 }
+
+export default use(
+  getServerErrors,
+  useServerAuth,
+  allowMethods(methods),
+  validate({ query: QuerySchema }),
+  handler
+);
+
+export const config = {
+  api: {
+    externalResolver: true,
+  },
+};

@@ -6,6 +6,7 @@ import {
   PaginationResponse,
   paginationArgs,
 } from "../pagination";
+import { USER_WITH_IMAGE } from "./user-service";
 
 const CONVERSATIONS_FOR_USER_INCLUDE = {
   messages: {
@@ -20,14 +21,12 @@ const CONVERSATIONS_FOR_USER_INCLUDE = {
   },
   users: {
     select: {
-      id: true,
+      ...USER_WITH_IMAGE,
       community: {
         select: {
           slug: true,
         },
       },
-      name: true,
-      image: true,
     },
     take: 1,
   },
@@ -52,9 +51,18 @@ export const ConversationService = {
   async getConversationsForUser({
     id,
     cursor,
-    take,
+    take: paginationTake,
   }: PaginationArgsWithID): Promise<PaginationResponse<Conversation[]>> {
-    const result = (await db.conversation.findMany({
+    const { messages, users } = CONVERSATIONS_FOR_USER_INCLUDE;
+    const { select, take } = users;
+
+    const where = {
+      NOT: {
+        id,
+      },
+    };
+
+    const result = await db.conversation.findMany({
       where: {
         users: {
           some: {
@@ -63,26 +71,24 @@ export const ConversationService = {
         },
       },
       include: {
-        messages: CONVERSATIONS_FOR_USER_INCLUDE.messages,
+        messages,
         users: {
-          where: {
-            NOT: {
-              id,
-            },
-          },
-          ...CONVERSATIONS_FOR_USER_INCLUDE.users,
+          where,
+          select,
+          take,
         },
       },
-      ...paginationArgs({ cursor, take }),
-    })) as Conversation[];
+
+      ...paginationArgs({ cursor, take: paginationTake }),
+    });
 
     if (result === null) {
       throw new Error("Something went wrong fetching conversations.");
     }
 
     return {
-      response: result,
-      cursor: result[result.length - 1].id,
+      response: result as Conversation[],
+      cursor: result[result.length - 1].sequence,
     };
   },
 
@@ -95,6 +101,37 @@ export const ConversationService = {
               in: participants,
             },
           },
+        },
+      },
+    });
+  },
+
+  async createConversation(participants: string[]) {
+    // session user id is always at the end of the list
+    const userId = participants[participants.length - 1];
+    const connect = participants.map((id) => ({ id }));
+
+    const { messages, users } = CONVERSATIONS_FOR_USER_INCLUDE;
+    const { select, take } = users;
+
+    const where = {
+      NOT: {
+        id: userId,
+      },
+    };
+
+    return await db.conversation.create({
+      data: {
+        users: {
+          connect,
+        },
+      },
+      include: {
+        messages,
+        users: {
+          where,
+          select,
+          take,
         },
       },
     });

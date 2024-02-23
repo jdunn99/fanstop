@@ -5,7 +5,7 @@ import { getServerErrors } from "@/lib/middleware/server-error-middleware";
 import { allowMethods } from "@/lib/middleware/methods-middleware";
 import {
   NextApiRequestWithValidation,
-  validateQuery,
+  validate,
 } from "@/lib/middleware/validation-middleware";
 import {
   NextApiRequestWithSession,
@@ -46,6 +46,6 @@ export default use(
   getServerErrors,
   useServerAuth,
   allowMethods(methods),
-  validateQuery({ query: QuerySchema }),
+  validate({ query: QuerySchema }),
   handler
 );

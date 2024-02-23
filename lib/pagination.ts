@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export type PaginationArgs = {
-  cursor?: string;
+  cursor?: number;
   take?: number;
 };
 
@@ -11,11 +11,21 @@ export type PaginationArgsWithID = PaginationArgs & {
 
 export type PaginationResponse<T> = {
   response: T;
-  cursor: string;
+  cursor?: number;
+  hasMore: boolean;
 };
 
-export const PaginationSchema = z.object({
-  cursor: z.string().cuid().optional(),
+export const PaginationCursor = z.object({
+  cursor: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (val) {
+        return parseInt(val);
+      }
+
+      return undefined;
+    }),
 });
 
 export function paginationArgs({ cursor, take }: PaginationArgs) {
@@ -24,7 +34,7 @@ export function paginationArgs({ cursor, take }: PaginationArgs) {
     skip: cursor ? 1 : undefined,
     cursor: cursor
       ? {
-          id: cursor,
+          sequence: cursor,
         }
       : undefined,
   };

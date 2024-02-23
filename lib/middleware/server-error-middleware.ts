@@ -5,7 +5,8 @@ export const getServerErrors: Middleware = async (req, res, next) => {
     await next();
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error" });
+    console.log("AN ERROR HAS BEEN FOUND");
+    res.status(500).send({ message: "Server error" });
     return;
   }
 };
