@@ -76,7 +76,7 @@ export const CommentService = {
         },
       },
       orderBy: {
-        createdAt: "asc",
+        createdAt: "desc",
       },
 
       ...paginationArgs({ cursor, take }),

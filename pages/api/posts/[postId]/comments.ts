@@ -27,7 +27,7 @@ async function handler(
   const result = await CommentService.getCommentsForPost({
     id: postId,
     cursor,
-    take: -1,
+    take: 2,
   });
 
   res.status(200).json(result);
