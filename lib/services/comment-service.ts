@@ -4,6 +4,7 @@ import {
   PaginationResponse,
   PaginationArgsWithID,
   paginationArgs,
+  getPaginatedMetadata,
 } from "../pagination";
 import { USER_WITH_IMAGE } from "./user-service";
 
@@ -57,7 +58,7 @@ export const CommentService = {
   },
 
   /**
-   * Returns a paginated list of itmes
+   * Returns a paginated list of comments
    * @param postId
    * @returns
    */
@@ -86,12 +87,11 @@ export const CommentService = {
       throw new Error("Something went wrong fetching comments.");
     }
 
-    const hasMore =
-      typeof take !== "undefined" && result.length >= Math.abs(take);
+    const { hasMore, cursor: newCursor } = getPaginatedMetadata(result, take);
 
     return {
       response: CommentValidators.CommentSchema.array().parse(result),
-      cursor: hasMore ? result[result.length - 1].sequence : undefined,
+      cursor: newCursor,
       hasMore,
     };
   },

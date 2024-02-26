@@ -15,8 +15,18 @@ export type PaginationResponse<T> = {
   hasMore: boolean;
 };
 
-export const PaginationCursor = z.object({
+export const PaginationSchema = z.object({
   cursor: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (val) {
+        return parseInt(val);
+      }
+
+      return undefined;
+    }),
+  take: z
     .string()
     .optional()
     .transform((val) => {
@@ -38,4 +48,14 @@ export function paginationArgs({ cursor, take }: PaginationArgs) {
         }
       : undefined,
   };
+}
+
+export function getPaginatedMetadata<T extends { sequence: number }>(
+  data: T[],
+  take?: number
+) {
+  const hasMore = typeof take !== "undefined" && data.length >= Math.abs(take);
+  const cursor = hasMore ? data[data.length - 1].sequence : undefined;
+
+  return { hasMore, cursor };
 }

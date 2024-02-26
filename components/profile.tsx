@@ -4,13 +4,13 @@ import { Layout, DashboardItem, DashboardItemHeading } from "./layout";
 import { PostComponent } from "./posts/post-item";
 import Button from "./ui/button";
 import { CommunityResponse } from "@/lib/api/validators";
-import { usePostsForCommunity } from "@/lib/queries/usePostQuery";
 import { SubscribeButton } from "./subscribe-button";
 import { ProfileImage } from "./ui/profile-image";
 import Link from "next/link";
 import { Socials } from "./socials";
 import { useCommunitySocialsQuery } from "@/lib/queries/useCommunitySocialsQuery";
 import { ProfileControls } from "./profile-controls";
+import { usePostsForCommunity } from "@/lib/queries/post-queries";
 
 interface ProfileComponentProps {
   slug: string;
@@ -58,65 +58,17 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
           {typeof socials !== "undefined" ? <Socials {...socials} /> : null}
         </div>
 
-        {/* <ProfileControls isOwn={isOwn} slug={slug} /> */}
         {typeof posts === "undefined" ? null : (
           <React.Fragment>
             <DashboardItem>
-              {posts.featuredPost ? (
-                <React.Fragment>
-                  <DashboardItemHeading heading="Featured Post" />
-                  <div className="space-y-8 mb-8">
-                    {posts.featuredPost ? (
-                      <PostComponent
-                        {...posts.featuredPost}
-                        isFeatured
-                        isOwn={data.isOwn}
-                      />
-                    ) : null}
-                  </div>
-                </React.Fragment>
-              ) : (
-                <div className="flex items-center justify-center flex-col space-y-2 pt-8">
-                  <h3 className="text-slate-800 font-semibold text-sm">
-                    No posts yet.
-                  </h3>
-                  <p className="text-xs">
-                    {community.name} has not made any posts.
-                  </p>
-                </div>
-              )}
+              {typeof posts !== "undefined"
+                ? posts.pages.map(({ response }) =>
+                    response.map(({ post, isAuthor }) => (
+                      <PostComponent key={post.id} {...post} isOwn={isAuthor} />
+                    ))
+                  )
+                : null}
             </DashboardItem>
-
-            {posts.recentPosts.length > 0 ? (
-              <DashboardItem>
-                <DashboardItemHeading heading="Recent Posts" />
-                <div className="grid gap-4 md:grid-cols-3 mb-8">
-                  {posts.recentPosts.map((post) => (
-                    <PostComponent {...post} isCol isOwn={isOwn} />
-                  ))}
-                </div>
-              </DashboardItem>
-            ) : null}
-            {posts.posts.length > 0 ? (
-              <DashboardItem>
-                <DashboardItemHeading heading="All Posts" />
-                <div className="space-y-8">
-                  {posts.posts.map((post) => (
-                    <PostComponent {...post} key={post.id} isOwn={data.isOwn} />
-                  ))}
-                </div>
-              </DashboardItem>
-            ) : null}
-            {posts.unpublishedPosts.length > 0 ? (
-              <DashboardItem>
-                <DashboardItemHeading heading="Unpublished Posts" />
-                <div className="space-y-8">
-                  {posts.unpublishedPosts.map((post) => (
-                    <PostComponent {...post} key={post.id} isOwn={data.isOwn} />
-                  ))}
-                </div>
-              </DashboardItem>
-            ) : null}
           </React.Fragment>
         )}
       </Layout>

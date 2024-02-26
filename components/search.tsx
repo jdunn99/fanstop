@@ -4,6 +4,7 @@ import { SearchResult } from "@/lib/api/search";
 import { useQuery } from "react-query";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useExploreQuery } from "@/lib/queries/search-queries";
 
 interface SearchResultItemProps {
   value: string;
@@ -24,16 +25,7 @@ interface SearchProps {
 export function Search({ defaultValue }: SearchProps) {
   const { push } = useRouter();
   const [searchQuery, setSearchQuery] = React.useState<string>();
-  const { data } = useQuery<SearchResult>(
-    ["search", searchQuery],
-    () =>
-      fetch(`/api/communities/search?searchQuery=${searchQuery}`).then((res) =>
-        res.json()
-      ),
-    {
-      enabled: typeof searchQuery === "string" && searchQuery !== "",
-    }
-  );
+  const { data } = useExploreQuery(searchQuery);
 
   function onSubmit(event: any) {
     event.preventDefault();
@@ -72,9 +64,9 @@ export function Search({ defaultValue }: SearchProps) {
                     Communities
                   </h1>
 
-                  {data.communities.map(({ id, slug, name }) => (
+                  {data.communities.map(({ slug, name }) => (
                     <Link href={`/${slug}`}>
-                      <SearchResultItem key={id} value={name}>
+                      <SearchResultItem key={slug} value={name}>
                         <span className="text-xs text-rose-500">@{slug}</span>
                       </SearchResultItem>
                     </Link>

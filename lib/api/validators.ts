@@ -70,7 +70,6 @@ export const CommunitiesValidators = {
     slug: z.string(),
     tags: z.array(z.string().cuid()),
     description: z.string().default(""),
-    creatorId: z.string().cuid(),
     facebook: z.string().optional(),
     instagram: z.string().optional(),
     twitter: z.string().optional(),
@@ -101,6 +100,28 @@ export type CommunityByIDQuery = z.infer<
 export type Socials = z.infer<
   typeof CommunitiesValidators.CommunitySocialsSchema
 >;
+
+// Groups
+const GroupBaseSchema = z.object({
+  id: z.string().cuid(),
+  name: z.string(),
+});
+
+export const GroupValidators = {
+  GroupBaseSchema,
+  GroupSchema: z
+    .object({
+      description: z.string(),
+      image: z.string().nullable(),
+      createdAt: z.date(),
+      updatedAt: z.date(),
+      slug: z.string(),
+      _count: z.object({
+        posts: z.number(),
+      }),
+    })
+    .merge(GroupBaseSchema),
+};
 
 // Posts
 
@@ -134,6 +155,7 @@ export const PostVailidators = {
       comments: z.number(),
       likes: z.number(),
     }),
+    group: GroupBaseSchema.nullable().optional(),
     image: z.string().nullable(),
     commentsVisible: z.boolean(),
     subscribersOnly: z.boolean(),

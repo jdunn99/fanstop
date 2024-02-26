@@ -6,7 +6,7 @@ import {
 } from "@/components/layout";
 import { Search } from "@/components/search";
 import Button from "@/components/ui/button";
-import { usePopularCommunities } from "@/lib/queries/useCommunities";
+import { usePopularCommunities } from "@/lib/queries/community-queries";
 import { usePopularTags } from "@/lib/queries/usePopularTags";
 import Link from "next/link";
 import React from "react";
@@ -32,14 +32,16 @@ export default function ExplorePage() {
       {typeof communities !== "undefined" ? (
         <DashboardItem>
           <DashboardItemHeading heading="Popular Communities" />
-          {communities.map(({ community, isOwn, isSubscriber }) => (
-            <CommunityCard
-              community={community}
-              isOwn={isOwn}
-              isSubscriber={isSubscriber}
-              key={community.id}
-            />
-          ))}
+          {communities.pages.map(({ response }) =>
+            response.map(({ community, isOwn, isSubscriber }) => (
+              <CommunityCard
+                community={community}
+                isOwn={isOwn}
+                isSubscriber={isSubscriber}
+                key={community.id}
+              />
+            ))
+          )}
         </DashboardItem>
       ) : null}
     </Layout>

@@ -1,41 +1,56 @@
+import { NextApiResponse } from "next";
+import { z } from "zod";
+import { use } from "next-api-route-middleware";
 import { allowMethods } from "@/lib/middleware/methods-middleware";
 import { getServerErrors } from "@/lib/middleware/server-error-middleware";
-import {
-  NextApiRequestWithSession,
-  useServerAuth,
-} from "@/lib/middleware/session-middleware";
+import { useServerAuth } from "@/lib/middleware/session-middleware";
 import {
   NextApiRequestWithValidatedSession,
+  NextApiRequestWithValidation,
   validate,
 } from "@/lib/middleware/validation-middleware";
-import { PaginationCursor } from "@/lib/pagination";
 import { CommentService } from "@/lib/services/comment-service";
-import { NextApiResponse } from "next";
-import { use } from "next-api-route-middleware";
-import { z } from "zod";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]";
+import { PaginationSchema } from "@/lib/pagination";
 
 const methods = ["GET"];
-const QuerySchema = z.object({ postId: z.string() }).merge(PaginationCursor);
+const QuerySchema = z
+  .object({
+    postId: z.string().cuid(),
+  })
+  .merge(PaginationSchema);
 
+/**
+ * Handles route for /comment/[commentId]
+ * PUT - Update a comment given the request body
+ * DELETE - Delete a comment by the [commentId]
+ */
 async function handler(
-  req: NextApiRequestWithValidatedSession<z.infer<typeof QuerySchema>>,
+  req: NextApiRequestWithValidation<z.infer<typeof QuerySchema>>,
   res: NextApiResponse
 ) {
-  const { validatedQuery } = req;
+  const { method, validatedBody, validatedQuery } = req;
+  const session = await getServerSession(req, res, authOptions);
+  // const { content } = validatedBody;
   const { postId, cursor } = validatedQuery;
 
-  const result = await CommentService.getCommentsForPost({
-    id: postId,
-    cursor,
-    take: 2,
-  });
+  switch (method) {
+    case "GET": {
+      const result = await CommentService.getCommentsForPost({
+        id: postId,
+        take: 4,
+        cursor,
+      });
 
-  res.status(200).json(result);
+      res.status(200).json(result);
+      return;
+    }
+  }
 }
 
 export default use(
   getServerErrors,
-  useServerAuth,
   allowMethods(methods),
   validate({ query: QuerySchema }),
   handler

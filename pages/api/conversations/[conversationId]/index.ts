@@ -13,7 +13,7 @@ import {
 } from "@/lib/middleware/session-middleware";
 import { ConversationService } from "@/lib/services/conversation-service";
 
-const methods = ["GET", "POST"];
+const methods = ["GET", "DELETE"];
 const QuerySchema = z.object({ conversationId: z.string().cuid() });
 
 async function handler(
@@ -21,16 +21,16 @@ async function handler(
     NextApiRequestWithValidation<z.infer<typeof QuerySchema>, {}>,
   res: NextApiResponse
 ) {
-  const { session, query, method, validatedQuery, validatedBody } = req;
+  const { session, method, validatedQuery } = req;
   const { conversationId } = validatedQuery;
 
   switch (method) {
     case "GET": {
-      // const messages = await getConversationById(conv);
-      const conversations = await ConversationService.getConversations({
-        take: 1,
-      });
-      res.status(200).json(conversations);
+      const conversation = await ConversationService.getConversationByID(
+        conversationId,
+        session.user.id
+      );
+      res.status(200).json(conversation);
       return;
     }
     case "POST": {
@@ -49,3 +49,9 @@ export default use(
   validate({ query: QuerySchema }),
   handler
 );
+
+export const config = {
+  api: {
+    externalResolver: true,
+  },
+};

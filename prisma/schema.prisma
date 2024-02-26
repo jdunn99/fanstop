@@ -86,6 +86,7 @@ model Community {
   twitter     String?
   youtube     String?
   tiktok      String?
+  groups      Group[]
 
   @@index([creatorId])
 }
@@ -125,11 +126,15 @@ model Post {
   author   User   @relation(fields: [authorId], references: [id])
   authorId String
 
+  group   Group?  @relation(fields: [groupId], references: [id])
+  groupId String?
+
   likes    Likes[]
   comments Comment[]
 
   @@index([communityId])
   @@index([authorId])
+  @@index([groupId])
 }
 
 model Tags {
@@ -211,7 +216,25 @@ model Notification {
   creatorId  String
   receiverId String
   createdAt  DateTime @default(now())
+  sequence   Int      @unique @default(autoincrement())
 
   @@index([creatorId])
   @@index([receiverId])
+}
+
+model Group {
+  id          String    @id @default(cuid())
+  name        String
+  description String
+  image       String?
+  sequence    Int       @unique @default(autoincrement())
+  posts       Post[]
+  community   Community @relation(fields: [communityId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  communityId String
+
+  @@index([communityId])
 }

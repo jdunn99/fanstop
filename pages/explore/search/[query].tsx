@@ -7,13 +7,13 @@ import {
 import { Search } from "@/components/search";
 import Button from "@/components/ui/button";
 import { CommunitySearchResult } from "@/lib/api/validators";
+import { useExploreResultsQuery } from "@/lib/queries/search-queries";
 import {
   useCommunitiesSearchResult,
   usePopularCommunities,
 } from "@/lib/queries/useCommunities";
 import { usePopularTags } from "@/lib/queries/usePopularTags";
 import communities from "@/pages/api/communities";
-import tags from "@/pages/api/tags";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -25,7 +25,7 @@ import { z } from "zod";
 export default function SearchQuery({
   query,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { data: communities } = useCommunitiesSearchResult(query);
+  const { data: communities } = useExploreResultsQuery(query);
   const { data: tags } = usePopularTags();
 
   const path = usePathname();
@@ -54,17 +54,19 @@ export default function SearchQuery({
       </div>
       {typeof communities !== "undefined" ? (
         <DashboardItem>
-          {communities.result.length > 0 ? (
+          {communities.pages.length > 0 ? (
             <React.Fragment>
               <DashboardItemHeading heading="Popular Communities" />
-              {communities.result.map(({ community, isOwn, isSubscriber }) => (
-                <CommunityCard
-                  community={community}
-                  isOwn={isOwn}
-                  isSubscriber={isSubscriber}
-                  key={community.id}
-                />
-              ))}
+              {communities.pages.map(({ response }) =>
+                response.map(({ community, isOwn, isSubscriber }) => (
+                  <CommunityCard
+                    community={community}
+                    isOwn={isOwn}
+                    isSubscriber={isSubscriber}
+                    key={community.id}
+                  />
+                ))
+              )}
             </React.Fragment>
           ) : (
             <p className="p-16 text-center text-sm text-slate-500">

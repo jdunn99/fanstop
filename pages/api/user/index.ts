@@ -10,13 +10,19 @@ import { NextApiResponse } from "next";
 import { use } from "next-api-route-middleware";
 import { z } from "zod";
 
-const methods = ["GET", "PUT"];
+const methods = ["GET", "POST", "DELETE"];
 const BodySchmea = z.object({
   name: z.string().optional(),
   newPassword: z.string().optional(),
 });
 export type UserUpdateBody = z.infer<typeof BodySchmea>;
 
+/**
+ * Defines handler function for /api/user route. Deals with an AUTHENTICATED user
+ * GET /user - Get the authenticated User.
+ * PUT /user - Update the authenticated User.
+ * DELETE /user - Deletes the authenticated User's account and any corresponding data.
+ */
 async function handler(
   req: NextApiRequestWithValidatedSession<{}, UserUpdateBody>,
   res: NextApiResponse
@@ -25,14 +31,17 @@ async function handler(
 
   switch (method) {
     case "GET": {
-      res.status(200).json(UserService.getUser(session.user.id));
+      res.status(200).json(await UserService.getUser(session.user.id));
       return;
     }
     case "PUT": {
       res
         .status(200)
-        .json(UserService.updateUser(session.user.id, validatedBody));
+        .json(await UserService.updateUser(session.user.id, validatedBody));
       return;
+    }
+    default: {
+      res.status(501).send({ message: "Not implemented yet!" });
     }
   }
 }

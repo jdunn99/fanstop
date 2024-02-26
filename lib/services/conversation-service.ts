@@ -1,9 +1,10 @@
-import { Conversation } from "../api/validators";
+import { Conversation, ConversationValidators } from "../api/validators";
 import { db } from "../db";
 import {
   PaginationArgs,
   PaginationArgsWithID,
   PaginationResponse,
+  getPaginatedMetadata,
   paginationArgs,
 } from "../pagination";
 import { USER_WITH_IMAGE } from "./user-service";
@@ -32,8 +33,17 @@ const CONVERSATIONS_FOR_USER_INCLUDE = {
   },
 };
 
+/**
+ * Defines service functions for calling Prisma and transforming data
+ */
 export const ConversationService = {
-  async getConversations({ cursor, take }: PaginationArgs = {}) {
+  /**
+   * Get all conversations
+   * @returns Paginated list of conversations
+   */
+  async getConversations({ cursor, take }: PaginationArgs = {}): Promise<
+    PaginationResponse<Conversation[]>
+  > {
     const result = await db.conversation.findMany({
       ...paginationArgs({ cursor, take }),
     });
@@ -42,12 +52,21 @@ export const ConversationService = {
       throw new Error("Something went wrong fetching the data");
     }
 
+    const { cursor: newCursor, hasMore } = getPaginatedMetadata(result, take);
+    const conversations =
+      ConversationValidators.ConversationSchema.array().parse(result);
+
     return {
-      cursor: result[result.length - 1].id,
-      result,
+      cursor: newCursor,
+      response: conversations,
+      hasMore,
     };
   },
 
+  /**
+   * Gets the conversations for the currently signed in user
+   * @returns The paginated list of conversations for the signed in user
+   */
   async getConversationsForUser({
     id,
     cursor,
@@ -86,12 +105,22 @@ export const ConversationService = {
       throw new Error("Something went wrong fetching conversations.");
     }
 
+    const { hasMore, cursor: newCursor } = getPaginatedMetadata(result, take);
+    const conversations =
+      ConversationValidators.ConversationSchema.array().parse(result);
+
     return {
-      response: result as Conversation[],
-      cursor: result[result.length - 1].sequence,
+      hasMore,
+      response: conversations,
+      cursor: newCursor,
     };
   },
 
+  /**
+   * Gets a list of conversations between a list of participants
+   * @param participants - The list of participants we are requesting conversations between
+   * @returns A list of conversations between the participants
+   */
   async getConversationForParticipants(participants: string[]) {
     return await db.conversation.findFirst({
       where: {
@@ -106,6 +135,34 @@ export const ConversationService = {
     });
   },
 
+  /**
+   * Gets a requested conversation. User must be authenticated.
+   * @param id - The requested conversation id
+   * @param userId - The authenticated user id
+   */
+  async getConversationByID(id: string, userId: string) {
+    return await db.conversation.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        users: {
+          where: {
+            NOT: {
+              id: userId,
+            },
+          },
+          select: USER_WITH_IMAGE,
+        },
+      },
+    });
+  },
+
+  /**
+   * Create a conversation given a list of participants
+   * @param participants - The list of participants we are requesting to create a conversation between
+   * @returns The newly created conversation
+   */
   async createConversation(participants: string[]) {
     // session user id is always at the end of the list
     const userId = participants[participants.length - 1];

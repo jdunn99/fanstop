@@ -1,38 +1,80 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import {
+  CreateCommunityArgs,
+  CommunitiesValidators,
+} from "@/lib/api/validators";
+import { allowMethods } from "@/lib/middleware/methods-middleware";
+import { getServerErrors } from "@/lib/middleware/server-error-middleware";
+import {
+  NextApiRequestWithValidation,
+  validate,
+} from "@/lib/middleware/validation-middleware";
+import { PaginationSchema } from "@/lib/pagination";
+import { CommunityService } from "@/lib/services/community-service";
+import { NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
+import { use } from "next-api-route-middleware";
+import { z } from "zod";
 import { authOptions } from "../auth/[...nextauth]";
-import { CommunitiesValidators } from "@/lib/api/validators";
-import { createCommunity } from "@/lib/api/community";
 
-export default async function handler(
-  req: NextApiRequest,
+const methods = ["GET", "POST"];
+
+/**
+ * Handler for /api/communities
+ * GET - Gets a list of all communities
+ * POST - Create a community given the request body
+ */
+async function handler(
+  req: NextApiRequestWithValidation<
+    z.infer<typeof PaginationSchema>,
+    CreateCommunityArgs
+  >,
   res: NextApiResponse
 ) {
-  try {
-    const { method, body } = req;
-    const session = await getServerSession(req, res, authOptions);
+  const { validatedQuery, method, validatedBody } = req;
+  const { take } = validatedQuery;
 
-    if (method !== "POST") {
-      res.status(400).json({ message: "Invalid method" });
+  // Since POST is the only one that needs the session, we will just handle the session manually not via middleware
+  const session = await getServerSession(req, res, authOptions);
+
+  switch (method) {
+    case "GET": {
+      const result = await CommunityService.getCommunities({
+        userId: session?.user.id,
+        take,
+      });
+
+      res.status(200).json(result);
       return;
     }
+    case "POST": {
+      if (session === null) {
+        res.status(401).json({ message: "Not logged in" });
+        return;
+      }
 
-    if (!session) {
-      res.status(401).json({ message: "Not signed in" });
+      const result = await CommunityService.createCommunity({
+        creatorId: session.user.id,
+        ...validatedBody,
+      });
+
+      res.status(200).json(result);
       return;
     }
-
-    const data = CommunitiesValidators.CreateCommunitySchema.parse({
-      ...body,
-      creatorId: session.user.id,
-    });
-
-    const result = await createCommunity(data);
-    res.status(200).json(result);
-    return;
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ message: "Something went wrong!" });
-    return;
   }
 }
+
+export default use(
+  allowMethods(methods),
+  getServerErrors,
+  validate({
+    query: PaginationSchema,
+    body: CommunitiesValidators.CreateCommunitySchema,
+  }),
+  handler
+);
+
+export const config = {
+  api: {
+    externalResolver: true,
+  },
+};
