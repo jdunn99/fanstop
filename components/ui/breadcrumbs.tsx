@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BsChevronBarRight, BsChevronRight } from "react-icons/bs";
 
-interface Path {
+export interface Path {
   href: string;
   value: string;
   disabled?: boolean;
@@ -17,7 +17,7 @@ export function Breadcrumbs({ paths }: BreadcrumbProps) {
       <ol className="inline-flex items-center space-x-1">
         {paths.map(({ href, value, disabled }, index) => (
           <li
-            className="inline-flex items-center text-slate-800 font-semibold space-x-1 text-sm"
+            className="inline-flex items-center text-slate-800 font-semibold space-x-1 text-sm dark:text-slate-300"
             key={href}
           >
             <Link

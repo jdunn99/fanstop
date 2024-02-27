@@ -4,6 +4,7 @@ import React from "react";
 import { z } from "zod";
 import { ProfileComponent } from "@/components/profile";
 import { useCommunityBySlug } from "@/lib/queries/community-queries";
+import { useBreadCrumbStore } from "@/lib/store/useBreadCrumbStore";
 
 export default function ProfilePage({
   slug,

@@ -6,11 +6,12 @@ import {
   MenuText,
   MenuItem,
   useMenu,
+  MenuDirection,
 } from "./ui/menu";
 import { AvatarImage } from "./ui/avatar";
 import { useSidebarRoutes } from "@/config/dashboard";
 import Link from "next/link";
-import { BsDoorOpenFill } from "react-icons/bs";
+import { FaDoorOpen, FaHome } from "react-icons/fa";
 
 interface AvatarButtonProps {
   image?: string;
@@ -24,7 +25,7 @@ function AvatarButton({ image, onClick }: AvatarButtonProps) {
   );
 }
 
-export function AvatarMenu() {
+export function AvatarMenu({ direction }: MenuDirection) {
   const { isOpen, toggle, onClose } = useMenu();
   const { data } = useSession();
   const routes = useSidebarRoutes();
@@ -35,27 +36,27 @@ export function AvatarMenu() {
     <Menu onClose={onClose}>
       <AvatarButton onClick={toggle} image={data.user.image || ""} />
       {isOpen ? (
-        <MenuList className="w-60">
-          <MenuGroup border>
+        <MenuList className="w-60" direction={direction}>
+          <MenuGroup className="py-2">
             <MenuText variant="heading">{data.user.name}</MenuText>
             <MenuText variant="sm">{data.user.email}</MenuText>
           </MenuGroup>
-          <MenuGroup border>
+          <MenuGroup>
             {routes.map(({ href, image, value }) => (
               <Link href={href} key={href}>
-                <MenuItem className="inline-flex gap-2">
-                  <span className="text-xl">{image}</span>
+                <MenuItem className="inline-flex gap-2 items-center !py-2">
+                  <span className="text-sm">{image}</span>
                   <span>{value}</span>
                 </MenuItem>
               </Link>
             ))}
           </MenuGroup>
           <MenuItem
-            className="inline-flex gap-2"
+            className="inline-flex gap-2 items-center"
             onClick={() => void signOut()}
           >
-            <span className="text-xl">
-              <BsDoorOpenFill />
+            <span className="">
+              <FaDoorOpen />
             </span>
             <span>Sign Out</span>
           </MenuItem>

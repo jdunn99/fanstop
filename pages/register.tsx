@@ -11,7 +11,7 @@ export default function Register({
   const [step, setStep] = React.useState<number>(1);
 
   return (
-    <div className="px-8 flex h-screen w-screen flex-col items-center justify-center mx-auto">
+    <div className="px-8 flex h-screen w-screen flex-col items-center justify-center mx-auto dark:bg-slate-900 dark:text-slate-200">
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[385px]">
         <div className="flex flex-col space-y-8 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">

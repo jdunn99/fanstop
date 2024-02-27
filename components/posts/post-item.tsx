@@ -71,7 +71,7 @@ function Post({
 }: PostComponentProps) {
   return (
     <Link
-      className="flex transition-colors rounded-lg p-8 hover:border-rose-100 border border-transparent hover:bg-white"
+      className="flex transition-colors rounded-lg p-8 hover:border-rose-100 border border-transparent hover:bg-white dark:hover:bg-slate-800 dark:hover:border-slate-700"
       href={`/${author.community.slug}/${id}`}
     >
       <div className="flex gap-8 w-full flex-col md:flex-row">
@@ -87,26 +87,26 @@ function Post({
               {!!group ? (
                 <p className="text-rose-500 font-semibold">{group.name}</p>
               ) : null}
-              <h1 className="text-2xl font-bold max-w-xs wrap text-slate-800">
+              <h1 className="text-2xl font-bold max-w-xs wrap text-slate-800 dark:text-white">
                 {title}
               </h1>
               <p className="text-xs text-rose-500 ">
                 {new Date(createdAt).toLocaleString()}
               </p>
-              <p className="text-base text-slate-600">
+              <p className="text-base text-slate-600 dark:text-slate-300">
                 {truncateString(description || "", 250)}
               </p>
-              <div className="w-full flex gap-4 pt-2  text-xs text-slate-6 00">
+              <div className="w-full flex gap-4 pt-2  text-xs text-slate-500 dark:text-slate-400">
                 <div className="flex gap-1 items-center">
-                  <MdThumbUp />
+                  <MdThumbUp className="dark:text-white text-slate-800" />
                   <p>{_count.likes} Likes</p>
                 </div>
                 <div className="flex gap-1 items-center">
-                  <FaComment />
+                  <FaComment className="dark:text-white text-slate-800" />
                   <p>{_count.comments} Comments</p>
                 </div>
                 <div className="flex gap-1 items-center">
-                  <BsEyeFill />
+                  <BsEyeFill className="dark:text-white text-slate-800" />
                   <p>{views} Views</p>
                 </div>
               </div>

@@ -13,11 +13,12 @@ import { NotificationMenu } from "./notification-menu";
 interface ProfileNavProps {
   children?: React.ReactNode;
 }
+
 export function ProfileNav({ children }: ProfileNavProps) {
   const { data: session } = useSession();
 
   return (
-    <header className="sticky h-[73px] top-0 z-50 w-full backdrop-blur  flex-none transition-colors duration-500 border-b border-slate-200 bg-white ">
+    <header className="sticky h-[46px] top-0 z-50 w-full backdrop-blur  flex-none transition-colors duration-500 border-b border-slate-200 bg-transparent ">
       <div className="max-w-[84rem] mx-auto h-full my-auto">
         <div className=" lg:px-4 px-1 mx-4 h-full">
           <div className="relative flex items-center h-full  ">

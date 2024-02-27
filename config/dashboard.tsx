@@ -1,5 +1,6 @@
 import type { DashboardConfig, NavConfig } from "@/types";
 import { useSession } from "next-auth/react";
+import { FaHome, FaInbox, FaSearch } from "react-icons/fa";
 import {
   MdHome,
   MdMessage,
@@ -7,6 +8,7 @@ import {
   MdSearch,
   MdSettings,
 } from "react-icons/md";
+import { IoMdPerson, IoMdSettings } from "react-icons/io";
 
 export const unAuthedConfig: DashboardConfig = {
   header: [],
@@ -52,28 +54,28 @@ export function useSidebarRoutes(): NavConfig {
         {
           href: "/",
           value: "Home",
-          image: <MdHome />,
+          image: <FaHome />,
         },
         {
           href: "/explore",
           value: "Explore",
-          image: <MdSearch />,
+          image: <FaSearch />,
         },
 
         {
           href: `/${session.user.slug}`,
           value: "Profile",
-          image: <MdPerson />,
+          image: <IoMdPerson />,
         },
         {
           href: "/messages",
           value: "Messages",
-          image: <MdMessage />,
+          image: <FaInbox />,
         },
         {
           href: "/settings",
           value: "Settings",
-          image: <MdSettings />,
+          image: <IoMdSettings />,
         },
       ]
     : [

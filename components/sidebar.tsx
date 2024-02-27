@@ -10,6 +10,58 @@ import { usePathname } from "next/navigation";
 import { useQuery } from "react-query";
 import { truncateString } from "@/lib/truncate";
 import { CreatePostButton } from "./create-post-button";
+import { AvatarImage } from "./ui/avatar";
+import { AvatarMenu } from "./avatar-menu";
+
+function SidebarTop() {
+  const { data: session } = useSession();
+
+  return (
+    <li className="flex flex-col gap-4 text-sm mb-2">
+      {session !== null ? (
+        <React.Fragment>
+          <div className="flex items-center gap-2">
+            <AvatarMenu direction="left" />
+            <div>
+              <p>{session.user.name}</p>
+              <p className="text-rose-500 font-semibold">
+                @{session.user.slug}
+              </p>
+            </div>
+          </div>
+          <CreatePostButton />
+        </React.Fragment>
+      ) : (
+        <React.Fragment>
+          <p>Test</p>
+          <p>Test</p>
+        </React.Fragment>
+      )}
+    </li>
+  );
+}
+
+interface SidebarLinkProps {
+  children?: React.ReactNode;
+  href: string;
+  isSelected: boolean;
+}
+function SidebarLink({ href, isSelected, children }: SidebarLinkProps) {
+  return (
+    <li>
+      <Link
+        href={href}
+        className={`group flex items-center text-[13px] py-1 px-2 rounded mb-2 font-medium hover:text-rose-500 ${
+          isSelected
+            ? "text-rose-500 bg-rose-50 dark:bg-slate-800"
+            : "text-slate-600 dark:text-slate-300"
+        }`}
+      >
+        {children}
+      </Link>
+    </li>
+  );
+}
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -20,7 +72,7 @@ export function Sidebar() {
   }, [pathname]);
 
   const { data } = useQuery<any>(["subscriptions"], () =>
-    fetch("/api/user/subscriptions").then((res) => res.json())
+    fetch("/api/user/subscriptions").then((res) => res.json()),
   );
 
   if (!items?.length) {
@@ -28,23 +80,18 @@ export function Sidebar() {
   }
 
   return (
-    <nav className="lg:text-sm lg:leading-6 relative top-8 px-8">
+    <nav className="lg:text-sm lg:leading-6 relative p-4">
       <ul>
+        <SidebarTop />
         {items.map((item, index) => (
-          <li key={index}>
-            <Link
-              key={index}
-              href={item.href}
-              className={`group flex items-center lg:text-sm p-1 rounded lg:leading-6 mb-4 font-medium hover:text-rose-500 ${
-                path === item.href
-                  ? "text-rose-500 bg-rose-50"
-                  : "text-slate-600"
-              }`}
-            >
-              <div className="mr-2 rounded-md text-xl">{item.image}</div>
-              {item.value}
-            </Link>
-          </li>
+          <SidebarLink
+            key={index}
+            href={item.href}
+            isSelected={path === item.href}
+          >
+            <div className="mr-2 rounded-md">{item.image}</div>
+            {item.value}
+          </SidebarLink>
         ))}
 
         {typeof data !== "undefined" && !data.message ? (
@@ -61,7 +108,7 @@ export function Sidebar() {
                       className={`group flex items-center lg:text-sm lg:leading-6 mb-4 font-medium hover:text-rose-500 ${
                         path === "/" + community.slug
                           ? "text-rose-500"
-                          : "text-slate-600"
+                          : "text-slate-600 dark:text-slate-200"
                       }`}
                     >
                       {truncateString(community.name, 25)}

@@ -38,8 +38,10 @@ export function PostComment({
         <div className="flex gap-4">
           <AvatarImage src={user.image!} />
           <div className="w-full">
-            <h4 className="text-lg font-bold text-slate-900">{user.name}</h4>
-            <p className="text-xs text-slate-500">
+            <h4 className="text-lg font-bold text-slate-900 dark:text-white">
+              {user.name}
+            </h4>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               {new Date(createdAt).toLocaleDateString()}{" "}
               {new Date(createdAt).getTime() === new Date(updatedAt).getTime()
                 ? ""
@@ -66,7 +68,7 @@ export function PostComment({
                 </div>
               </div>
             ) : (
-              <p className="prose pt-1">{content}</p>
+              <p className="prose pt-1 dark:prose-invert">{content}</p>
             )}
           </div>
         </div>
