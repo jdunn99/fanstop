@@ -125,7 +125,7 @@ export function Sidebar() {
       >
         <SidebarContent />
       </ResizablePanel>
-      <ResizableHandle className="dark:bg-slate-800" />
+      <ResizableHandle className="dark:bg-slate-800 bg-slate-200" />
     </React.Fragment>
   );
 }

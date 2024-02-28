@@ -39,12 +39,15 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
       <Sidebar />
       <LayoutPane>
         <LayoutHeader paths={paths}>
-          <p>Hi</p>
           {isOwn ? (
             <div className="flex items-center gap-2 font-semibold">
               <Link href="/settings">
-                <Button size="sm" variant="ghost">
+                <Button
+                  className="inline-flex gap-2"
+                  variant="secondaryoutline"
+                >
                   <BsGearFill />
+                  Edit Profile
                 </Button>
               </Link>
             </div>

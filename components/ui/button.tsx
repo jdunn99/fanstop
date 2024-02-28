@@ -10,6 +10,8 @@ export const BUTTON_VARIANTS = {
     outline: "border border-rose-500 text-rose-500 bg-white hover:bg-slate-50",
     secondary:
       "bg-slate-50 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-400",
+    secondaryoutline:
+      "bg-slate-50 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-700 dark:text-slate-300 border dark:border-slate-600",
     ghost: "bg-transparent hover:bg-slate-50 opacity-80 hover:opacity-100",
   },
   size: {
