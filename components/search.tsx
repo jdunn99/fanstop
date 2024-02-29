@@ -33,7 +33,11 @@ export function Search({ defaultValue }: SearchProps) {
   }
 
   return (
-    <form className="relative" onSubmit={onSubmit}>
+    <form className="relative space-y-4 mt-8" onSubmit={onSubmit}>
+      <h1 className="text-2xl font-semibold">Search</h1>
+      <p className="text-slate-600 dark:text-slate-300 text-sm">
+        Search for posts or communities by tag or name.
+      </p>
       <Input
         onChange={(e) => setSearchQuery(e.target.value)}
         type="search"
@@ -42,7 +46,7 @@ export function Search({ defaultValue }: SearchProps) {
         placeholder="Search"
       />
       {data ? (
-        <div className="w-full absolute top-11 z-10 bg-white border border-slate-100 rounded-lg shadow">
+        <div className="w-full absolute top-[7rem] z-10 bg-white border border-slate-100 rounded-lg shadow">
           {data.communities.length > 0 || data.tags.length > 0 ? (
             <div className="space-y-1">
               {data.tags.length > 0 ? (
@@ -76,7 +80,7 @@ export function Search({ defaultValue }: SearchProps) {
             </div>
           ) : (
             <p className="p-16 text-center text-sm text-slate-500">
-              No results found.
+              No suggestions.
             </p>
           )}
         </div>

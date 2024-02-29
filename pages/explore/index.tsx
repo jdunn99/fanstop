@@ -58,11 +58,9 @@ export default function ExplorePage() {
       <LayoutPane>
         <LayoutHeader
           paths={[{ href: "/explore", value: "Explore", disabled: true }]}
-        >
-          <Search />
-        </LayoutHeader>
-        <div className="w-full border-b py-4 bg-white"></div>
+        />
         <Content>
+          <Search />
           <div className="flex mx-auto items-center gap-2 justify-center w-full">
             {typeof tags !== "undefined"
               ? tags.map(({ id, name }) => (
@@ -85,7 +83,7 @@ export default function ExplorePage() {
                     isSubscriber={isSubscriber}
                     key={community.id}
                   />
-                )),
+                ))
               )}
             </DashboardItem>
           ) : null}

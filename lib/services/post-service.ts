@@ -6,7 +6,12 @@ import {
   getPaginatedMetadata,
   paginationArgs,
 } from "../pagination";
-import { PostVailidators, PostItem, PostResponse } from "../api/validators";
+import {
+  PostVailidators,
+  PostItem,
+  PostResponse,
+  PostContent,
+} from "../api/validators";
 import { LikeService } from "./like-service";
 import { SubscriberService } from "./subscriber-service";
 
@@ -122,5 +127,54 @@ export const PostService = {
       post,
       ...metadata,
     };
+  },
+
+  async getPostContent(id: string, userId?: string) {
+    const result = await db.post.findFirst({
+      where: {
+        id,
+        OR: [
+          {
+            isPublished: true,
+          },
+          {
+            authorId: userId,
+          },
+        ],
+      },
+      select: {
+        subscribersOnly: true,
+        content: true,
+        community: {
+          select: {
+            slug: true,
+          },
+        },
+        authorId: true,
+      },
+    });
+
+    if (result === null) {
+      throw new Error("Post not found");
+    }
+
+    const { authorId, content, subscribersOnly, community } = result;
+
+    if (
+      subscribersOnly &&
+      userId !== authorId &&
+      typeof userId !== "undefined"
+    ) {
+      const isSubscriber = await SubscriberService.checkSubscriber({
+        slug: community.slug,
+        userId,
+      });
+
+      if (!isSubscriber) {
+        return null;
+      }
+    }
+
+    return content as unknown as PostContent[];
   },
 };

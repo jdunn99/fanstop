@@ -212,7 +212,6 @@ export const EditorContext = React.createContext<
 
 export function useEditor() {
   const context = React.useContext(EditorContext);
-  // TODO: ENV THIS
 
   if (context === undefined) {
     throw new Error("Context must be called within a Provider");

@@ -15,7 +15,7 @@ function SidebarTop() {
 
   return (
     <li className="flex flex-col gap-4 text-sm mb-2">
-      {session !== null ? (
+      {!!session ? (
         <React.Fragment>
           <div className="flex items-center gap-2">
             <AvatarMenu direction="left" />

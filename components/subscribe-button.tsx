@@ -16,8 +16,8 @@ export function SubscribeButton({ slug, isSubscriber }: SubscribeButtonProps) {
   }
 
   return (
-    <Button variant={isSubscriber ? "primary" : "ghost"} onClick={onClick}>
-      {isSubscriber ? <BsHeartFill /> : <BsHeart />}
+    <Button variant="secondary" onClick={onClick}>
+      Subscribe
     </Button>
   );
 }
