@@ -9,6 +9,7 @@ import Image from "next/image";
 import { NavDrawerOpenButton } from "./nav-drawer";
 import { useSession } from "next-auth/react";
 import { NotificationMenu } from "./notification-menu";
+import { LoginSignupButtons } from "./login-signup-buttons";
 
 interface ProfileNavProps {
   children?: React.ReactNode;
@@ -36,19 +37,12 @@ export function ProfileNav({ children }: ProfileNavProps) {
               {session?.user ? (
                 <React.Fragment>
                   <CreatePostButton />
-                  <NotificationMenu userId={session.user.id} />
+                  <NotificationMenu />
                   <AvatarMenu />
                 </React.Fragment>
               ) : (
                 <React.Fragment>
-                  <Link href="/login">
-                    <Button variant="ghost" size="sm">
-                      Login
-                    </Button>
-                  </Link>
-                  <Link href="/register">
-                    <Button size="sm">Sign Up</Button>
-                  </Link>
+                  <LoginSignupButtons />
                 </React.Fragment>
               )}
               <NavDrawerOpenButton />

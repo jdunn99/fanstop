@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "react-query";
+import { QueryOptions, useInfiniteQuery } from "react-query";
 import { PaginationResponse } from "../pagination";
 
 async function fetchPaginatedResults({
@@ -22,7 +22,11 @@ async function fetchPaginatedResults({
  * @param path - The API route for fetching data
  * @returns - The requested paginated data
  */
-export function usePaginatedQuery<T>(queryKey: any, path: string) {
+export function usePaginatedQuery<T>(
+  queryKey: any,
+  path: string,
+  options?: any
+) {
   return useInfiniteQuery<PaginationResponse<T>>({
     queryKey,
     queryFn: async ({ pageParam }) =>
@@ -30,5 +34,6 @@ export function usePaginatedQuery<T>(queryKey: any, path: string) {
     getNextPageParam: ({ cursor }) => {
       return cursor;
     },
+    ...options,
   });
 }

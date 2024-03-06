@@ -9,12 +9,11 @@ interface ContentProps {
 
 export function LayoutPane({ children }: Pick<ContentProps, "children">) {
   return (
-    <ResizablePanel>
-      <div className="flex-1 z-10 bg-slate-50 h-screen overflow-auto dark:bg-slate-900">
-        {children}
-        <ProfileFooter />
+    <div className="relative mx-auto overflow-auto flex w-full">
+      <div className="relative min-h-screen pt-12 w-full max-w-screen-lg mx-auto px-4 break-words">
+        <div>{children}</div>
       </div>
-    </ResizablePanel>
+    </div>
   );
 }
 

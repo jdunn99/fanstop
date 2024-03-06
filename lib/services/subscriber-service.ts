@@ -1,5 +1,11 @@
 import { User } from "next-auth";
 import { db } from "../db";
+import {
+  PaginationArgs,
+  getPaginatedMetadata,
+  paginationArgs,
+} from "../pagination";
+import { USER_WITH_IMAGE } from "./user-service";
 
 type SubscriberQuery = {
   user: User & {
@@ -26,6 +32,42 @@ export const SubscriberService = {
     return result > 0;
   },
 
+  async getSubscriptionsForUser(
+    userId: string,
+    { take, cursor }: PaginationArgs
+  ) {
+    const result = await db.subscriber.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        community: {
+          select: {
+            slug: true,
+            name: true,
+            image: true,
+          },
+        },
+      },
+      ...paginationArgs({ cursor, take }),
+    });
+
+    if (!result) {
+      throw new Error("Something went wrong fetching subscribers.");
+    }
+
+    const { hasMore, cursor: newCursor } = getPaginatedMetadata(result, take);
+
+    return {
+      response: result,
+      cursor: newCursor,
+      hasMore,
+    };
+  },
+
   /**
    * Subscribes an authenticated user to a community
    * Creates a notification
@@ -33,6 +75,10 @@ export const SubscriberService = {
    * @param userId - The ID of the authenticated user
    */
   async subscribeToCommunity({ user, slug }: SubscriberQuery) {
+    if (user.slug === slug) {
+      throw new Error("Cannot subscribe to yourself!");
+    }
+
     // Create the subscription
     const result = await db.subscriber.create({
       data: {

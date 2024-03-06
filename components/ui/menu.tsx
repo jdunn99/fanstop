@@ -57,7 +57,7 @@ const MenuButton = React.forwardRef<HTMLButtonElement, MenuButtonProps>(
         className={`${className} ${BUTTON_BASE_STYLE} ${BUTTON_VARIANTS.variant[variant]} ${BUTTON_VARIANTS.size[size]}`}
       />
     );
-  },
+  }
 );
 MenuButton.displayName = "MenuButton";
 
@@ -100,7 +100,7 @@ const MenuItem = React.forwardRef<HTMLButtonElement, MenuItemProps>(
         className={`${className} disabled:bg-slate-50 disabled:text-slate-400 w-full text-left block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-700 dark:hover:text-slate-100 dark:text-slate-300`}
       />
     );
-  },
+  }
 );
 MenuItem.displayName = "MenuItem";
 
@@ -123,7 +123,7 @@ const MenuText = React.forwardRef<HTMLDivElement, MenuTextProps>(
         className={`${className} ${MENU_TEXT_VARIANTS[variant]} w-full text-left block px-4`}
       />
     );
-  },
+  }
 );
 MenuText.displayName = "MenuText";
 
@@ -140,7 +140,7 @@ const MenuGroup: any = React.forwardRef<HTMLDivElement, MenuGroupProps>(
         className={`${className} ${border && "border-b"} dark:border-slate-700`}
       />
     );
-  },
+  }
 );
 MenuGroup.displayName = "MenuGroup";
 

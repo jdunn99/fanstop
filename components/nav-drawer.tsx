@@ -1,9 +1,9 @@
 import React from "react";
-import { Sidebar } from "./sidebar";
 import Button from "./ui/button";
 import ReactDOM from "react-dom";
 import { FaBars } from "react-icons/fa";
 import { Portal } from "./ui/portal";
+import { Sidebar } from "./sidebar/sidebar";
 
 interface NavDrawerProps {
   isOpen: boolean;

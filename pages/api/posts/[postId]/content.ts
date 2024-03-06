@@ -21,21 +21,19 @@ const QuerySchema = z.object({
 });
 
 /**
- * Handles route for /comment/[commentId]
- * PUT - Update a comment given the request body
- * DELETE - Delete a comment by the [commentId]
+ * Handles route for /[postId]/content
+ * GET - Get the content for a post
  */
 async function handler(
   req: NextApiRequestWithValidation<z.infer<typeof QuerySchema>>,
   res: NextApiResponse
 ) {
-  const { method, validatedBody, validatedQuery } = req;
-  const session = await getServerSession(req, res, authOptions);
-  // const { content } = validatedBody;
+  const { method, validatedQuery } = req;
   const { postId } = validatedQuery;
 
   switch (method) {
     case "GET": {
+      const session = await getServerSession(req, res, authOptions);
       const result = await PostService.getPostContent(postId, session?.user.id);
 
       res.status(200).json(result);

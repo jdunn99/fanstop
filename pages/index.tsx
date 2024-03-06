@@ -3,21 +3,12 @@ import React from "react";
 import { isAuthed } from "@/lib/authSSR";
 import { CreateCommunity } from "@/components/create-community";
 import { HomePage } from "@/components/home-page";
-import { FeedPage } from "@/components/feed-page";
 
 export default function Home({
   data,
   hasCommunity,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  return data ? (
-    hasCommunity ? (
-      <FeedPage />
-    ) : (
-      <CreateCommunity />
-    )
-  ) : (
-    <HomePage />
-  );
+  return data ? hasCommunity ? null : <CreateCommunity /> : <HomePage />;
 }
 
 export async function getServerSideProps({

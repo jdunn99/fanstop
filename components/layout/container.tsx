@@ -5,12 +5,13 @@ interface ContainerProps {
 }
 export function Container({ children }: ContainerProps) {
   return (
-    <ResizablePanelGroup
-      direction="horizontal"
-      className="antialised dark:bg-slate-900 dark:text-slate-200 max-h-screen overflow-hidden"
+    <div
       id="root"
+      className="flex h-screen flex-col bg-white dark:bg-slate-900 dark:text-slate-200"
     >
-      {children}
-    </ResizablePanelGroup>
+      <div className="flex-grow overflow-auto w-full">
+        <div className="flex h-full">{children}</div>
+      </div>
+    </div>
   );
 }

@@ -1,87 +1,49 @@
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]";
-import {
-  useCommunitiesByIDQuery,
-  useCommunitiesByParamQuery,
-} from "@/lib/queries/useCommunities";
-import { ProfileComponent } from "@/components/profile";
-import { useSession } from "next-auth/react";
-import { DashboardItem } from "@/components/layout";
-import { LayoutPane } from "@/components/layout/content";
 import { LayoutHeader } from "@/components/layout/header";
-import { PostComponent } from "@/components/posts/post-item";
-import { ProfileHeader } from "@/components/profile/profile-header";
-import { SubscribeButton } from "@/components/subscribe-button";
-import Button from "@/components/ui/button";
-import { usePostsForCommunity } from "@/lib/queries/post-queries";
-import { useCommunitySocialsQuery } from "@/lib/queries/useCommunitySocialsQuery";
-import { Content } from "@radix-ui/react-dialog";
-import { Sidebar, Link } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import React from "react";
-import { BsGearFill } from "react-icons/bs";
-import { ProfilePosts } from "@/components/profile/profile-posts";
+import { usePathname } from "next/navigation";
+import { useSidebarRoutes } from "@/config/dashboard";
+import { usePostsForCommunity } from "@/lib/queries/post-queries";
+import { Sidebar } from "@/components/sidebar/sidebar";
+import { FeedPost } from "@/components/posts/feed-post";
+import { FeedAside } from "@/components/sidebar/feed-aside";
+import { NotificationMenu } from "@/components/notification-menu";
+import { CreatePostButton } from "@/components/create-post-button";
 
-export default function Profile({
-  user,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { data } = useCommunitiesByParamQuery(user.id);
+export default function Profile() {
+  const { data } = usePostsForCommunity("jdunn");
+  const pathname = usePathname();
+  const items = useSidebarRoutes();
 
-  if (!data) return null;
+  const path = React.useMemo(() => {
+    return "/" + pathname.split("/")[1];
+  }, [pathname]);
 
-  const paths = [
-    { href: "/", value: "Profile", disabled: true },
-    { href: `/${data.community.slug}`, value: data.community.name },
-  ];
-
-  const { community, isOwn, isSubscriber } = data;
+  if (!items?.length) {
+    return null;
+  }
 
   return (
     <Container>
       <Sidebar />
-      <LayoutPane>
-        <LayoutHeader paths={paths}>
-          {isOwn ? (
-            <div className="flex items-center gap-2 font-semibold">
-              <Link href="/settings">
-                <Button className="inline-flex gap-2" variant="secondary">
-                  <BsGearFill />
-                  Edit Profile
-                </Button>
-              </Link>
-            </div>
-          ) : (
-            <SubscribeButton
-              isSubscriber={isSubscriber}
-              slug={community.slug}
-            />
-          )}
-        </LayoutHeader>
-        <Content>
-          <ProfileHeader community={community} />
-          <ProfilePosts slug={community.slug} />
-        </Content>
-      </LayoutPane>
+      <div className="relative mx-auto overflow-auto flex w-full">
+        <div className="relative min-h-screen pt-12 w-full max-w-screen-lg mx-auto px-4 break-words">
+          <div>
+            <LayoutHeader
+              paths={[{ href: "/", disabled: true, value: "Home" }]}
+            >
+              <NotificationMenu />
+              <CreatePostButton />
+            </LayoutHeader>
+            {data?.pages.map((page) =>
+              page.response.map(({ post }) => (
+                <FeedPost post={post} includeAuthor />
+              ))
+            )}
+          </div>
+        </div>
+        <FeedAside />
+      </div>
     </Container>
   );
-}
-
-export async function getServerSideProps({
-  req,
-  res,
-}: GetServerSidePropsContext) {
-  const session = await getServerSession(req, res, authOptions);
-
-  if (session === null) {
-    return {
-      redirect: "/login",
-    };
-  }
-
-  return {
-    props: {
-      user: session.user,
-    },
-  };
 }

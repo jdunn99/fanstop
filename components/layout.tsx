@@ -1,5 +1,4 @@
 import React from "react";
-import { Sidebar } from "./sidebar";
 import { ProfileNav } from "./nav";
 import { ProfileFooter } from "./footer";
 import { usePathname } from "next/navigation";
@@ -84,7 +83,7 @@ export function Layout({ children, heading }: LayoutProps) {
     <div className="antialised dark:bg-slate-900 dark:text-slate-200" id="root">
       <div className="flex overflow-hidden">
         <aside className=" inset-y-0 z-10 flex-shrink-0 w-80 bg-white h-screen dark:bg-slate-900 border-r dark:border-slate-800 lg:static fixed">
-          <Sidebar />
+          <p>LOL</p>
         </aside>
 
         <LayoutContent heading={heading}>{children}</LayoutContent>
