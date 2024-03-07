@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQuery } from "react-query";
-import { CommunityResponse } from "../api/validators";
+import { CommunityResponse, RecommendedCommunity } from "../api/validators";
 import { PaginationResponse } from "../pagination";
 import { usePaginatedQuery } from "./paginated-query";
 
@@ -18,6 +18,12 @@ function usePopularCommunities() {
   return usePaginatedQuery<CommunityResponse[]>(
     ["communities"],
     "/communities"
+  );
+}
+
+export function useRecommendedCommunitiesQuery() {
+  return useQuery<RecommendedCommunity[]>(["recommended-communities"], () =>
+    fetch("/api/communities/recommended").then((res) => res.json())
   );
 }
 

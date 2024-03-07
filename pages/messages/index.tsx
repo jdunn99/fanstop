@@ -2,7 +2,7 @@ import { ConversationContainer } from "@/components/conversations";
 import { CreateConversationButton } from "@/components/create-conversation";
 import { MessagesContainer } from "@/components/messages";
 import { ProfileNav } from "@/components/nav";
-import { Sidebar } from "@/components/sidebar";
+import { Sidebar } from "@/components/sidebar/sidebar";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";

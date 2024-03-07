@@ -28,7 +28,7 @@ import {
 import { FaSearch } from "react-icons/fa";
 import { CreatePostButton } from "./create-post-button";
 import { NotificationMenu } from "./notification-menu";
-import { ProfileAside } from "./sidebar/profile-aside";
+import { ProfileAside } from "./asides/profile-aside";
 import { PostBottom } from "./posts/post-bottom";
 
 interface ProfileComponentProps {

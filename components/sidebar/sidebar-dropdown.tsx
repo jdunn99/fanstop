@@ -1,4 +1,3 @@
-import { FaPooStorm } from "react-icons/fa";
 import {
   Accordion,
   AccordionContent,
@@ -6,8 +5,8 @@ import {
   AccordionTrigger,
 } from "../ui/accordion";
 import { NavConfig } from "@/types";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { CommunityLink } from "../community-link";
 
 interface SidebarDropdownProps {
   value: string;
@@ -33,18 +32,8 @@ export function SidebarDropdown({
         </AccordionTrigger>
         <AccordionContent>
           <ul className="mt-4 px-5 border-l ml-3 w-full space-y-4">
-            {children.map(({ href, value, image }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className={`${
-                    path === href ? "text-rose-500" : "text-slate-500"
-                  } font-medium hover:text-slate-700 inline-flex items-center gap-2`}
-                >
-                  {image}
-                  {value}
-                </Link>
-              </li>
+            {children.map((link) => (
+              <CommunityLink key={link.href} {...link} path={path} />
             ))}
           </ul>
         </AccordionContent>

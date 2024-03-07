@@ -12,7 +12,7 @@ export function ProfileHeader({ community }: ProfileHeaderProps) {
   const { data: socials } = useCommunitySocialsQuery(community.slug);
 
   return (
-    <div className="w-full space-y-8 mx-auto max-w-screen-md text-center">
+    <div className="w-full space-y-8 mx-auto text-center p-4">
       <div className="flex justify-end"></div>
       {community.image ? <ProfileImage src={community.image} /> : null}
       <h1 className="text-center text-4xl font-bold  text-slate-800 dark:text-slate-200">

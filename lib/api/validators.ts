@@ -100,6 +100,11 @@ export type CommunityByIDQuery = z.infer<
 export type Socials = z.infer<
   typeof CommunitiesValidators.CommunitySocialsSchema
 >;
+export type RecommendedCommunity = {
+  slug: string;
+  name: string;
+  image: string;
+};
 
 // Groups
 const GroupBaseSchema = z.object({

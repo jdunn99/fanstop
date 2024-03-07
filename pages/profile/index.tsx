@@ -3,7 +3,7 @@ import { Container } from "@/components/layout/container";
 import React from "react";
 import { usePathname } from "next/navigation";
 import { useSidebarRoutes } from "@/config/dashboard";
-import { usePostsForCommunity } from "@/lib/queries/post-queries";
+import { useFeedQuery, usePostsForCommunity } from "@/lib/queries/post-queries";
 import { Sidebar } from "@/components/sidebar/sidebar";
 import { FeedPost } from "@/components/posts/feed-post";
 import { FeedAside } from "@/components/sidebar/feed-aside";
@@ -11,7 +11,7 @@ import { NotificationMenu } from "@/components/notification-menu";
 import { CreatePostButton } from "@/components/create-post-button";
 
 export default function Profile() {
-  const { data } = usePostsForCommunity("jdunn");
+  const { data } = useFeedQuery();
   const pathname = usePathname();
   const items = useSidebarRoutes();
 

@@ -16,6 +16,17 @@ import { LikeService } from "./like-service";
 import { SubscriberService } from "./subscriber-service";
 
 export const DB_POST_INCLUDE = {
+  id: true,
+  description: true,
+  title: true,
+  createdAt: true,
+  updatedAt: true,
+  views: true,
+  sequence: true,
+  isPublished: true,
+  subscribersOnly: true,
+  commentsVisible: true,
+  image: true,
   _count: {
     select: {
       likes: true,
@@ -94,7 +105,7 @@ export const PostService = {
   ): Promise<PaginationResponse<PostResponse[]>> {
     const result = await db.post.findMany({
       where,
-      include: DB_POST_INCLUDE,
+      select: DB_POST_INCLUDE,
       ...paginationArgs({ take, cursor }),
     });
 
@@ -117,7 +128,7 @@ export const PostService = {
   async getPost(where: Prisma.PostWhereInput, userId?: string) {
     const result = await db.post.findFirst({
       where,
-      include: DB_POST_INCLUDE,
+      select: DB_POST_INCLUDE,
     });
 
     const post = PostVailidators.PostSchema.parse(result);
@@ -176,5 +187,62 @@ export const PostService = {
     }
 
     return content as unknown as PostContent[];
+  },
+
+  async getPopularPosts({
+    take,
+    userId,
+  }: PaginationArgs & {
+    userId?: string;
+  }) {
+    const result = await db.post.findMany({
+      where: {
+        isPublished: true,
+        NOT: {
+          authorId: userId,
+        },
+      },
+      orderBy: {
+        likes: {
+          _count: "desc",
+        },
+      },
+      take,
+      select: DB_POST_INCLUDE,
+    });
+    const posts = PostVailidators.PostSchema.array().parse(result);
+
+    return await buildPostResponse(posts, userId);
+  },
+
+  async getFeedForUser(userId: string, { take, cursor }: PaginationArgs) {
+    const result = await db.post.findMany({
+      where: {
+        isPublished: true,
+        community: {
+          subscribers: {
+            some: {
+              userId,
+            },
+          },
+        },
+      },
+      select: DB_POST_INCLUDE,
+      ...paginationArgs({ take, cursor }),
+    });
+
+    if (result === null) {
+      throw new Error("Something went wrong fetching your feed");
+    }
+
+    const posts = PostVailidators.PostSchema.array().parse(result);
+    const response = await buildPostResponse(posts, userId);
+    const { cursor: newCursor, hasMore } = getPaginatedMetadata(result, take);
+
+    return {
+      response,
+      hasMore,
+      cursor: newCursor,
+    };
   },
 };

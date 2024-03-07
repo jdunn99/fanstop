@@ -109,6 +109,10 @@ export const CommunityService = {
       },
     });
 
+    if (!result) {
+      throw new Error("Something went wrong fetching communities");
+    }
+
     return buildCommunityResponse(
       CommunitiesValidators.CommunitySchema.array().parse(result),
       userId
@@ -166,6 +170,32 @@ export const CommunityService = {
     );
 
     return { isOwn, isSubscriber, community };
+  },
+
+  async getRecommendedCommunities({
+    userId,
+    take,
+  }: PaginationArgs & {
+    userId?: string;
+  }) {
+    return await db.community.findMany({
+      where: {
+        NOT: {
+          creatorId: userId,
+        },
+      },
+      orderBy: {
+        subscribers: {
+          _count: "desc",
+        },
+      },
+      take,
+      select: {
+        image: true,
+        name: true,
+        slug: true,
+      },
+    });
   },
 
   async getSocialsForCommunity({ slug }: Pick<Community, "slug">) {
