@@ -11,6 +11,7 @@ import {
   PostItem,
   PostResponse,
   PostContent,
+  CreatePostArgs,
 } from "../api/validators";
 import { LikeService } from "./like-service";
 import { SubscriberService } from "./subscriber-service";
@@ -87,6 +88,12 @@ async function buildPostResponse(posts: PostItem[], userId?: string) {
       userId
     );
 
+    const { isPublished } = post;
+    // Only add unpublished posts if we are the author
+    if (!isAuthor && !isPublished) {
+      continue;
+    }
+
     response.push({
       isAuthor,
       isLiked,
@@ -99,6 +106,30 @@ async function buildPostResponse(posts: PostItem[], userId?: string) {
 }
 
 export const PostService = {
+  async createPost({ title, description, authorId }: CreatePostArgs) {
+    return await db.post.create({
+      data: {
+        isPublished: false,
+        description,
+        title,
+        views: 0,
+        community: {
+          connect: {
+            creatorId: authorId,
+          },
+        },
+        author: {
+          connect: {
+            id: authorId,
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+  },
+
   async getPosts(
     where: Prisma.PostWhereInput,
     { authorId, take, cursor }: { authorId?: string } & PaginationArgs

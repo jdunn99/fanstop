@@ -30,6 +30,7 @@ import { CreatePostButton } from "./create-post-button";
 import { NotificationMenu } from "./notification-menu";
 import { ProfileAside } from "./asides/profile-aside";
 import { PostBottom } from "./posts/post-bottom";
+import { Badge } from "./ui/badge";
 
 interface ProfileComponentProps {
   slug: string;
@@ -111,29 +112,37 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
               </div>
             </div>
             {typeof posts === "undefined" ? null : (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid items-end grid-cols-2 lg:grid-cols-3 gap-8">
                 {typeof posts !== "undefined"
                   ? posts.pages.map(({ response }) =>
                       response.map(({ post }) => (
-                        // <FeedPost key={post.id} post={post} />
                         <div className="grid" key={post.id}>
                           <img
                             className="w-full h-auto rounded-lg flex-shrink-0"
                             src={post.image!}
                           />
-                          <h1 className="text-2xl font-bold text-slate-800">
-                            {post.title}
-                          </h1>
-                          <p className=" text-slate-500  truncate mb-2">
-                            {post.description}
-                          </p>
 
-                          <div className="flex items-center justify-between">
-                            <p className="text-xs font-medium text-slate-600  truncate">
-                              {new Date(post.createdAt).toDateString()}
+                          <Link href={`/${slug}/${post.id}`}>
+                            <div className="flex items-center gap-2">
+                              <h1 className="text-2xl font-bold text-slate-800">
+                                {post.title}
+                              </h1>
+
+                              {post.isPublished ? null : (
+                                <div>
+                                  <Badge variant="secondary">Unpublished</Badge>
+                                </div>
+                              )}
+                            </div>
+                            <p className=" text-slate-500  truncate mb-2">
+                              {post.description}
                             </p>
-                            <PostBottom {...post} />
-                          </div>
+                          </Link>
+
+                          <p className="text-xs font-medium text-slate-600  truncate mb-2">
+                            {new Date(post.createdAt).toDateString()}
+                          </p>
+                          <PostBottom {...post} />
                         </div>
                       ))
                     )

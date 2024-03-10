@@ -18,7 +18,7 @@ export function CommunityCard({
   return (
     <div
       className="flex rounded-lg 
-      border bg-white p-6 items-start hover:border-rose-400 cursor-pointer 
+      border bg-slate-50 p-6 items-start hover:border-rose-400 cursor-pointer 
       hover:bg-rose-50"
     >
       <div className="mr-4">

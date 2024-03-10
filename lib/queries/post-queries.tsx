@@ -3,7 +3,11 @@ import { PostItem, PostResponse } from "../api/validators";
 import { usePaginatedQuery } from "./paginated-query";
 import { useSession } from "next-auth/react";
 
-function usePostQuery(id: string) {}
+function usePostQuery(id: string) {
+  return useQuery<PostResponse>(["post", id], () =>
+    fetch(`/api/posts/${id}`).then((res) => res.json())
+  );
+}
 
 function usePostsForCommunity(slug: string) {
   return usePaginatedQuery<PostResponse[]>(
@@ -26,9 +30,21 @@ function useFeedQuery() {
   });
 }
 
+function usePostsForAuthedUserQuery() {
+  const { data: session } = useSession();
+  return usePaginatedQuery<PostResponse[]>(
+    ["community-posts", session?.user.slug],
+    `/communities/${session?.user.slug}/posts`,
+    {
+      enabled: session !== null && typeof session !== "undefined",
+    }
+  );
+}
+
 export {
   usePostQuery,
   usePostsForCommunity,
   usePopularPostsQuery,
   useFeedQuery,
+  usePostsForAuthedUserQuery,
 };

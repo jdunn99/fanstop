@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { db } from "../db";
 import {
   CreatePostArgs,
@@ -10,7 +9,6 @@ import {
   PostVailidators,
 } from "./validators";
 import { checkSubscriber } from "./community";
-import { Prisma } from "@prisma/client";
 import { checkPostLiked } from "./like";
 import { getSubscriptionsForUser } from "./subscriptions";
 

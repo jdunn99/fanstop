@@ -9,7 +9,7 @@ export type PaginationArgsWithID = PaginationArgs & {
   id: string;
 };
 
-export type PaginationResponse<T> = {
+export type PaginationResponse<T extends Object> = {
   response: T;
   cursor?: number;
   hasMore: boolean;

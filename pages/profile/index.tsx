@@ -12,16 +12,6 @@ import { CreatePostButton } from "@/components/create-post-button";
 
 export default function Profile() {
   const { data } = useFeedQuery();
-  const pathname = usePathname();
-  const items = useSidebarRoutes();
-
-  const path = React.useMemo(() => {
-    return "/" + pathname.split("/")[1];
-  }, [pathname]);
-
-  if (!items?.length) {
-    return null;
-  }
 
   return (
     <Container>

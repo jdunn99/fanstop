@@ -6,7 +6,7 @@ import { LikePostButton } from "./like-post-button";
 
 export function PostBottom(post: PostItem) {
   return (
-    <div className="flex items-center gap-8 text-sm text-slate-500 font-semibold">
+    <div className="flex items-center gap-4 text-sm text-slate-500 font-semibold">
       <LikePostButton id={post.id} likes={post._count.likes} />
 
       <Link href={`/${post.author.community.slug}/${post.id}#comments`}>

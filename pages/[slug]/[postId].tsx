@@ -116,8 +116,6 @@ export default function PostPage({
 export async function getServerSideProps({ query }: GetServerSidePropsContext) {
   const postId = z.string().parse(query.postId);
 
-  // await addViewToPost(postId);
-
   return {
     props: {
       postId,

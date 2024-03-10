@@ -127,7 +127,7 @@ export function useRoutes() {
         },
 
         {
-          href: "Profile",
+          href: `/${session.user.slug}`,
           value: "Profile",
           image: <IoMdPerson />,
         },

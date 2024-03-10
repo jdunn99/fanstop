@@ -22,23 +22,24 @@ export default function ExplorePage() {
         <LayoutHeader
           paths={[{ href: "/explore", value: "Explore", disabled: true }]}
         />
-        <Content>
-          <Search />
-          <div className="flex mx-auto items-center gap-2 justify-center w-full">
-            {typeof tags !== "undefined"
-              ? tags.map(({ id, name }) => (
-                  <Link href={`/explore/search/${name}`} key={id}>
-                    <Button type="button" variant="white" size="sm">
-                      {name}
-                    </Button>
-                  </Link>
-                ))
-              : null}
-          </div>
-          {typeof communities !== "undefined" ? (
-            <DashboardItem>
-              <DashboardItemHeading heading="Popular Communities" />
-              {communities.pages.map(({ response }) =>
+        <Search />
+        <div className="flex mx-auto items-center gap-2 justify-center w-full">
+          {typeof tags !== "undefined"
+            ? tags.map(({ id, name }) => (
+                <Link href={`/explore/search/${name}`} key={id}>
+                  <Button type="button" variant="white" size="sm">
+                    {name}
+                  </Button>
+                </Link>
+              ))
+            : null}
+        </div>
+        <div className="mt-8">
+          <h1 className="text-lg mb-4 font-semibold text-slate-800">
+            Popular Communities
+          </h1>
+          {typeof communities !== "undefined"
+            ? communities.pages.map(({ response }) =>
                 response.map(({ community, isOwn, isSubscriber }) => (
                   <CommunityCard
                     community={community}
@@ -47,10 +48,9 @@ export default function ExplorePage() {
                     key={community.id}
                   />
                 ))
-              )}
-            </DashboardItem>
-          ) : null}
-        </Content>
+              )
+            : null}
+        </div>
       </LayoutPane>
     </Container>
   );
