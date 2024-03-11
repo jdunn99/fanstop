@@ -2,7 +2,7 @@ import { Community, CommunityResponse } from "@/lib/api/validators";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Button from "./ui/button";
-import { SubscribeButton } from "./subscribe-button";
+import { SubscribeButton, UnsubscribeButton } from "./subscribe-button";
 import { Avatar } from "./ui/avatar";
 import { ProfileImage } from "./ui/profile-image";
 
@@ -54,8 +54,10 @@ export function CommunityCard({
       {data !== null ? (
         isOwn ? (
           <Button size="sm">Edit Profile</Button>
+        ) : isSubscriber ? (
+          <UnsubscribeButton slug={slug} />
         ) : (
-          <SubscribeButton slug={slug} isSubscriber={isSubscriber} />
+          <SubscribeButton slug={slug} />
         )
       ) : null}
     </div>

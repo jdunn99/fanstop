@@ -15,9 +15,12 @@ export function useCreateCommentMutation() {
       return result.json();
     },
     onSuccess(data, variables, context) {
-      queryClient.setQueryData(["comments", variables.postId], (oldData) => {
-        return [data, ...(oldData as unknown as Comment[])];
-      });
+      queryClient.setQueryData(
+        ["comments", variables.postId],
+        (oldData: unknown) => {
+          return [data, ...(oldData as unknown as Comment[])];
+        }
+      );
     },
   });
 }

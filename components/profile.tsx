@@ -1,22 +1,16 @@
 import React from "react";
 import { BsGearFill } from "react-icons/bs";
-import { Layout, DashboardItem, DashboardItemHeading } from "./layout";
-import { PostComponent } from "./posts/post-item";
 import { CommunityResponse } from "@/lib/api/validators";
-import { SubscribeButton } from "./subscribe-button";
-import { ProfileImage } from "./ui/profile-image";
+import { SubscribeButton, UnsubscribeButton } from "./subscribe-button";
 import Link from "next/link";
 import { useCommunitySocialsQuery } from "@/lib/queries/useCommunitySocialsQuery";
 import { usePostsForCommunity } from "@/lib/queries/post-queries";
 import { Container } from "./layout/container";
-import { Content, LayoutPane } from "./layout/content";
 import { LayoutHeader } from "./layout/header";
 import { ProfileHeader } from "./profile/profile-header";
 import Button from "./ui/button";
 import { Sidebar } from "./sidebar/sidebar";
-import { FeedPost } from "./posts/feed-post";
-import { FeedAside } from "./sidebar/feed-aside";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+
 import Input from "./ui/input";
 import {
   Select,
@@ -69,8 +63,10 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
                     </Button>
                   </Link>
                 </React.Fragment>
+              ) : isSubscriber ? (
+                <UnsubscribeButton slug={slug} />
               ) : (
-                <SubscribeButton isSubscriber={isSubscriber} slug={slug} />
+                <SubscribeButton slug={slug} />
               )}
             </LayoutHeader>
 

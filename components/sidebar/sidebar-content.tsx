@@ -11,18 +11,24 @@ export function SidebarSubscriberContent() {
 
   return (
     <ul className="px-3 space-y-1">
-      {data?.pages.map((page, index) => (
-        <SidebarDropdown
-          key={index}
-          value="Subscriptions"
-          image={<BsPersonHeart />}
-          children={page.response.map(({ community }: any) => ({
-            href: `/${community.slug}`,
-            value: community.name,
-            image: <img src={community.image!} className="w-8 h-8 rounded" />,
-          }))}
-        />
-      ))}
+      {typeof data !== "undefined" &&
+      data.pages.length > 0 &&
+      data.pages[0].response.length > 0
+        ? data.pages.map((page, index) => (
+            <SidebarDropdown
+              key={index}
+              value="Subscriptions"
+              image={<BsPersonHeart />}
+              children={page.response.map(({ community }: any) => ({
+                href: `/${community.slug}`,
+                value: community.name,
+                image: (
+                  <img src={community.image!} className="w-8 h-8 rounded" />
+                ),
+              }))}
+            />
+          ))
+        : null}
     </ul>
   );
 }

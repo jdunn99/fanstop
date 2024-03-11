@@ -22,8 +22,9 @@ async function handler(
     NextApiRequestWithValidation<{}, z.infer<typeof BodySchema>>,
   res: NextApiResponse
 ) {
-  const { session, method, validatedBody } = req;
+  const { query, session, method, validatedBody } = req;
   const { slug } = validatedBody;
+  console.log(query);
 
   switch (method) {
     case "POST": {

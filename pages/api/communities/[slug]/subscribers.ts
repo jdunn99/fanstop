@@ -1,9 +1,6 @@
 import { allowMethods } from "@/lib/middleware/methods-middleware";
 import { getServerErrors } from "@/lib/middleware/server-error-middleware";
-import {
-  NextApiRequestWithSession,
-  useServerAuth,
-} from "@/lib/middleware/session-middleware";
+import { useServerAuth } from "@/lib/middleware/session-middleware";
 import {
   NextApiRequestWithValidatedSession,
   validate,
@@ -12,8 +9,9 @@ import { SubscriberService } from "@/lib/services/subscriber-service";
 import { NextApiResponse } from "next";
 import { use } from "next-api-route-middleware";
 import { CommunityQuerySchema } from ".";
+import { z } from "zod";
 
-const methods = ["GET", "POST"];
+const methods = ["GET", "POST", "DELETE"];
 
 /**
  * Handler function for getting subscribers for a community and
@@ -28,6 +26,8 @@ async function handler(
   const { method, session, validatedQuery } = req;
   const { slug } = validatedQuery;
 
+  console.log(validatedQuery);
+
   switch (method) {
     case "GET": {
       res.status(504).json({ message: "Not implemented yet" });
@@ -40,6 +40,16 @@ async function handler(
           slug,
         })
       );
+      return;
+    }
+    case "DELETE": {
+      res
+        .status(200)
+        .json(
+          await SubscriberService.deleteSubscription(slug, session.user.id)
+        );
+
+      return;
     }
   }
 }

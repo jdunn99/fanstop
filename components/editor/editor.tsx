@@ -10,6 +10,10 @@ import { Breadcrumbs } from "../ui/breadcrumbs";
 import { useRouter } from "next/router";
 import { useToast } from "../ui/toast";
 import { useSavePostMutation } from "@/lib/mutations/useSavePostMutation";
+import { Container } from "../layout/container";
+import { Sidebar } from "../sidebar/sidebar";
+import { LayoutPane } from "../layout/content";
+import { LayoutHeader } from "../layout/header";
 
 interface EditorProps {
   id: string;
@@ -129,20 +133,22 @@ export function Editor({ id, title, content, description }: EditorProps) {
 
   return (
     <EditorContext.Provider value={{ dispatch, editorState }}>
-      <Layout>
-        <div>
-          <div className="grid w-full gap-2 pt-4 pl-16 ">
-            <header className="sticky top-0 z-40 ">
-              <div className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4">
-                <Breadcrumbs paths={[{ href: "/", value: "Home" }]} />
-                <div className="flex gap-2">
-                  <Button variant="secondary" onClick={onSave}>
-                    Save
-                  </Button>
-                  <Button onClick={onClick}>Publish</Button>
-                </div>
-              </div>
-            </header>
+      <Container>
+        <Sidebar />
+        <LayoutPane>
+          <LayoutHeader
+            paths={[
+              { href: "/", value: "Home" },
+              { href: "/", value: "Create Post", disabled: true },
+            ]}
+          >
+            <Button variant="secondary" onClick={onSave}>
+              Save
+            </Button>
+            <Button onClick={onClick}>Publish</Button>
+          </LayoutHeader>
+
+          <div className="grid w-full gap-2 pt-4 ">
             <article className="prose mx-auto w-full max-w-screen-lg">
               <TextareaAutosize
                 autoFocus
@@ -173,8 +179,8 @@ export function Editor({ id, title, content, description }: EditorProps) {
               </div>
             </article>
           </div>
-        </div>
-      </Layout>
+        </LayoutPane>
+      </Container>
     </EditorContext.Provider>
   );
 }
