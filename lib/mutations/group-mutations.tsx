@@ -30,4 +30,12 @@ function useCreateGroupMutation() {
   );
 }
 
-export { useCreateGroupMutation };
+function useDeleteGroupMutation() {
+  return useMutation(["delete-group"], (id: string) =>
+    fetch(`/api/groups/${id}`, {
+      method: "DELETE",
+    }).then((res) => res.json())
+  );
+}
+
+export { useCreateGroupMutation, useDeleteGroupMutation };

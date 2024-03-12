@@ -19,11 +19,15 @@ export function SidebarSubscriberContent() {
               key={index}
               value="Subscriptions"
               image={<BsPersonHeart />}
-              children={page.response.map(({ community }: any) => ({
+              config={page.response.map(({ community }: any) => ({
                 href: `/${community.slug}`,
                 value: community.name,
                 image: (
-                  <img src={community.image!} className="w-8 h-8 rounded" />
+                  <img
+                    src={community.image!}
+                    className="w-8 h-8 rounded"
+                    alt="image"
+                  />
                 ),
               }))}
             />
@@ -42,7 +46,7 @@ export function SidebarRouteContent() {
       {routes.map((item, index) =>
         item.children ? (
           <li key={item.value}>
-            <SidebarDropdown {...item} />
+            <SidebarDropdown config={item.children} {...item} />
           </li>
         ) : (
           <li key={item.href}>

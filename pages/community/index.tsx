@@ -33,12 +33,12 @@ export function CommunityPageLayout({
   );
 }
 
-export default function reroute() {
+export default function useReroute() {
   const router = useRouter();
 
   React.useEffect(() => {
     router.push("/community/dashboard");
-  }, []);
+  }, [router]);
 
   return null;
 }

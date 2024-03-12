@@ -31,16 +31,17 @@ function FeedPage() {
             {data?.pages.map((page) =>
               page.response.length === 0 ? (
                 <Empty
+                  key={crypto.randomUUID()}
                   href="/explore"
                   buttonValue="Find Communities"
                   heading="Your feed is empty"
                 >
-                  Looks like you haven't subscribed to any communities. Any new
-                  posts from those communities will be displayed here
+                  Looks like you haven&apos;t subscribed to any communities. Any
+                  new posts from those communities will be displayed here
                 </Empty>
               ) : (
                 page.response.map(({ post }) => (
-                  <FeedPost post={post} includeAuthor />
+                  <FeedPost post={post} includeAuthor key={post.id} />
                 ))
               )
             )}

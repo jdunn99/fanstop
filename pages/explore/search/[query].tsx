@@ -1,29 +1,17 @@
 import { CommunityCard } from "@/components/community-card";
-import {
-  Layout,
-  DashboardItem,
-  DashboardItemHeading,
-} from "@/components/layout";
+import { DashboardItem, DashboardItemHeading } from "@/components/layout";
 import { Container } from "@/components/layout/container";
 import { Content, LayoutPane } from "@/components/layout/content";
 import { LayoutHeader } from "@/components/layout/header";
-import { Sidebar } from "@/components/layout/sidebar";
 import { Search } from "@/components/search";
+import { Sidebar } from "@/components/sidebar/sidebar";
 import Button from "@/components/ui/button";
-import { CommunitySearchResult } from "@/lib/api/validators";
 import { useExploreResultsQuery } from "@/lib/queries/search-queries";
-import {
-  useCommunitiesSearchResult,
-  usePopularCommunities,
-} from "@/lib/queries/useCommunities";
 import { usePopularTags } from "@/lib/queries/usePopularTags";
-import communities from "@/pages/api/communities";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next/router";
 import React from "react";
-import { useQuery } from "react-query";
 import { z } from "zod";
 
 export default function SearchQuery({
@@ -37,50 +25,6 @@ export default function SearchQuery({
     const split = path.split("/");
     return decodeURI(split[split.length - 1]);
   }, [path]);
-
-  // return (
-  //   <Layout heading="Explore">
-  //     <Search defaultValue={query} />
-  //     <div className="flex items-center justify-center gap-2">
-  //       {typeof tags !== "undefined"
-  //         ? tags.map(({ id, name }) => (
-  //             <Link href={`/explore/search/${name}`} key={id}>
-  //               <Button
-  //                 type="button"
-  //                 variant={variantPath === name ? "primary" : "white"}
-  //                 size="sm"
-  //               >
-  //                 {name}
-  //               </Button>
-  //             </Link>
-  //           ))
-  //         : null}
-  //     </div>
-  //     {typeof communities !== "undefined" ? (
-  //       <DashboardItem>
-  //         {communities.pages.length > 0 ? (
-  //           <React.Fragment>
-  //             <DashboardItemHeading heading="Popular Communities" />
-  //             {communities.pages.map(({ response }) =>
-  //               response.map(({ community, isOwn, isSubscriber }) => (
-  //                 <CommunityCard
-  //                   community={community}
-  //                   isOwn={isOwn}
-  //                   isSubscriber={isSubscriber}
-  //                   key={community.id}
-  //                 />
-  //               ))
-  //             )}
-  //           </React.Fragment>
-  //         ) : (
-  //           <p className="p-16 text-center text-sm text-slate-500">
-  //             No communities found for <strong>{query}</strong>
-  //           </p>
-  //         )}
-  //       </DashboardItem>
-  //     ) : null}
-  //   </Layout>
-  // );
 
   return (
     <Container>

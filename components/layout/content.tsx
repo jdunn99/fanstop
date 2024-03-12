@@ -1,6 +1,4 @@
-import { ProfileFooter } from "../footer";
 import { Header } from "../layout";
-import { ResizablePanel } from "../ui/resizable";
 
 interface ContentProps {
   heading?: string;

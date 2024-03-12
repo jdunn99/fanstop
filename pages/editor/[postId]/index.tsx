@@ -22,7 +22,7 @@ export default function PostEditorPage({
       mutate();
     }
     setIsMounted(true);
-  }, [isMounted]);
+  }, [mutate, isMounted]);
 
   if (!data) return null;
 

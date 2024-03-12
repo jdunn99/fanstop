@@ -1,12 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Sidebar } from "../sidebar";
 import Button from "../ui/button";
 import { TAG_WITH_TEXT } from "./editor-tag";
 import { EditorControlItem } from "./editor-control";
 import { EditorActionType, ValidTags } from "@/lib/useEditor";
 import { BsPlus, BsThreeDotsVertical } from "react-icons/bs";
-import { MenuItem } from "../ui/menu";
 import {
   DeleteButton,
   MoveDownButton,

@@ -28,7 +28,7 @@ PostCommentSectionProps) {
     if (isIntersecting) {
       fetchNextPage();
     }
-  }, [isIntersecting]);
+  }, [fetchNextPage, isIntersecting]);
 
   console.log(isIntersecting);
 

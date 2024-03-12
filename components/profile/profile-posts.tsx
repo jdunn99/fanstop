@@ -1,7 +1,4 @@
 import React from "react";
-import { DashboardItem } from "../layout";
-import { PostComponent } from "../posts/post-item";
-import { usePostsForCommunity } from "@/lib/queries/post-queries";
 import { PostItem } from "@/lib/api/validators";
 import { PostBottom } from "../posts/post-bottom";
 import { Badge } from "../ui/badge";

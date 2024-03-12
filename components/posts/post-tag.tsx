@@ -33,4 +33,4 @@ export const PostTag = React.forwardRef<HTMLDivElement, PostTagProps>(
       );
   }
 );
-EditorTag.displayName = "EditorTag";
+PostTag.displayName = "PostTag";

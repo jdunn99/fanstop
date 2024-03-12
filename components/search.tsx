@@ -1,7 +1,5 @@
 import React from "react";
 import Input from "./ui/input";
-import { SearchResult } from "@/lib/api/search";
-import { useQuery } from "react-query";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useExploreQuery } from "@/lib/queries/search-queries";
@@ -55,7 +53,7 @@ export function Search({ defaultValue }: SearchProps) {
                     Tags
                   </h1>
                   {data.tags.map(({ id, name }) => (
-                    <a href={`/explore/search/${name}`}>
+                    <a href={`/explore/search/${name}`} key={id}>
                       <SearchResultItem value={name} key={id} />
                     </a>
                   ))}
@@ -69,7 +67,7 @@ export function Search({ defaultValue }: SearchProps) {
                   </h1>
 
                   {data.communities.map(({ slug, name }) => (
-                    <Link href={`/${slug}`}>
+                    <Link href={`/${slug}`} key={slug}>
                       <SearchResultItem key={slug} value={name}>
                         <span className="text-xs text-rose-500">@{slug}</span>
                       </SearchResultItem>

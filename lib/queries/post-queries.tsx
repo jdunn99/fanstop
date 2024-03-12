@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { PostItem, PostResponse } from "../api/validators";
+import { PostContent, PostItem, PostResponse } from "../api/validators";
 import { usePaginatedQuery } from "./paginated-query";
 import { useSession } from "next-auth/react";
 
@@ -41,8 +41,15 @@ function usePostsForAuthedUserQuery() {
   );
 }
 
+function usePostContentQuery(id: string) {
+  return useQuery<PostContent[] | null>(["post-content", id], () =>
+    fetch(`/api/posts/${id}/content`).then((res) => res.json())
+  );
+}
+
 export {
   usePostQuery,
+  usePostContentQuery,
   usePostsForCommunity,
   usePopularPostsQuery,
   useFeedQuery,

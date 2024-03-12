@@ -17,7 +17,7 @@ export default function Login({
     if (data) {
       router.push("/");
     }
-  }, [data]);
+  }, [data, router]);
 
   return (
     <div className="px-8 flex h-screen w-screen flex-col items-center justify-center mx-auto dark:bg-slate-900 dark:text-slate-200">

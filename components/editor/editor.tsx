@@ -61,7 +61,7 @@ export function Editor({ id, title, content, description }: EditorProps) {
         },
       },
     ];
-  }, []);
+  }, [content]);
 
   const [editorState, dispatch] = React.useReducer(editorReducer, {
     metadata: null,
@@ -75,27 +75,30 @@ export function Editor({ id, title, content, description }: EditorProps) {
   const router = useRouter();
   const focusedRef = React.useRef<HTMLDivElement>();
 
-  async function handleSavePress(event: KeyboardEvent) {
-    if (event.ctrlKey && event.key === "s") {
-      event.preventDefault();
+  const handleSavePress = React.useCallback(
+    async (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.key === "s") {
+        event.preventDefault();
 
-      if (editorTitleRef.current && editorDescriptionRef.current) {
-        await mutateAsync({
-          title: editorTitleRef.current.value,
-          description: editorDescriptionRef.current.value,
-          editorState,
-        });
+        if (editorTitleRef.current && editorDescriptionRef.current) {
+          await mutateAsync({
+            title: editorTitleRef.current.value,
+            description: editorDescriptionRef.current.value,
+            editorState,
+          });
 
-        toast({
-          variant: "success",
-          title: `${editorTitle} saved`,
-          description:
-            "Your post was saved. For others to view it, be sure to publish it.",
-          timeout: 1000,
-        });
+          toast({
+            variant: "success",
+            title: `${editorTitle} saved`,
+            description:
+              "Your post was saved. For others to view it, be sure to publish it.",
+            timeout: 1000,
+          });
+        }
       }
-    }
-  }
+    },
+    [editorState, editorTitle, mutateAsync, toast]
+  );
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
@@ -105,7 +108,7 @@ export function Editor({ id, title, content, description }: EditorProps) {
         window.removeEventListener("keydown", handleSavePress);
       };
     }
-  }, [window]);
+  }, [handleSavePress]);
 
   async function onSave() {
     await mutateAsync({

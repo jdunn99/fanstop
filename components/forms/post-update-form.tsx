@@ -21,7 +21,7 @@ import { useRouter } from "next/router";
 import { PostItem } from "@/lib/api/validators";
 import { useToast } from "../ui/toast";
 import { usePublishPostMutation } from "@/lib/mutations/usePublishPostMutation";
-import { usePostContentQuery } from "@/lib/queries/usePostQuery";
+import { usePostContentQuery } from "@/lib/queries/post-queries";
 import { Switch } from "@/components/ui/switch";
 import {
   Select,
@@ -204,7 +204,9 @@ export function PostUpdateForm({
                     {typeof groups !== "undefined"
                       ? groups.pages.map((page) =>
                           page.response.map(({ name }) => (
-                            <SelectItem value={name}>{name}</SelectItem>
+                            <SelectItem value={name} key={name}>
+                              {name}
+                            </SelectItem>
                           ))
                         )
                       : null}

@@ -36,7 +36,9 @@ export function ProfileAside() {
         <AsideHeader>Popular Posts</AsideHeader>
         {typeof posts !== "undefined"
           ? posts.pages.map(({ response }) =>
-              response.map(({ post }) => <PostAsideItem {...post} />)
+              response.map(({ post }) => (
+                <PostAsideItem {...post} key={post.id} />
+              ))
             )
           : null}
       </AsideSection>

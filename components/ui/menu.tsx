@@ -20,7 +20,7 @@ export function Menu({ onClose, children }: MenuProps) {
     return () => {
       document.removeEventListener("click", handleOutsideClick);
     };
-  }, []);
+  }, [onClose]);
 
   return (
     <div ref={ref} className="relative inline-block text-right">

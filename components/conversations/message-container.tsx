@@ -71,13 +71,13 @@ export function MessagesContainer({ id, name }: { id: string; name: string }) {
         window.removeEventListener("resize", handleResize);
       };
     }
-  }, []);
+  }, [handleResize]);
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
       handleResize();
     }
-  }, []);
+  }, [handleResize]);
 
   return (
     <div className="min-h-screen w-full" ref={ref}>

@@ -27,7 +27,7 @@ export default function Profile() {
             </LayoutHeader>
             {data?.pages.map((page) =>
               page.response.map(({ post }) => (
-                <FeedPost post={post} includeAuthor />
+                <FeedPost post={post} includeAuthor key={post.id} />
               ))
             )}
           </div>

@@ -62,7 +62,7 @@ export function useIntersectionObserver(options: any): IntersectionResult {
     return () => {
       observer.disconnect();
     };
-  }, [ref, JSON.stringify(threshold), root, rootMargin]);
+  }, [ref, root, rootMargin, threshold]);
 
   const prevRef = useRef<Element | null>(null);
 

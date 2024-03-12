@@ -13,7 +13,7 @@ import { authOptions } from "./api/auth/[...nextauth]";
 import { useUpdateCommunityMutation } from "@/lib/mutations/useUpdateCommunityMutation";
 import { useCreateCommunityForm } from "@/lib/useCreateCommunityForm";
 import { CreateCommunityForm, Form } from "@/components/create-community-form";
-import { getTagsForCommunity } from "@/lib/api/tags";
+import { TagsService } from "@/lib/services/tags-service";
 
 export default function Settings({
   slug,
@@ -33,7 +33,7 @@ export default function Settings({
     }
 
     return selected;
-  }, []);
+  }, [tags]);
 
   const { selected, setSelected, profileImage, setProfileImage } =
     useCreateCommunityForm({
@@ -100,7 +100,13 @@ export async function getServerSideProps({
     };
   }
 
-  const tags = await getTagsForCommunity(session.user.slug);
+  const tags = await TagsService.getTags({
+    communities: {
+      some: {
+        slug: session.user.slug,
+      },
+    },
+  });
 
   if (tags === null) {
     return {

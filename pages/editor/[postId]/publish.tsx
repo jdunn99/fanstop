@@ -54,6 +54,7 @@ export default function PostPublishPage({
       description,
       img: coverImage,
       postContent: content!,
+      isPublished: true,
       commentsVisible: comments === "Enable",
       subscribersOnly: visibility === "Subscribers only",
     });
@@ -90,7 +91,7 @@ export default function PostPublishPage({
         setCoverImage({ src: data.post.image! });
       }
     }
-  }, [isLoading]);
+  }, [data, isLoading]);
 
   if (!data) return null;
   if (!content) return null;

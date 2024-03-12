@@ -40,5 +40,5 @@ export function useFlattenedPaginatedData<T, Key extends keyof T>(
     }
 
     return flattened;
-  }, [data]);
+  }, [key, data]);
 }

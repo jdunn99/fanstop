@@ -59,7 +59,10 @@ export const SubscriberService = {
       throw new Error("Something went wrong fetching subscribers.");
     }
 
-    const { hasMore, cursor: newCursor } = getPaginatedMetadata(result, take);
+    const { hasMore, cursor: newCursor } = getPaginatedMetadata(
+      result as any,
+      take
+    );
 
     return {
       response: result,

@@ -42,8 +42,6 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
 
   if (!data || !posts) return null;
 
-  const { community, isOwn, isSubscriber } = data;
-
   return (
     <Container>
       <Sidebar />
@@ -73,16 +71,18 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
                         }
 
                         if (group !== "All") {
-                          if (post.group && post.group.name === group) {
-                            return (
-                              <ProfilePosts post={post} setGroup={setGroup} />
-                            );
-                          } else {
+                          if (!post.group || post.group.name !== group) {
                             return null;
                           }
                         }
 
-                        return <ProfilePosts post={post} setGroup={setGroup} />;
+                        return (
+                          <ProfilePosts
+                            post={post}
+                            setGroup={setGroup}
+                            key={post.id}
+                          />
+                        );
                       })
                     )
                   : null}

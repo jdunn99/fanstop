@@ -36,7 +36,9 @@ export function ProfileSelectFilter({
         <SelectItem value="All">All</SelectItem>
         {groups?.pages.map((page) =>
           page.response.map(({ name }) => (
-            <SelectItem value={name}>{name}</SelectItem>
+            <SelectItem value={name} key={name}>
+              {name}
+            </SelectItem>
           ))
         )}
       </SelectContent>

@@ -13,13 +13,13 @@ import React from "react";
 interface SidebarDropdownProps {
   value: string;
   image: JSX.Element;
-  children: NavConfig;
+  config: NavConfig;
 }
 
 export function SidebarDropdown({
   value,
   image,
-  children,
+  config,
 }: SidebarDropdownProps) {
   const path = usePathname();
 
@@ -57,7 +57,7 @@ export function SidebarDropdown({
         </AccordionTrigger>
         <AccordionContent>
           <ul className="mt-4 px-5 border-l ml-3 w-full space-y-4">
-            {children.map((link) => (
+            {config.map((link) => (
               <CommunityLink key={link.href} {...link} path={path} />
             ))}
           </ul>

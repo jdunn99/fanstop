@@ -1,5 +1,3 @@
-import { ResizablePanelGroup } from "../ui/resizable";
-
 interface ContainerProps {
   children?: React.ReactNode;
 }

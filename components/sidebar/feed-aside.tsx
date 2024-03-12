@@ -14,6 +14,7 @@ function SuggestedCommunities() {
       {typeof data !== "undefined" ? (
         data.map(({ image, name, slug }) => (
           <CommunityLink
+            key={slug}
             href={`/${slug}`}
             image={<img src={image} className="w-10 h-10 rounded-lg" />}
             value={name}
