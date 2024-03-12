@@ -1,30 +1,11 @@
 import React from "react";
-import { BsGearFill } from "react-icons/bs";
 import { CommunityResponse } from "@/lib/api/validators";
-import { SubscribeButton, UnsubscribeButton } from "./subscribe-button";
-import Link from "next/link";
 import { useCommunitySocialsQuery } from "@/lib/queries/useCommunitySocialsQuery";
 import { usePostsForCommunity } from "@/lib/queries/post-queries";
 import { Container } from "./layout/container";
-import { LayoutHeader } from "./layout/header";
 import { ProfileHeader } from "./profile/profile-header";
-import Button from "./ui/button";
 import { Sidebar } from "./sidebar/sidebar";
-
-import Input from "./ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-import { FaSearch } from "react-icons/fa";
-import { CreatePostButton } from "./create-post-button";
-import { NotificationMenu } from "./notification-menu";
 import { ProfileAside } from "./asides/profile-aside";
-import { PostBottom } from "./posts/post-bottom";
-import { Badge } from "./ui/badge";
 import { ProfileFilters, ProfileSelectFilter } from "./profile/profile-filters";
 import { ProfilePosts } from "./profile/profile-posts";
 
@@ -38,7 +19,7 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
   const { data: socials } = useCommunitySocialsQuery(slug);
 
   const [searchQuery, setSearchQuery] = React.useState<string>("");
-  const [group, setGroup] = React.useState<string>("");
+  const [group, setGroup] = React.useState<string>("All");
 
   if (!data || !posts) return null;
 
