@@ -19,7 +19,7 @@ import { GroupArgs, GroupValidators } from "@/lib/api/validators";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
-const methods = ["GET", "POST"];
+const methods = ["GET"];
 const BodySchema = GroupValidators.GroupArgsSchema;
 
 async function handler(
@@ -32,22 +32,9 @@ async function handler(
   const { validatedQuery, validatedBody, method } = req;
   const { slug, ...rest } = validatedQuery;
 
-  if (method === "GET") {
-    return res
-      .status(200)
-      .json(await GroupService.getGroupsForCommunity(slug, { ...rest }));
-  } else {
-    const session = await getServerSession(req, res, authOptions);
-    if (session === null) {
-      return res.status(401).json({ message: "Not logged in" });
-    }
-    return res.status(200).json(
-      await GroupService.createGroup(slug, {
-        userId: session.user.id,
-        ...validatedBody,
-      })
-    );
-  }
+  return res
+    .status(200)
+    .json(await GroupService.getGroupsForCommunity(slug, { ...rest }));
 }
 
 export default use(

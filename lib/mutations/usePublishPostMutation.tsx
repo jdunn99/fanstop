@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "react-query";
 import { uploadImage } from "../file";
 import { Block } from "../useEditor";
+import { parseImageState } from "../parseImageState";
 
 interface PostPublishProps {
   title: string;
@@ -31,15 +32,7 @@ export function usePublishPostMutation(id: string) {
       commentsVisible,
       subscribersOnly,
     }: PostPublishProps) => {
-      let image: string | undefined = undefined;
-
-      if (img) {
-        if (img.formData) {
-          image = await uploadImage(img.formData);
-        } else {
-          image = img.src as string;
-        }
-      }
+      const image = await parseImageState(img);
 
       // now set the cover image as the first element
       let content = postContent;

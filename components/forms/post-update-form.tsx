@@ -31,6 +31,7 @@ import {
   SelectTrigger,
 } from "../ui/select";
 import { useGroupsForAuthedUser } from "@/lib/queries/group-queries";
+import { ImageInput } from "../image-input";
 
 const PostUpdateFormSchema = z.object({
   title: z.string(),
@@ -73,7 +74,6 @@ export function PostUpdateForm({
     formData?: FormData;
   }>(() => (image !== null ? { src: image } : { src: null }));
 
-  const imageInputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -108,24 +108,6 @@ export function PostUpdateForm({
       });
 
       setTimeout(() => router.back(), 1000);
-    }
-  }
-
-  function onFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-    if (event.target.files) {
-      const selectedFile = event.target.files[0];
-      const { reader, formData } = getFileData(event.target.files[0]);
-
-      reader.onload = (event) => {
-        const { target } = event;
-        if (!target) {
-          return;
-        }
-
-        setCoverImage({ src: target.result!.toString(), formData });
-      };
-
-      reader.readAsDataURL(selectedFile);
     }
   }
 
@@ -317,30 +299,9 @@ export function PostUpdateForm({
           />
           <div className="px-4">
             <FormContainer label="Cover Image">
-              <div
-                className="w-full border min-h-[64px] rounded-xl cursor-pointer bg-white hover:bg-rose-50"
-                onClick={() => {
-                  imageInputRef.current?.click();
-                }}
-              >
-                {typeof coverImage !== "undefined" &&
-                coverImage.src !== null ? (
-                  <img
-                    src={coverImage.src}
-                    className="rounded-xl hover:opacity-50"
-                  />
-                ) : (
-                  <p className="flex justify-center items-center h-full gap-2 text-slate-600 font-semibold">
-                    <BsPlusCircleFill /> Add image
-                  </p>
-                )}
-              </div>
-
-              <input
-                ref={imageInputRef}
-                className="hidden"
-                type="file"
-                onChange={onFileChange}
+              <ImageInput
+                coverImage={coverImage}
+                setCoverImage={setCoverImage}
               />
             </FormContainer>
           </div>

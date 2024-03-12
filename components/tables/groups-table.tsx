@@ -19,6 +19,7 @@ import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { useServerAuth } from "@/lib/middleware/session-middleware";
 import { FaPlusCircle } from "react-icons/fa";
 import Button from "../ui/button";
+import { CreateGroupDialog } from "../create-group-dialog";
 
 export const columns: ColumnDef<any>[] = [
   {
@@ -33,16 +34,16 @@ export const columns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
     header: "Name",
-    // cell(props) {
-    //   const { row } = props;
-    //   const { image, title } = row.original;
-    //   return (
-    //     <div className="md:flex-row flex-col flex flex-1 w-full gap-2 items-center relative flex-shrink-0">
-    //       {image !== null ? <img src={image} className="w-12 rounded" /> : null}
-    //       <span className="font-semibold text-slate-800">{title}</span>
-    //     </div>
-    //   );
-    // },
+    cell(props) {
+      const { row } = props;
+      const { image, name } = row.original;
+      return (
+        <div className="md:flex-row flex-col flex flex-1 w-full gap-2 items-center relative flex-shrink-0">
+          {image !== null ? <img src={image} className="w-12 rounded" /> : null}
+          <span className="font-semibold text-slate-800">{name}</span>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "description",
@@ -74,10 +75,7 @@ export function GroupsTable() {
         filterKey="name"
         placeholder="Search groups"
       >
-        <Button className="!text-sm gap-2 py-2" size="xs">
-          <FaPlusCircle />
-          Create group
-        </Button>
+        <CreateGroupDialog />
       </DataTable>
     </div>
   );

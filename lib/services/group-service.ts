@@ -8,7 +8,6 @@ import {
 
 export const GroupService = {
   createGroup(
-    slug: string,
     args: GroupArgs & {
       userId: string;
     }
@@ -18,7 +17,6 @@ export const GroupService = {
       data: {
         community: {
           connect: {
-            slug,
             creatorId: args.userId,
           },
         },
