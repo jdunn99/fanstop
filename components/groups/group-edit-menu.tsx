@@ -25,15 +25,15 @@ import { useToast } from "../ui/toast";
 import { Group } from "@/lib/api/validators";
 
 export function PostEditMenu(group: Group) {
-  const { mutateAsync } = useDeletePostMutation(
-    post.id,
-    post.author.community.slug
-  );
+  // const { mutateAsync } = useDeletePostMutation(
+  //   post.id,
+  //   post.author.community.slug
+  // );
 
   const { toast } = useToast();
 
   async function deletePost() {
-    await mutateAsync();
+    // await mutateAsync();
     toast({
       title: "Success",
       description: "Post was deleted successfully.",
@@ -53,14 +53,6 @@ export function PostEditMenu(group: Group) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="z-[99]">
-          <Link href={`/editor/${post.id}`}>
-            <DropdownMenuItem className="cursor-pointer gap-2">
-              <FaPen className="text-xs" />
-              Edit
-            </DropdownMenuItem>
-          </Link>
-
-          <DropdownMenuSeparator />
           <AlertDialogTrigger asChild>
             <DropdownMenuItem className="cursor-pointer gap-2">
               <FaTrashAlt className="text-xs" />
