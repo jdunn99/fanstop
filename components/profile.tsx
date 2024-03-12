@@ -8,6 +8,8 @@ import { Sidebar } from "./sidebar/sidebar";
 import { ProfileAside } from "./asides/profile-aside";
 import { ProfileFilters, ProfileSelectFilter } from "./profile/profile-filters";
 import { ProfilePosts } from "./profile/profile-posts";
+import { Empty } from "./empty";
+import { CreatePostButton } from "./create-post-button";
 
 interface ProfileComponentProps {
   slug: string;
@@ -38,8 +40,22 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
                 group={group}
               />
             </ProfileFilters>
-            {typeof posts === "undefined" ? null : (
-              <div className="grid items-end grid-cols-2 lg:grid-cols-3 gap-8">
+            {data.community._count.posts === 0 ? (
+              <div className="flex flex-col items-center gap-4 min-h-[250px] justify-center">
+                <p className="text-slate-800 font-medium text-lg ">
+                  {data.isOwn ? "You have " : `${data.community.name} has `} not
+                  made any posts yet.
+                </p>
+                {data.isOwn ? (
+                  <p className="text-slate-600 max-w-md leading-loose text-center text-sm">
+                    You can create your first post by clicking the button below.
+                  </p>
+                ) : null}
+
+                {data.isOwn ? <CreatePostButton /> : null}
+              </div>
+            ) : (
+              <div className="grid items-end grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {typeof posts !== "undefined"
                   ? posts.pages.map(({ response }) =>
                       response.map(({ post }) => {

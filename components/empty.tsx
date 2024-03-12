@@ -5,8 +5,8 @@ import Link from "next/link";
 interface EmptyProps {
   heading: string;
   children: React.ReactNode;
-  href: string;
-  buttonValue: string;
+  href?: string;
+  buttonValue?: string;
 }
 export function Empty({ heading, children, href, buttonValue }: EmptyProps) {
   return (
@@ -15,9 +15,11 @@ export function Empty({ heading, children, href, buttonValue }: EmptyProps) {
       <p className="text-slate-600 max-w-md leading-loose text-center text-sm">
         {children}
       </p>
-      <Link href={href}>
-        <Button className="mt-4">{buttonValue}</Button>
-      </Link>
+      {!!buttonValue && !!href ? (
+        <Link href={href}>
+          <Button className="mt-4">{buttonValue}</Button>
+        </Link>
+      ) : null}
     </div>
   );
 }

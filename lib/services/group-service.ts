@@ -25,6 +25,17 @@ export const GroupService = {
     });
   },
 
+  deleteGroup(name: string, creatorId: string) {
+    return db.group.delete({
+      where: {
+        name,
+        community: {
+          creatorId,
+        },
+      },
+    });
+  },
+
   async getGroupsForCommunity(slug: string, args: PaginationArgs) {
     const result = await db.group.findMany({
       where: {

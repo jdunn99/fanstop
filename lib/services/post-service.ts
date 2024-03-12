@@ -147,6 +147,9 @@ export const PostService = {
     const result = await db.post.findMany({
       where,
       select: DB_POST_INCLUDE,
+      orderBy: {
+        createdAt: "desc",
+      },
       ...paginationArgs({ take, cursor }),
     });
 
@@ -267,6 +270,9 @@ export const PostService = {
             },
           },
         },
+      },
+      orderBy: {
+        createdAt: "desc",
       },
       select: DB_POST_INCLUDE,
       ...paginationArgs({ take, cursor }),

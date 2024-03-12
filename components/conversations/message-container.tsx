@@ -59,7 +59,7 @@ export function MessagesContainer({ id, name }: { id: string; name: string }) {
 
   const handleResize = React.useCallback(() => {
     if (ref.current) {
-      ref.current.style.height = `${window.innerHeight - 73}px`;
+      ref.current.style.height = `${window.innerHeight - 1}px`;
     }
   }, [ref]);
 
@@ -80,7 +80,7 @@ export function MessagesContainer({ id, name }: { id: string; name: string }) {
   }, [handleResize]);
 
   return (
-    <div className="min-h-screen w-full" ref={ref}>
+    <div className="w-full" ref={ref}>
       <div className="fixed w-full px-6 py-[1.5rem] lg:w-[calc(100vw-704px)] bg-white border-b z-50 right-0">
         <div className="flex items-center p-0 gap-4">
           <Link href="/messages">

@@ -28,7 +28,9 @@ export function LayoutHeader({ paths, children }: HeaderProps) {
       <div className="flex items-center gap-2 bg-transparent">
         <SidebarDrawer />
 
-        <Breadcrumbs paths={paths} />
+        <div className="hidden md:block">
+          <Breadcrumbs paths={paths} />
+        </div>
       </div>
       <div className="flex gap-2 items-center">
         {session !== null ? children : <LoginSignupButtons />}

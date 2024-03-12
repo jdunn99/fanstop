@@ -3,7 +3,7 @@ import Button from "@/components/ui/button";
 import Textarea from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/toast";
 import { CreateCommentArgs } from "@/lib/api/validators";
-import { useCreateCommentMutation } from "@/lib/mutations/useCreateCommentMutation";
+import { useCreateCommentMutation } from "@/lib/mutations/comment-mutations";
 import { useSession } from "next-auth/react";
 import React from "react";
 
@@ -15,11 +15,11 @@ export function CommentInput({ postId }: CommentInputProps) {
   const { data: session } = useSession();
 
   const [comment, setComment] = React.useState<string>("");
-  const { mutate: createComment } = useCreateCommentMutation();
+  const { mutateAsync: createComment } = useCreateCommentMutation();
 
   const { toast } = useToast();
 
-  function onClick({ content, postId }: Partial<CreateCommentArgs>) {
+  async function onClick({ content, postId }: Partial<CreateCommentArgs>) {
     if (session === null) {
       toast({
         title: "Not signed in.",
@@ -28,11 +28,12 @@ export function CommentInput({ postId }: CommentInputProps) {
         timeout: 1000,
       });
     } else {
-      createComment({
+      await createComment({
         userId: "",
         content: content || "",
         postId: postId || "",
       });
+      setComment("");
     }
   }
 

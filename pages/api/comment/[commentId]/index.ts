@@ -43,6 +43,8 @@ async function handler(
   const { content } = validatedBody;
   const { commentId } = validatedQuery;
 
+  console.log(method);
+
   switch (method) {
     case "PUT": {
       const result = await CommentService.updateComment({
@@ -58,6 +60,7 @@ async function handler(
         id: commentId,
         userId: session.user.id,
       });
+      console.log(result);
       res.status(200).json(result);
       return;
     }

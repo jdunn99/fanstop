@@ -35,7 +35,7 @@ export function MessageItem({
         </div>
         <p
           className={`text-sm p-2 rounded text-right ${
-            isOwn ? "text-white bg-rose-500" : "text-slate-500 bg-white"
+            isOwn ? "text-white bg-rose-500" : "text-slate-500 bg-slate-50"
           }`}
         >
           {content}

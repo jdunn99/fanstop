@@ -9,22 +9,26 @@ import { useCreateConversationMutation } from "@/lib/mutations/useCreateConversa
 import { Container } from "@/components/layout/container";
 import { Sidebar } from "@/components/sidebar/sidebar";
 import { EmptyMessagesContainer } from "@/components/conversations/message-container";
+import { useWindowWidth } from "@/lib/useWindowWidth";
 
 export default function MessagesWithConversation({
   conversationId,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data } = useConversationByIDQuery(conversationId);
+  const isMobile = useWindowWidth();
 
   if (typeof data === "undefined") {
     return null;
   }
 
   return (
-    <Container>
+    <Container noHeight>
       <Sidebar />
 
       <div className="relative mx-auto overflow-auto flex w-full">
-        <ConversationContainer />
+        <div className="hidden sm:block">
+          <ConversationContainer />
+        </div>
         <MessagesContainer id={data.id} name={data.users[0].name} />
       </div>
     </Container>

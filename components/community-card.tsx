@@ -51,15 +51,17 @@ export function CommunityCard({
         </div>
       </Link>
 
-      {data !== null ? (
-        isOwn ? (
-          <Button size="sm">Edit Profile</Button>
-        ) : isSubscriber ? (
-          <UnsubscribeButton slug={slug} />
-        ) : (
-          <SubscribeButton slug={slug} />
-        )
-      ) : null}
+      <div className="hidden md:block">
+        {data !== null ? (
+          isOwn ? (
+            <Button size="sm">Edit Profile</Button>
+          ) : isSubscriber ? (
+            <UnsubscribeButton slug={slug} />
+          ) : (
+            <SubscribeButton slug={slug} />
+          )
+        ) : null}
+      </div>
     </div>
   );
 }

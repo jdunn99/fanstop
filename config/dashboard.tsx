@@ -146,10 +146,10 @@ export function useRoutes() {
           value: "Community",
           image: <BsPeopleFill />,
           children: [
-            {
-              href: "/community/dashboard",
-              value: "Dashboard",
-            },
+            // {
+            //   href: "/community/dashboard",
+            //   value: "Dashboard",
+            // },
             {
               href: "/community/posts",
               value: "Posts",
@@ -159,10 +159,10 @@ export function useRoutes() {
               href: "/community/groups",
               value: "Groups",
             },
-            {
-              href: "/community/subscriptions",
-              value: "Subscriptions",
-            },
+            // {
+            //   href: "/community/subscriptions",
+            //   value: "Subscriptions",
+            // },
           ],
         },
         {

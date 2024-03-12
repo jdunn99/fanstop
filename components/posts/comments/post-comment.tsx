@@ -1,9 +1,11 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import Button from "@/components/ui/button";
 import Textarea from "@/components/ui/textarea";
-import { useDeleteCommentMutation } from "@/lib/mutations/useDeleteCommentMutation";
-import { useUpdateCommentMutation } from "@/lib/mutations/useUpdateCommentMutation";
 import { Comment } from "@/lib/api/validators";
+import {
+  useDeleteCommentMutation,
+  useUpdateCommentMutation,
+} from "@/lib/mutations/comment-mutations";
 import { useSession } from "next-auth/react";
 import React from "react";
 import { BsPencilFill, BsTrashFill } from "react-icons/bs";

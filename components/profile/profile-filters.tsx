@@ -29,7 +29,7 @@ export function ProfileSelectFilter({
       value={group}
       defaultValue="All"
     >
-      <SelectTrigger className="w-48 truncate flex-shrink-0 flex gap-2 bg-slate-50">
+      <SelectTrigger className="lg:w-48 w-16 truncate flex-shrink-0 flex gap-2 bg-slate-50">
         <SelectValue placeholder="Group" />
       </SelectTrigger>
       <SelectContent>

@@ -37,7 +37,7 @@ export function FeedPost({ includeAuthor, post }: FeedPostProps) {
     <div>
       <div className="flex items-start gap-4  py-4">
         {includeAuthor ? <AvatarImage src={post.author.image!} /> : null}
-        <div className="flex items-start justify-between w-full flex-col md:flex-row">
+        <div className="flex items-start justify-between w-full flex-col md:flex-row gap-4">
           <div className="space-y-4 flex-1">
             <FeedPostHeading includeAuthor={includeAuthor} post={post} />
             <Link
