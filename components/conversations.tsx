@@ -14,7 +14,7 @@ import {
   CreateConversationDrawerButton,
 } from "./conversations/create-conversation-drawer";
 
-function ConversationItem({ id, users, messages }: Conversation) {
+export function ConversationItem({ id, users, messages }: Conversation) {
   const [user] = users;
   const message = messages[0];
 
@@ -65,7 +65,7 @@ export function ConversationContainer() {
 
   return (
     <aside
-      className={`inset-y-0 z-10 flex-shrink-0 w-full lg:w-96 bg-white border-r lg:flex  max-sm:flex-1 ${
+      className={`inset-y-0 z-10 flex-shrink-0 w-full lg:w-96 bg-white border-r lg:flex  ${
         isConversationPage ? "flex" : "hidden"
       }`}
     >

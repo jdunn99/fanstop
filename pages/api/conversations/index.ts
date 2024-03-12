@@ -41,8 +41,11 @@ async function handler(
       }
       const { userIds } = validatedBody;
 
-      const participants = [session.user.id, ...userIds];
-      return res.status(200).json(participants);
+      const participants = [...userIds, session.user.id];
+
+      return res
+        .status(200)
+        .json(await ConversationService.createConversation(participants));
     }
   }
 }

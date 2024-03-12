@@ -14,11 +14,14 @@ import {
 import { ConversationService } from "@/lib/services/conversation-service";
 
 const methods = ["GET", "DELETE"];
-const QuerySchema = z.object({ conversationId: z.string().cuid() });
+export const ConversationQuerySchema = z.object({
+  conversationId: z.string().cuid(),
+});
+export type ConversationQuery = z.infer<typeof ConversationQuerySchema>;
 
 async function handler(
   req: NextApiRequestWithSession &
-    NextApiRequestWithValidation<z.infer<typeof QuerySchema>, {}>,
+    NextApiRequestWithValidation<ConversationQuery>,
   res: NextApiResponse
 ) {
   const { session, method, validatedQuery } = req;
@@ -46,7 +49,7 @@ export default use(
   getServerErrors,
   useServerAuth,
   allowMethods(methods),
-  validate({ query: QuerySchema }),
+  validate({ query: ConversationQuerySchema }),
   handler
 );
 

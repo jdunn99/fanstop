@@ -10,21 +10,9 @@ if (process.env.NODE_ENV === "production") {
   prisma = new PrismaClient();
 } else {
   if (!global.cachedPrisma) {
-    global.cachedPrisma = new PrismaClient({
-      log: [
-        {
-          emit: "event",
-          level: "query",
-        },
-      ],
-    });
+    global.cachedPrisma = new PrismaClient();
   }
   prisma = global.cachedPrisma;
-
-  // @ts-ignore
-  prisma.$on("query", async (e: any) => {
-    console.log(`${e.query} ${e.params}`);
-  });
 }
 
 export const db = prisma;

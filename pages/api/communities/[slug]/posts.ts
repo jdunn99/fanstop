@@ -13,14 +13,16 @@ import { PostService } from "@/lib/services/post-service";
 import { PaginationSchema } from "@/lib/pagination";
 
 const methods = ["GET", "DELETE"];
-export const CommunityQuerySchema = z
+export const CommunityQuerySchemaWithPagination = z
   .object({
     slug: z.string(),
   })
   .merge(PaginationSchema);
 
 async function handler(
-  req: NextApiRequestWithValidatedSession<z.infer<typeof CommunityQuerySchema>>,
+  req: NextApiRequestWithValidatedSession<
+    z.infer<typeof CommunityQuerySchemaWithPagination>
+  >,
   res: NextApiResponse
 ) {
   const { validatedQuery, method } = req;
@@ -56,7 +58,7 @@ async function handler(
 
 export default use(
   allowMethods(methods),
-  validate({ query: CommunityQuerySchema }),
+  validate({ query: CommunityQuerySchemaWithPagination }),
   handler,
   getServerErrors
 );

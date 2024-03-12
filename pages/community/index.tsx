@@ -19,7 +19,7 @@ export function CommunityPageLayout({
     <Container>
       <Sidebar />
       <div className="relative mx-auto overflow-auto flex w-full">
-        <div className="relative min-h-screen pt-12 w-full max-w-screen-lg mx-auto px-4 break-words">
+        <div className="relative min-h-screen pt-12 w-full max-w-screen-xl mx-auto px-4 break-words">
           <div>
             <LayoutHeader paths={paths}>
               <NotificationMenu />

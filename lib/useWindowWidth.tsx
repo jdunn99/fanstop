@@ -18,5 +18,5 @@ export function useWindowWidth() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  return !!width && width < 840;
+  return !!width && width < 1024;
 }

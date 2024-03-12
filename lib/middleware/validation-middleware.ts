@@ -33,7 +33,7 @@ export function validate({
       req.validatedQuery = result.data;
     }
 
-    if (req.body && body) {
+    if (req.body && body && req.method !== "GET") {
       const result = body.safeParse(req.body);
       if (!result.success) {
         res.status(400).send({ message: result.error });

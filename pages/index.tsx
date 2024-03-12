@@ -11,7 +11,6 @@ import { FeedAside } from "@/components/sidebar/feed-aside";
 import { useFeedQuery } from "@/lib/queries/post-queries";
 import { Container } from "@/components/layout/container";
 import { Sidebar } from "@/components/sidebar/sidebar";
-import Button from "@/components/ui/button";
 import { Empty } from "@/components/empty";
 
 function FeedPage() {

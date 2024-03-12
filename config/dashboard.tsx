@@ -156,8 +156,8 @@ export function useRoutes() {
             },
 
             {
-              href: "/community/categories",
-              value: "Categories",
+              href: "/community/groups",
+              value: "Groups",
             },
             {
               href: "/community/subscriptions",

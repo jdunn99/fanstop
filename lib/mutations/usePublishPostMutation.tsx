@@ -7,11 +7,13 @@ interface PostPublishProps {
   description: string;
   img?: {
     formData?: FormData;
-    src: string;
+    src: string | null;
   };
   postContent: Block[];
   subscribersOnly: boolean;
   commentsVisible: boolean;
+  isPublished: boolean;
+  group?: string;
 }
 
 export function usePublishPostMutation(id: string) {
@@ -21,9 +23,11 @@ export function usePublishPostMutation(id: string) {
     ["post", id],
     async ({
       title,
+      isPublished,
       description,
       img,
       postContent,
+      group,
       commentsVisible,
       subscribersOnly,
     }: PostPublishProps) => {
@@ -33,12 +37,16 @@ export function usePublishPostMutation(id: string) {
         if (img.formData) {
           image = await uploadImage(img.formData);
         } else {
-          image = img.src;
+          image = img.src as string;
         }
       }
 
       // now set the cover image as the first element
       let content = postContent;
+
+      if (postContent === null) {
+        content = [] as Block[];
+      }
 
       if (content[0] && content[0].tag === "img") {
         content[0] = {
@@ -63,6 +71,7 @@ export function usePublishPostMutation(id: string) {
       const result = await fetch(`/api/posts/${id}`, {
         headers: {
           "Content-Type": "application/json",
+          accept: "application/json",
         },
         body: JSON.stringify({
           title,
@@ -71,7 +80,8 @@ export function usePublishPostMutation(id: string) {
           content,
           commentsVisible,
           subscribersOnly,
-          isPublished: true,
+          group,
+          isPublished,
         }),
         method: "PUT",
       });

@@ -112,33 +112,39 @@ export function ProfileComponent({ data, slug }: ProfileComponentProps) {
                 {typeof posts !== "undefined"
                   ? posts.pages.map(({ response }) =>
                       response.map(({ post }) => (
-                        <div className="grid" key={post.id}>
+                        <div className="grid grid-rows-2 gap-1" key={post.id}>
                           <img
-                            className="w-full h-auto rounded-lg flex-shrink-0"
+                            className="w-full mb-4 bg-slate-50 max-h-48 object-contain rounded-lg flex-shrink-0"
                             src={post.image!}
                           />
+                          <div className="grid">
+                            <Link
+                              href={`/${slug}/${post.id}`}
+                              className="space-y-2 mt-4"
+                            >
+                              <div className="flex items-center gap-2">
+                                <h1 className="text-2xl font-bold text-slate-800">
+                                  {post.title}
+                                </h1>
 
-                          <Link href={`/${slug}/${post.id}`}>
-                            <div className="flex items-center gap-2">
-                              <h1 className="text-2xl font-bold text-slate-800">
-                                {post.title}
-                              </h1>
+                                {post.isPublished ? null : (
+                                  <div>
+                                    <Badge variant="secondary">
+                                      Unpublished
+                                    </Badge>
+                                  </div>
+                                )}
+                              </div>
+                              <p className=" text-slate-500  break-words mb-2">
+                                {post.description}
+                              </p>
+                            </Link>
 
-                              {post.isPublished ? null : (
-                                <div>
-                                  <Badge variant="secondary">Unpublished</Badge>
-                                </div>
-                              )}
-                            </div>
-                            <p className=" text-slate-500  truncate mb-2">
-                              {post.description}
+                            <p className="text-xs font-medium text-slate-600  truncate mb-2">
+                              {new Date(post.createdAt).toDateString()}
                             </p>
-                          </Link>
-
-                          <p className="text-xs font-medium text-slate-600  truncate mb-2">
-                            {new Date(post.createdAt).toDateString()}
-                          </p>
-                          <PostBottom {...post} />
+                            <PostBottom {...post} />
+                          </div>
                         </div>
                       ))
                     )

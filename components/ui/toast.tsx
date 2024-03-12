@@ -6,8 +6,7 @@ interface ToastProps {
   timeout?: number;
 }
 
-const BASE_TOAST_STYLE =
-  "flex flex-col gap-2 p-4 rounded-lg shadow-md space-y-1";
+const BASE_TOAST_STYLE = "flex flex-col gap-1 p-4 rounded-lg shadow-md";
 const TOAST_VARIANTS = {
   base: "bg-slate-300 text-slate-800",
   error: "bg-red-300 text-red-800",

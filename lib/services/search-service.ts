@@ -4,6 +4,7 @@ import { z } from "zod";
 import { db } from "../db";
 import SearchQuery from "@/pages/explore/search/[query]";
 import { PaginationSchema } from "../pagination";
+import { USER_WITH_IMAGE } from "./user-service";
 
 export const SearchQuerySchema = z.object({
   query: z.string(),
@@ -41,6 +42,52 @@ export const SearchService = {
       select: {
         id: true,
         name: true,
+      },
+    });
+  },
+
+  getUserSearchResult(name: string, userId?: string) {
+    return db.user.findMany({
+      where: {
+        NOT: {
+          id: userId,
+        },
+        OR: [
+          {
+            name: {
+              contains: name,
+            },
+          },
+          {
+            community: {
+              slug: {
+                contains: name,
+              },
+            },
+          },
+        ],
+      },
+      select: {
+        ...USER_WITH_IMAGE,
+        community: {
+          select: {
+            slug: true,
+          },
+        },
+        conversations: {
+          where: {
+            users: {
+              some: {
+                name: {
+                  contains: name,
+                },
+              },
+            },
+          },
+          select: {
+            id: true,
+          },
+        },
       },
     });
   },

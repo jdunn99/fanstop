@@ -13,11 +13,15 @@ import { CommentService } from "@/lib/services/comment-service";
 import { PostService } from "@/lib/services/post-service";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]";
+import { PostVailidators } from "@/lib/api/validators";
 
 const methods = ["GET", "PUT", "DELETE"];
 const QuerySchema = z.object({
   postId: z.string().cuid(),
 });
+const BodySchema = PostVailidators.PostUpdateFields.merge(
+  z.object({ group: z.string().optional() })
+);
 
 /**
  * Handles route for /comment/[commentId]
@@ -25,13 +29,23 @@ const QuerySchema = z.object({
  * DELETE - Delete a comment by the [commentId]
  */
 async function handler(
-  req: NextApiRequestWithValidation<z.infer<typeof QuerySchema>>,
+  req: NextApiRequestWithValidation<
+    z.infer<typeof QuerySchema>,
+    z.infer<typeof BodySchema>
+  >,
   res: NextApiResponse
 ) {
   const { method, validatedBody, validatedQuery } = req;
   const session = await getServerSession(req, res, authOptions);
-  // const { content } = validatedBody;
   const { postId } = validatedQuery;
+
+  if (method !== "GET") {
+    console.log("DOES THIS WORK ");
+    if (session === null) {
+      res.status(401).json({ message: "Not logged in" });
+      return;
+    }
+  }
 
   switch (method) {
     case "GET": {
@@ -44,12 +58,17 @@ async function handler(
       return;
     }
     case "PUT": {
-      const result = null;
+      const result = await PostService.updatePost({
+        id: postId,
+        authorId: session!.user.id,
+        ...validatedBody,
+      });
+      console.log(result);
       res.status(200).json(result);
       return;
     }
     case "DELETE": {
-      const result = null;
+      const result = await PostService.deletePost(postId, session!.user.id);
       res.status(200).json(result);
       return;
     }
@@ -59,7 +78,7 @@ async function handler(
 export default use(
   getServerErrors,
   allowMethods(methods),
-  validate({ query: QuerySchema }),
+  validate({ query: QuerySchema, body: BodySchema }),
   handler
 );
 

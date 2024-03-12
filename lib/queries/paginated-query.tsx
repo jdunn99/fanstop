@@ -22,7 +22,7 @@ async function fetchPaginatedResults({
  * @param path - The API route for fetching data
  * @returns - The requested paginated data
  */
-export function usePaginatedQuery<T>(
+export function usePaginatedQuery<T extends {}>(
   queryKey: any,
   path: string,
   options?: any

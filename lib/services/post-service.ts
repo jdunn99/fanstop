@@ -12,6 +12,7 @@ import {
   PostResponse,
   PostContent,
   CreatePostArgs,
+  PostUpdateArgs,
 } from "../api/validators";
 import { LikeService } from "./like-service";
 import { SubscriberService } from "./subscriber-service";
@@ -126,6 +127,15 @@ export const PostService = {
       },
       select: {
         id: true,
+      },
+    });
+  },
+
+  deletePost(id: string, authorId: string) {
+    return db.post.delete({
+      where: {
+        id,
+        authorId,
       },
     });
   },
@@ -275,5 +285,34 @@ export const PostService = {
       hasMore,
       cursor: newCursor,
     };
+  },
+
+  updatePost({ id, authorId, group, ...rest }: PostUpdateArgs) {
+    const connection =
+      typeof group !== "undefined"
+        ? {
+            group: {
+              connect: {
+                name: group,
+              },
+            },
+          }
+        : {
+            group: {
+              disconnect: true,
+            },
+          };
+
+    return db.post.update({
+      where: {
+        id,
+        authorId,
+      },
+      data: {
+        ...connection,
+        ...rest,
+      },
+      select: DB_POST_INCLUDE,
+    });
   },
 };

@@ -1,12 +1,24 @@
-import { PostItem } from "@/lib/api/validators";
+import { Group, PostItem } from "@/lib/api/validators";
 import { ColumnDef, flexRender } from "@tanstack/react-table";
 import { DataTable } from "./data-table";
 import { usePostsForAuthedUserQuery } from "@/lib/queries/post-queries";
 import { useFlattenedPaginatedData } from "@/lib/useFlattenedPaginatedData";
-import Input from "../ui/input";
 import { CreatePostButton } from "../create-post-button";
 import React from "react";
 import { Badge } from "../ui/badge";
+import { truncateString } from "@/lib/truncate";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import Button from "../ui/button";
+import { BsThreeDots } from "react-icons/bs";
+import { FaCommentDots } from "react-icons/fa";
+import { PostEditMenu } from "../posts/post-edit-menu";
 
 export const columns: ColumnDef<PostItem>[] = [
   {
@@ -35,6 +47,9 @@ export const columns: ColumnDef<PostItem>[] = [
   {
     accessorKey: "description",
     header: "Description",
+    cell({ cell }) {
+      return truncateString(cell.getValue() as string, 40);
+    },
   },
   {
     accessorKey: "createdAt",
@@ -62,8 +77,41 @@ export const columns: ColumnDef<PostItem>[] = [
     header: "Likes",
   },
   {
+    accessorKey: "_count.comments",
+    header: "Comments",
+  },
+  {
+    accessorKey: "subscribersOnly",
+    header: "Visiblity",
+    cell(props) {
+      const { cell } = props;
+      const subscribersOnly = cell.getValue() as Boolean;
+      return subscribersOnly ? "Subscribers Only" : "Anyone";
+    },
+  },
+  {
+    accessorKey: "commentsVisible",
+    header: "Comments Enabled",
+    cell(props) {
+      const { cell } = props;
+      const commentsVisible = cell.getValue() as Boolean;
+      return commentsVisible ? "Enabled" : "Disabled";
+    },
+  },
+  {
     accessorKey: "group",
     header: "Group",
+    cell: ({ cell }) => {
+      const value = cell.getValue() as Group;
+      return value !== null ? value.name : "None";
+    },
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: ({ row }) => {
+      return <PostEditMenu {...row.original} />;
+    },
   },
 ];
 
@@ -73,7 +121,12 @@ export function PostTable() {
 
   return (
     <div className="w-full py-10">
-      <DataTable columns={columns} data={flattened} filterKey="title">
+      <DataTable
+        columns={columns}
+        data={flattened}
+        filterKey="title"
+        placeholder="Search posts"
+      >
         <CreatePostButton />
       </DataTable>
     </div>

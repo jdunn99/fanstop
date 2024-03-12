@@ -15,6 +15,10 @@ import { useRouter } from "next/router";
 import { usePostQuery } from "@/lib/queries/post-queries";
 import Button from "@/components/ui/button";
 import { BsX } from "react-icons/bs";
+import {
+  PostUpdateForm,
+  PostUpdateFormProps,
+} from "@/components/forms/post-update-form";
 
 export default function CommunityPostPageWithDrawer({
   postId,
@@ -31,17 +35,19 @@ export default function CommunityPostPageWithDrawer({
       <Drawer direction="right" open onClose={onClick}>
         <DrawerPortal>
           <DrawerOverlay onClick={onClick} />
-          <DrawerContentNoOverlay className="lg:w-1/3 w-3/4  break-words px-4 fixed right-0 top-0 dark:border-slate-800 h-full !m-0 !rounded-t-none">
-            <DrawerHeader className="flex items-center w-full justify-between">
-              <DrawerTitle>Post</DrawerTitle>
-              <DrawerClose>
-                <Button variant="ghost">
-                  <BsX />
-                </Button>
-              </DrawerClose>
-            </DrawerHeader>
-            {JSON.stringify(data)}
-          </DrawerContentNoOverlay>
+          {typeof data === "undefined" ? null : (
+            <DrawerContentNoOverlay className="lg:w-1/3 w-3/4 break-words  fixed right-0 top-0 dark:border-slate-800 h-full !m-0 !rounded-t-none">
+              <DrawerHeader className="flex items-center w-full justify-between">
+                <DrawerTitle>Post</DrawerTitle>
+                <DrawerClose onClick={onClick}>
+                  <Button variant="ghost">
+                    <BsX />
+                  </Button>
+                </DrawerClose>
+              </DrawerHeader>
+              <PostUpdateForm {...data.post} />
+            </DrawerContentNoOverlay>
+          )}
         </DrawerPortal>
       </Drawer>
     </CommunityPostsPage>

@@ -7,7 +7,7 @@ export function useCreateConversationMutation() {
   return useMutation(
     ["conversations"],
     (userIds: string[]) =>
-      fetch("/api/user/conversations", {
+      fetch("/api/conversations", {
         method: "POST",
         headers: {
           "Content-type": "application/json",

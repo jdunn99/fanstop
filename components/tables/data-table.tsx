@@ -24,6 +24,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   children?: React.ReactNode;
   filterKey?: string;
+  placeholder?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -31,6 +32,7 @@ export function DataTable<TData, TValue>({
   data,
   children,
   filterKey = "",
+  placeholder = "",
 }: DataTableProps<TData, TValue>) {
   const [filterState, setFilterState] = React.useState<ColumnFiltersState>([]);
   const table = useReactTable({
@@ -46,7 +48,7 @@ export function DataTable<TData, TValue>({
   const router = useRouter();
 
   function onRowClick(id: string) {
-    router.push(`/${router.pathname}/${id}`);
+    router.push(`${router.pathname}/${id}`);
   }
 
   return (
@@ -54,7 +56,7 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center justify-between gap-2 mb-6">
         <Input
           className="flex-1 w-full"
-          placeholder="Search posts"
+          placeholder={placeholder}
           type="search"
           value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
@@ -84,15 +86,21 @@ export function DataTable<TData, TValue>({
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
+            table.getRowModel().rows.map((row, index) => (
               <TableRow
                 className="cursor-pointer"
-                onClick={() => onRowClick((row.original as any).id)}
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    onClick={() => {
+                      if (cell.id !== index + "_actions") {
+                        onRowClick((row.original as any).id);
+                      }
+                    }}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

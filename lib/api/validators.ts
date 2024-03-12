@@ -114,6 +114,11 @@ const GroupBaseSchema = z.object({
 
 export const GroupValidators = {
   GroupBaseSchema,
+  GroupArgsSchema: z.object({
+    name: z.string(),
+    description: z.string(),
+    image: z.string().nullable(),
+  }),
   GroupSchema: z
     .object({
       description: z.string(),
@@ -127,7 +132,8 @@ export const GroupValidators = {
     })
     .merge(GroupBaseSchema),
 };
-
+export type Group = z.infer<typeof GroupValidators.GroupSchema>;
+export type GroupArgs = z.infer<typeof GroupValidators.GroupArgsSchema>;
 // Posts
 
 const PostValidTagsSchema = z.union([
@@ -175,6 +181,15 @@ export const PostVailidators = {
       image: z.string().nullable(),
     }),
   }),
+  PostUpdateFields: z.object({
+    title: z.string().optional(),
+    description: z.string().optional().nullable(),
+    content: z.array(ContentSchema.nullable()).optional(),
+    image: z.string().optional().nullable(),
+    isPublished: z.boolean().optional(),
+    subscribersOnly: z.boolean().optional(),
+    commentsVisible: z.boolean().optional(),
+  }),
   PostUpdateSchema: z.object({
     id: z.string().cuid(),
     authorId: z.string().cuid(),
@@ -205,7 +220,9 @@ export const CommunityPostsSchema = z.object({
 export type ValidTags = z.infer<typeof PostValidTagsSchema>;
 export type PostContent = z.infer<typeof PostVailidators.PostContentSchema>;
 export type PostItem = z.infer<typeof PostVailidators.PostSchema>;
-export type PostUpdateArgs = z.infer<typeof PostVailidators.PostUpdateSchema>;
+export type PostUpdateArgs = z.infer<
+  typeof PostVailidators.PostUpdateSchema
+> & { group?: string };
 export type PostResponse = {
   post: PostItem;
   isAuthor: boolean;
