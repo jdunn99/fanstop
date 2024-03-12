@@ -1,5 +1,4 @@
 import { useCreateCommunityMutation } from "@/lib/mutations/useCreateCommunityMutation";
-import tags from "@/pages/api/tags";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
 import React from "react";

@@ -14,14 +14,12 @@ import Link from "next/link";
 import { AvatarImage } from "./ui/avatar";
 import { useNotificationsQuery } from "@/lib/queries/useNotificationsQuery";
 import { useDeleteNotificationMutation } from "@/lib/mutations/useDeleteNotificationMutation";
+import { FaBell, FaRegBell } from "react-icons/fa";
 
-interface Props {
-  userId: string;
-}
-
-export function NotificationMenu({ userId }: Props) {
+export function NotificationMenu() {
+  const { data: session } = useSession();
   const { isOpen, toggle, onClose } = useMenu();
-  const { data } = useNotificationsQuery(userId);
+  const { data } = useNotificationsQuery(session?.user.id);
   const { mutate } = useDeleteNotificationMutation();
 
   if (typeof data === "undefined") {
@@ -30,8 +28,8 @@ export function NotificationMenu({ userId }: Props) {
 
   return (
     <Menu onClose={onClose}>
-      <Button onClick={toggle} variant="ghost">
-        <BsBellFill />
+      <Button onClick={toggle} variant="ghost" size="sm">
+        <FaRegBell />
         {data.length > 0 ? (
           <div className="w-4 h-4 absolute top-0 right-0 rounded-full inline-flex items-center justify-center text-xs bg-rose-500 text-white">
             {data.length}
@@ -54,7 +52,12 @@ export function NotificationMenu({ userId }: Props) {
                   <Button
                     variant="secondary"
                     size="xs"
-                    onClick={() => mutate({ notificationId: item.id, userId })}
+                    onClick={() =>
+                      mutate({
+                        notificationId: item.id,
+                        userId: session?.user.id!,
+                      })
+                    }
                   >
                     x
                   </Button>

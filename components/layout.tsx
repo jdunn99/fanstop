@@ -1,19 +1,9 @@
 import React from "react";
-import { Sidebar } from "./sidebar";
 import { ProfileNav } from "./nav";
-import { Footer, ProfileFooter } from "./footer";
-
-interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {}
-export function Container({ children, className, ...rest }: ContainerProps) {
-  return (
-    <div
-      className={`${className} grid items-start gap-8 px-8 h-[calc(100vh-98px)] `}
-      {...rest}
-    >
-      {children}
-    </div>
-  );
-}
+import { ProfileFooter } from "./footer";
+import { usePathname } from "next/navigation";
+import { useBreadCrumbStore } from "@/lib/store/useBreadCrumbStore";
+import { Breadcrumbs } from "./ui/breadcrumbs";
 
 interface HeaderProps {
   heading: string;
@@ -48,6 +38,16 @@ export function DashboardItemHeading({
   );
 }
 
+function LayoutHeader() {
+  const paths = useBreadCrumbStore((state) => state.paths);
+
+  return (
+    <header className="w-full border-b min-h-[42px] dark:border-slate-700 px-8">
+      <Breadcrumbs paths={paths} />
+    </header>
+  );
+}
+
 interface DashboardItemProps {
   children?: React.ReactNode;
 }
@@ -61,8 +61,9 @@ export function DashboardItem({ children }: DashboardItemProps) {
 
 export function LayoutContent({ children, heading }: LayoutProps) {
   return (
-    <div className="flex-1 space-y-6 pt-8 flex flex-col z-10 min-h-[calc(100vh-73px)] overflow-auto bg-slate-50">
-      <main className="lg:px-10 px-2  max-w-screen-lg mx-auto h-full w-full">
+    <div className="flex-1 space-y-6 flex flex-col z-10 h-screen overflow-auto bg-slate-50 dark:bg-slate-900">
+      <LayoutHeader />
+      <main className="lg:px-10 px-2  max-w-screen-lg mx-auto  w-full">
         <div className="space-y-8 py-8 h-full">
           {typeof heading === "undefined" ? null : <Header heading={heading} />}
           {children}
@@ -79,38 +80,14 @@ interface LayoutProps {
 }
 export function Layout({ children, heading }: LayoutProps) {
   return (
-    <div className="antialised" id="root">
-      <ProfileNav />
+    <div className="antialised dark:bg-slate-900 dark:text-slate-200" id="root">
       <div className="flex overflow-hidden">
-        <aside className=" inset-y-0 z-10 flex-shrink-0 w-64 bg-white border-r lg:static fixed">
-          <Sidebar />
+        <aside className=" inset-y-0 z-10 flex-shrink-0 w-80 bg-white h-screen dark:bg-slate-900 border-r dark:border-slate-800 lg:static fixed">
+          <p>LOL</p>
         </aside>
 
         <LayoutContent heading={heading}>{children}</LayoutContent>
       </div>
-    </div>
-  );
-}
-
-interface EmptyCardProps {
-  children?: React.ReactNode;
-  fromSearch?: boolean;
-  heading: string;
-}
-export function EmptyCard({ heading, children }: EmptyCardProps) {
-  return (
-    <div className="w-full min-h-[400px] flex items-center flex-col justify-center bg-slate-50 border rounded-lg">
-      {React.Children.count(children) === 0 ? (
-        <React.Fragment>
-          <h3 className="font-semibold text-sm">{heading}</h3>
-          <p className="text-sm text-slate-500 pt-2 pb-8">
-            It looks like you haven't created any {heading.toLocaleLowerCase()}{" "}
-            yet.
-          </p>
-        </React.Fragment>
-      ) : (
-        children
-      )}
     </div>
   );
 }

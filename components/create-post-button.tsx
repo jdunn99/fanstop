@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { FaPlusCircle, FaStickyNote } from "react-icons/fa";
 import Button from "./ui/button";
 
 export function CreatePostButton() {
@@ -19,7 +20,8 @@ export function CreatePostButton() {
   }
 
   return (
-    <Button className="whitespace-nowrap" onClick={onClick}>
+    <Button onClick={onClick} className="!text-sm gap-2 py-2" size="xs">
+      <FaPlusCircle />
       Create post
     </Button>
   );

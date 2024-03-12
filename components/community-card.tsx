@@ -2,7 +2,7 @@ import { Community, CommunityResponse } from "@/lib/api/validators";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Button from "./ui/button";
-import { SubscribeButton } from "./subscribe-button";
+import { SubscribeButton, UnsubscribeButton } from "./subscribe-button";
 import { Avatar } from "./ui/avatar";
 import { ProfileImage } from "./ui/profile-image";
 
@@ -18,7 +18,7 @@ export function CommunityCard({
   return (
     <div
       className="flex rounded-lg 
-      border bg-white p-6 items-start hover:border-rose-400 cursor-pointer 
+      border bg-slate-50 p-6 items-start hover:border-rose-400 cursor-pointer 
       hover:bg-rose-50"
     >
       <div className="mr-4">
@@ -54,8 +54,10 @@ export function CommunityCard({
       {data !== null ? (
         isOwn ? (
           <Button size="sm">Edit Profile</Button>
+        ) : isSubscriber ? (
+          <UnsubscribeButton slug={slug} />
         ) : (
-          <SubscribeButton slug={slug} isSubscriber={isSubscriber} />
+          <SubscribeButton slug={slug} />
         )
       ) : null}
     </div>

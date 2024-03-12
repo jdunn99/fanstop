@@ -2,13 +2,14 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
 import React from "react";
 import { z } from "zod";
-import { useCommunitiesByIDQuery } from "@/lib/queries/useCommunities";
 import { ProfileComponent } from "@/components/profile";
+import { useCommunityBySlug } from "@/lib/queries/community-queries";
+import { useBreadCrumbStore } from "@/lib/store/useBreadCrumbStore";
 
 export default function ProfilePage({
   slug,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { data } = useCommunitiesByIDQuery(slug);
+  const { data } = useCommunityBySlug(slug);
 
   return <ProfileComponent slug={slug} data={data} />;
 }

@@ -1,45 +1,49 @@
-import { db } from "@/lib/db";
-import { NextApiRequest, NextApiResponse } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]";
+import { allowMethods } from "@/lib/middleware/methods-middleware";
+import { getServerErrors } from "@/lib/middleware/server-error-middleware";
+import {
+  NextApiRequestWithSession,
+  useServerAuth,
+} from "@/lib/middleware/session-middleware";
+import {
+  NextApiRequestWithValidatedSession,
+  validate,
+} from "@/lib/middleware/validation-middleware";
+import { PaginationArgs, PaginationSchema } from "@/lib/pagination";
+import { SubscriberService } from "@/lib/services/subscriber-service";
+import { NextApiResponse } from "next";
+import { use } from "next-api-route-middleware";
 
-export default async function handler(
-  req: NextApiRequest,
+const methods = ["GET"];
+
+/**
+ * Gets the communities the authenticated User is subscribed to
+ */
+async function handler(
+  req: NextApiRequestWithValidatedSession<PaginationArgs>,
   res: NextApiResponse
 ) {
-  try {
-    const { method } = req;
-    const session = await getServerSession(req, res, authOptions);
+  const { session, validatedQuery } = req;
 
-    if (method !== "GET") {
-      res.status(400).json({ message: "Invalid method" });
-      return;
-    }
-
-    if (session === null) {
-      res.status(401).json({ message: "Not logged in" });
-      return;
-    }
-
-    const result = await db.subscriber.findMany({
-      where: {
-        userId: session.user.id,
-      },
-      select: {
-        community: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-          },
-        },
-      },
-    });
-
-    res.status(200).json(result);
-    return;
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ message: "Something went wrong" });
-  }
+  res
+    .status(200)
+    .json(
+      await SubscriberService.getSubscriptionsForUser(
+        session.user.id,
+        validatedQuery
+      )
+    );
 }
+
+export default use(
+  getServerErrors,
+  useServerAuth,
+  validate({ query: PaginationSchema }),
+  allowMethods(methods),
+  handler
+);
+
+export const config = {
+  api: {
+    externalResolver: true,
+  },
+};

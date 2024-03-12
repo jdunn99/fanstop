@@ -1,31 +1,36 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]";
-import { getNotificationsForUser } from "@/lib/api/notification";
+import { allowMethods } from "@/lib/middleware/methods-middleware";
+import { getServerErrors } from "@/lib/middleware/server-error-middleware";
+import {
+  NextApiRequestWithSession,
+  useServerAuth,
+} from "@/lib/middleware/session-middleware";
+import { NotificationService } from "@/lib/services/notification-service";
+import { NextApiResponse } from "next";
+import { use } from "next-api-route-middleware";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  try {
-    const { method } = req;
-    const session = await getServerSession(req, res, authOptions);
-    if (method !== "GET") {
-      return res.status(400).json({ message: "Invalid method" });
-    }
+const methods = ["GET"];
 
-    if (session === null) {
-      return res.status(401).json({ message: "Not logged in" });
-    }
+/**
+ * Defines handler functions for /api/user/notifications routes.
+ * Deals with retrieving notifications from the currently authenticated user
+ */
+async function handler(req: NextApiRequestWithSession, res: NextApiResponse) {
+  const { session } = req;
 
-    const result = await getNotificationsForUser(session.user.id);
-
-    console.log(result);
-    res.status(200).json(result);
-    return;
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ message: "Something went wrong" });
-    return;
-  }
+  res
+    .status(200)
+    .json(await NotificationService.getNotificationsForUser(session.user.id));
 }
+
+export default use(
+  getServerErrors,
+  useServerAuth,
+  allowMethods(methods),
+  handler
+);
+
+export const config = {
+  api: {
+    externalResolver: true,
+  },
+};

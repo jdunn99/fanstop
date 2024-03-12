@@ -3,13 +3,12 @@ import Link from "next/link";
 import React from "react";
 import { ProfileNav } from "./nav";
 import Button from "./ui/button";
-import { usePopularCommunities } from "@/lib/queries/useCommunities";
 import Image from "next/image";
 import { ProfileImage } from "./ui/profile-image";
 import { ProfileFooter } from "./footer";
+import { usePopularCommunities } from "@/lib/queries/community-queries";
 
 export function HomePage() {
-  const { data } = useSession();
   const { data: communities } = usePopularCommunities();
 
   return (
@@ -62,39 +61,41 @@ export function HomePage() {
           </div>
 
           {typeof communities !== "undefined" ? (
-            <div className="space-y-16 mx-auto max-w-screen-lg p-16 ">
+            <div className="space-y-8 mx-auto max-w-screen-lg p-16 ">
               <p className="uppercase text-center font-bold text-rose-400 text-sm">
                 Featured Communities
               </p>
-              {communities.map(({ community }) => (
-                <Link
-                  key={community.id}
-                  className="flex sm:flex-row flex-col w-full sm:items-start text-center items-center justify-center sm:text-left sm:justify-normal hover:underline"
-                  href={community.slug}
-                >
-                  <div className="flex flex-col sm:flex-row gap-2 flex-1 items-center sm:items-start">
-                    <div className="lg:mr-4">
-                      <ProfileImage src={community.image!} />
-                    </div>
+              {communities.pages.map(({ response }) =>
+                response.map(({ community }) => (
+                  <Link
+                    key={community.id}
+                    className="flex hover:bg-slate-100 sm:p-8 rounded-lg sm:flex-row flex-col w-full sm:items-start text-center items-center justify-center sm:text-left sm:justify-normal "
+                    href={community.slug}
+                  >
+                    <div className="flex flex-col sm:flex-row gap-2 flex-1 items-center sm:items-start">
+                      <div className="lg:mr-4">
+                        <ProfileImage src={community.image!} />
+                      </div>
 
-                    <div className="space-y-1">
-                      <h2 className="text-xl font-bold text-slate-600">
-                        {community.name}
-                      </h2>
-                      <p className="text-rose-500 font-semibold text-sm">
-                        @{community.slug}
-                      </p>
+                      <div className="space-y-1">
+                        <h2 className="text-xl font-bold text-slate-600">
+                          {community.name}
+                        </h2>
+                        <p className="text-rose-500 font-semibold text-sm">
+                          @{community.slug}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex-[1.5] space-y-1 sm:pl-8">
-                    <p className="text-slate-800">{community.description}</p>
-                    <div className="flex items-center gap-2 font-semibold text-slate-600 text-sm sm:flex-row flex-col ">
-                      <p>{community._count.subscribers} subscribers</p>
-                      <p>{community._count.posts} posts</p>
+                    <div className="flex-[1.5] space-y-1 sm:pl-8">
+                      <p className="text-slate-800">{community.description}</p>
+                      <div className="flex items-center gap-2 font-semibold text-slate-600 text-sm sm:flex-row flex-col ">
+                        <p>{community._count.subscribers} subscribers</p>
+                        <p>{community._count.posts} posts</p>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))
+              )}
               <div className="mx-auto pt-8 text-center md:max-w-[58rem]">
                 <Link href="/explore">
                   <Button>See who is on FanStop</Button>

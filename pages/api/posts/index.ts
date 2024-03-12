@@ -1,35 +1,52 @@
-import { createPost } from "@/lib/api/post";
-import { NextApiRequest, NextApiResponse } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]";
+import { allowMethods } from "@/lib/middleware/methods-middleware";
+import { getServerErrors } from "@/lib/middleware/server-error-middleware";
+import {
+  NextApiRequestWithSession,
+  useServerAuth,
+} from "@/lib/middleware/session-middleware";
+import {
+  NextApiRequestWithValidatedSession,
+  validate,
+} from "@/lib/middleware/validation-middleware";
+import { PostService } from "@/lib/services/post-service";
+import { NextApiResponse } from "next";
+import { use } from "next-api-route-middleware";
+import { z } from "zod";
 
-export default async function handler(
-  req: NextApiRequest,
+const methods = ["POST"];
+const BodySchema = z.object({
+  title: z.string(),
+  description: z.string(),
+});
+
+/**
+ * Handler function for creating post skeletons
+ */
+async function handler(
+  req: NextApiRequestWithValidatedSession<{}, z.infer<typeof BodySchema>>,
   res: NextApiResponse
 ) {
-  try {
-    const { method, body } = req;
-    const session = await getServerSession(req, res, authOptions);
-
-    if (method !== "POST") {
-      res.status(400).json({ message: "Invalid method" });
-      return;
-    }
-
-    if (session === null) {
-      res.status(401).json({ message: "Not signed in" });
-      return;
-    }
-
-    const result = await createPost({
+  const { validatedBody, session } = req;
+  const { title, description } = validatedBody;
+  res.status(200).json(
+    await PostService.createPost({
+      title,
+      description,
       authorId: session.user.id,
-      ...body,
-    });
-
-    res.status(200).json(result);
-    return;
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ message: "Something went wrong" });
-  }
+    })
+  );
 }
+
+export default use(
+  getServerErrors,
+  useServerAuth,
+  validate({ body: BodySchema }),
+  allowMethods(methods),
+  handler
+);
+
+export const config = {
+  api: {
+    externalResolver: true,
+  },
+};

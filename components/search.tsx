@@ -1,9 +1,8 @@
 import React from "react";
 import Input from "./ui/input";
-import { SearchResult } from "@/lib/api/search";
-import { useQuery } from "react-query";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useExploreQuery } from "@/lib/queries/search-queries";
 
 interface SearchResultItemProps {
   value: string;
@@ -24,16 +23,7 @@ interface SearchProps {
 export function Search({ defaultValue }: SearchProps) {
   const { push } = useRouter();
   const [searchQuery, setSearchQuery] = React.useState<string>();
-  const { data } = useQuery<SearchResult>(
-    ["search", searchQuery],
-    () =>
-      fetch(`/api/communities/search?searchQuery=${searchQuery}`).then((res) =>
-        res.json()
-      ),
-    {
-      enabled: typeof searchQuery === "string" && searchQuery !== "",
-    }
-  );
+  const { data } = useExploreQuery(searchQuery);
 
   function onSubmit(event: any) {
     event.preventDefault();
@@ -41,7 +31,11 @@ export function Search({ defaultValue }: SearchProps) {
   }
 
   return (
-    <form className="relative" onSubmit={onSubmit}>
+    <form className="relative space-y-4 mt-8" onSubmit={onSubmit}>
+      <h1 className="text-2xl font-semibold">Search</h1>
+      <p className="text-slate-600 dark:text-slate-300 text-sm">
+        Search for posts or communities by tag or name.
+      </p>
       <Input
         onChange={(e) => setSearchQuery(e.target.value)}
         type="search"
@@ -50,7 +44,7 @@ export function Search({ defaultValue }: SearchProps) {
         placeholder="Search"
       />
       {data ? (
-        <div className="w-full absolute top-11 z-10 bg-white border border-slate-100 rounded-lg shadow">
+        <div className="w-full absolute top-[7rem] z-10 bg-white border border-slate-100 rounded-lg shadow">
           {data.communities.length > 0 || data.tags.length > 0 ? (
             <div className="space-y-1">
               {data.tags.length > 0 ? (
@@ -59,7 +53,7 @@ export function Search({ defaultValue }: SearchProps) {
                     Tags
                   </h1>
                   {data.tags.map(({ id, name }) => (
-                    <a href={`/explore/search/${name}`}>
+                    <a href={`/explore/search/${name}`} key={id}>
                       <SearchResultItem value={name} key={id} />
                     </a>
                   ))}
@@ -72,9 +66,9 @@ export function Search({ defaultValue }: SearchProps) {
                     Communities
                   </h1>
 
-                  {data.communities.map(({ id, slug, name }) => (
-                    <Link href={`/${slug}`}>
-                      <SearchResultItem key={id} value={name}>
+                  {data.communities.map(({ slug, name }) => (
+                    <Link href={`/${slug}`} key={slug}>
+                      <SearchResultItem key={slug} value={name}>
                         <span className="text-xs text-rose-500">@{slug}</span>
                       </SearchResultItem>
                     </Link>
@@ -84,7 +78,7 @@ export function Search({ defaultValue }: SearchProps) {
             </div>
           ) : (
             <p className="p-16 text-center text-sm text-slate-500">
-              No results found.
+              No suggestions.
             </p>
           )}
         </div>

@@ -35,7 +35,7 @@ function CreateConversationModal({
     return () => {
       document.removeEventListener("click", handleOutsideClick);
     };
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   React.useEffect(() => {
     rootRef.current = document.getElementById("root");

@@ -8,11 +8,12 @@ export const BUTTON_VARIANTS = {
     primary: "bg-rose-500 text-white hover:bg-rose-600",
     white: "bg-white text-slate-800 hover:bg-slate-100 border",
     outline: "border border-rose-500 text-rose-500 bg-white hover:bg-slate-50",
-    secondary: "bg-slate-50 hover:bg-slate-200",
+    secondary:
+      "bg-slate-50 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 border border-slate-100 dark:border-slate-600",
     ghost: "bg-transparent hover:bg-slate-50 opacity-80 hover:opacity-100",
   },
   size: {
-    base: "min-h-10 py-2 px-4 rounded-xl",
+    base: "h-10 py-2 px-4 rounded-lg",
     sm: "h-9 px-3 rounded-xl",
     xs: " py-1 px-2 rounded-lg text-xs",
     lg: "h-10 px-8 rounded-2xl",
@@ -29,9 +30,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "primary", size = "base", ...rest }, ref) => {
     return (
       <button
-        {...rest}
         ref={ref}
         className={`${className} ${BUTTON_BASE_STYLE} ${BUTTON_VARIANTS.variant[variant]} ${BUTTON_VARIANTS.size[size]}`}
+        {...rest}
       />
     );
   }

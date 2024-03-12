@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ProviderButtons } from "@/components/provider-buttons";
 import { LoginInput } from "@/components/login-input";
 import { useRouter } from "next/router";
+import { Logo } from "@/components/ui/logo";
 
 export default function Login({
   providers,
@@ -16,13 +17,18 @@ export default function Login({
     if (data) {
       router.push("/");
     }
-  }, [data]);
+  }, [data, router]);
 
   return (
-    <div className="px-8 flex h-screen w-screen flex-col items-center justify-center mx-auto">
+    <div className="px-8 flex h-screen w-screen flex-col items-center justify-center mx-auto dark:bg-slate-900 dark:text-slate-200">
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[385px]">
-        <div className="flex flex-col space-y-8 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">Sign In</h1>
+        <div className="flex flex-col space-y-4 text-center">
+          <div className="grid place-items-center">
+            <Logo />
+          </div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Sign in to FanStop
+          </h1>
 
           <ProviderButtons providers={providers} label="Sign in with" />
           <div className="relative">
@@ -30,12 +36,14 @@ export default function Login({
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs ">
-              <span className="bg-white px-2">Or sign in with email</span>
+              <span className="bg-white dark:bg-slate-900 px-2">
+                Or sign in with email
+              </span>
             </div>
           </div>
           <LoginInput />
           <p className="text-sm opacity-80">
-            Already have an account?{" "}
+            Don't have an account?{" "}
             <Link
               href="/register"
               className="underline underline-offset-2 text-rose-500"

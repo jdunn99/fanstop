@@ -2,7 +2,8 @@ import { GetServerSidePropsContext } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
 import { CreateInput } from "@/components/create-input";
-import { Container, Header } from "@/components/layout";
+import { Container } from "@/components/layout/container";
+import { Header } from "@/components/layout";
 
 export default function newCommunityPage() {
   return (

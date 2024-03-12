@@ -1,8 +1,11 @@
 import { DashboardItem } from "@/components/layout";
 import { PostComment } from "./post-comment";
 import { CommentInput } from "./comment-input";
-import { useCommentForPostQuery } from "@/lib/queries/useCommentQuery";
 import { PostBar } from "../post-bar";
+import React from "react";
+import Button from "@/components/ui/button";
+import { useCommentsForPostQuery } from "@/lib/queries/comment-queries";
+import { useIntersectionObserver } from "@/lib/useIntersection";
 
 interface PostCommentSectionProps {
   postId: string;
@@ -18,7 +21,16 @@ export function PostCommentSection({
   isLiked,
 }: // likes,
 PostCommentSectionProps) {
-  const { data: comments } = useCommentForPostQuery(postId);
+  const { data: comments, fetchNextPage } = useCommentsForPostQuery(postId);
+
+  const [ref, isIntersecting] = useIntersectionObserver({ threshold: 1.0 });
+  React.useEffect(() => {
+    if (isIntersecting) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, isIntersecting]);
+
+  console.log(isIntersecting);
 
   return (
     <DashboardItem>
@@ -29,9 +41,21 @@ PostCommentSectionProps) {
       </div>
       <div className="pb-4">
         {typeof comments !== "undefined"
-          ? comments.map((comment) => (
-              <PostComment {...comment} key={comment.id} />
-            ))
+          ? comments.pages.map(({ response }, pageIndex) =>
+              response.map((comment, index) => (
+                <div
+                  key={comment.id}
+                  ref={
+                    pageIndex === comments.pages.length - 1 &&
+                    index === response.length - 1
+                      ? ref
+                      : null
+                  }
+                >
+                  <PostComment {...comment} />
+                </div>
+              ))
+            )
           : null}
       </div>
     </DashboardItem>

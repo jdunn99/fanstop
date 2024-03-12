@@ -1,46 +1,79 @@
-import { deleteComment, updateComment } from "@/lib/api/comment";
-import { NextApiRequest, NextApiResponse } from "next";
-import { getServerSession } from "next-auth";
+import { NextApiResponse } from "next";
 import { z } from "zod";
-import { authOptions } from "../../auth/[...nextauth]";
+import { use } from "next-api-route-middleware";
+import { allowMethods } from "@/lib/middleware/methods-middleware";
+import { getServerErrors } from "@/lib/middleware/server-error-middleware";
+import { useServerAuth } from "@/lib/middleware/session-middleware";
+import {
+  NextApiRequestWithValidatedSession,
+  validate,
+} from "@/lib/middleware/validation-middleware";
+import { CommentService } from "@/lib/services/comment-service";
 
-export default async function handler(
-  req: NextApiRequest,
+const methods = ["PUT", "DELETE"];
+const QuerySchema = z.object({
+  commentId: z.string().cuid(),
+});
+const BodySchema = z.object({
+  content: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (typeof val === "undefined") {
+        return "";
+      }
+
+      return val;
+    }),
+});
+
+/**
+ * Handles route for /comment/[commentId]
+ * PUT - Update a comment given the request body
+ * DELETE - Delete a comment by the [commentId]
+ */
+async function handler(
+  req: NextApiRequestWithValidatedSession<
+    z.infer<typeof QuerySchema>,
+    z.infer<typeof BodySchema>
+  >,
   res: NextApiResponse
 ) {
-  try {
-    const { method, query, body } = req;
-    const { commentId } = z.object({ commentId: z.string() }).parse(query);
-    const session = await getServerSession(req, res, authOptions);
+  const { method, validatedBody, validatedQuery, session } = req;
+  const { content } = validatedBody;
+  const { commentId } = validatedQuery;
 
-    if (session === null) {
-      res.status(401).json({ message: "Not signed in" });
+  switch (method) {
+    case "PUT": {
+      const result = await CommentService.updateComment({
+        id: commentId,
+        content,
+        userId: session.user.id,
+      });
+      res.status(200).json(result);
       return;
     }
-
-    switch (method) {
-      case "PUT": {
-        const { content } = z.object({ content: z.string() }).parse(body);
-        const result = await updateComment({
-          id: commentId,
-          content,
-          userId: session.user.id,
-        });
-        res.status(200).json(result);
-        return;
-      }
-      case "DELETE": {
-        const result = await deleteComment(commentId, session.user.id);
-        res.status(200).json(result);
-        return;
-      }
-      default: {
-        res.status(400).json({ message: "Invalid method" });
-        return;
-      }
+    case "DELETE": {
+      const result = await CommentService.deleteComment({
+        id: commentId,
+        userId: session.user.id,
+      });
+      res.status(200).json(result);
+      return;
     }
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ message: "Something went wrong" });
   }
 }
+
+export default use(
+  getServerErrors,
+  useServerAuth,
+  allowMethods(methods),
+  validate({ query: QuerySchema, body: BodySchema }),
+  handler
+);
+
+export const config = {
+  api: {
+    externalResolver: true,
+  },
+};

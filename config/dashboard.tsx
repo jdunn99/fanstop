@@ -1,12 +1,15 @@
 import type { DashboardConfig, NavConfig } from "@/types";
 import { useSession } from "next-auth/react";
 import {
-  MdHome,
-  MdMessage,
-  MdPerson,
-  MdSearch,
-  MdSettings,
-} from "react-icons/md";
+  FaHome,
+  FaInbox,
+  FaLayerGroup,
+  FaPencilAlt,
+  FaSearch,
+} from "react-icons/fa";
+import { MdHome, MdSearch } from "react-icons/md";
+import { IoMdPerson, IoMdSettings } from "react-icons/io";
+import { BsPeopleFill } from "react-icons/bs";
 
 export const unAuthedConfig: DashboardConfig = {
   header: [],
@@ -21,6 +24,28 @@ export const unAuthedConfig: DashboardConfig = {
     },
   ],
 };
+
+export const sidebarConfig = [
+  {
+    href: "/",
+    value: "Home",
+  },
+  {
+    children: [
+      {
+        href: "/",
+      },
+    ],
+  },
+  {
+    href: "Profile",
+    value: "Profile",
+  },
+  {
+    href: "/explore",
+    value: "Explore",
+  },
+];
 
 export const dashboardConfig: DashboardConfig = {
   header: [],
@@ -52,6 +77,34 @@ export function useSidebarRoutes(): NavConfig {
         {
           href: "/",
           value: "Home",
+          image: <FaHome />,
+        },
+        {
+          href: "/explore",
+          value: "Explore",
+          image: <FaSearch />,
+        },
+
+        {
+          href: `/${session.user.slug}`,
+          value: "Profile",
+          image: <IoMdPerson />,
+        },
+        {
+          href: "/messages",
+          value: "Messages",
+          image: <FaInbox />,
+        },
+        {
+          href: "/settings",
+          value: "Settings",
+          image: <IoMdSettings />,
+        },
+      ]
+    : [
+        {
+          href: "/",
+          value: "Home",
           image: <MdHome />,
         },
         {
@@ -59,21 +112,68 @@ export function useSidebarRoutes(): NavConfig {
           value: "Explore",
           image: <MdSearch />,
         },
+      ];
+}
+
+export function useRoutes() {
+  const { data: session } = useSession();
+
+  return session && session.user.slug
+    ? [
+        {
+          href: "/",
+          value: "Home",
+          image: <FaHome />,
+        },
 
         {
           href: `/${session.user.slug}`,
           value: "Profile",
-          image: <MdPerson />,
+          image: <IoMdPerson />,
+        },
+        {
+          href: "/explore",
+          value: "Explore",
+          image: <FaSearch />,
         },
         {
           href: "/messages",
           value: "Messages",
-          image: <MdMessage />,
+          image: <FaInbox />,
+        },
+
+        {
+          value: "Community",
+          image: <BsPeopleFill />,
+          children: [
+            {
+              href: "/community/dashboard",
+              value: "Dashboard",
+            },
+            {
+              href: "/community/posts",
+              value: "Posts",
+            },
+
+            {
+              href: "/community/groups",
+              value: "Groups",
+            },
+            {
+              href: "/community/subscriptions",
+              value: "Subscriptions",
+            },
+          ],
         },
         {
-          href: "/settings",
+          children: [
+            {
+              href: "/settings/general",
+              value: "General",
+            },
+          ],
           value: "Settings",
-          image: <MdSettings />,
+          image: <IoMdSettings />,
         },
       ]
     : [

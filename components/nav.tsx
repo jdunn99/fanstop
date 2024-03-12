@@ -9,15 +9,17 @@ import Image from "next/image";
 import { NavDrawerOpenButton } from "./nav-drawer";
 import { useSession } from "next-auth/react";
 import { NotificationMenu } from "./notification-menu";
+import { LoginSignupButtons } from "./login-signup-buttons";
 
 interface ProfileNavProps {
   children?: React.ReactNode;
 }
+
 export function ProfileNav({ children }: ProfileNavProps) {
   const { data: session } = useSession();
 
   return (
-    <header className="sticky h-[73px] top-0 z-50 w-full backdrop-blur  flex-none transition-colors duration-500 border-b border-slate-200 bg-white ">
+    <header className="sticky h-[46px] top-0 z-50 w-full backdrop-blur  flex-none transition-colors duration-500 border-b border-slate-200 bg-transparent ">
       <div className="max-w-[84rem] mx-auto h-full my-auto">
         <div className=" lg:px-4 px-1 mx-4 h-full">
           <div className="relative flex items-center h-full  ">
@@ -35,19 +37,12 @@ export function ProfileNav({ children }: ProfileNavProps) {
               {session?.user ? (
                 <React.Fragment>
                   <CreatePostButton />
-                  <NotificationMenu userId={session.user.id} />
+                  <NotificationMenu />
                   <AvatarMenu />
                 </React.Fragment>
               ) : (
                 <React.Fragment>
-                  <Link href="/login">
-                    <Button variant="ghost" size="sm">
-                      Login
-                    </Button>
-                  </Link>
-                  <Link href="/register">
-                    <Button size="sm">Sign Up</Button>
-                  </Link>
+                  <LoginSignupButtons />
                 </React.Fragment>
               )}
               <NavDrawerOpenButton />

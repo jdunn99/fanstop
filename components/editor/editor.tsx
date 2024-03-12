@@ -10,6 +10,10 @@ import { Breadcrumbs } from "../ui/breadcrumbs";
 import { useRouter } from "next/router";
 import { useToast } from "../ui/toast";
 import { useSavePostMutation } from "@/lib/mutations/useSavePostMutation";
+import { Container } from "../layout/container";
+import { Sidebar } from "../sidebar/sidebar";
+import { LayoutPane } from "../layout/content";
+import { LayoutHeader } from "../layout/header";
 
 interface EditorProps {
   id: string;
@@ -57,7 +61,7 @@ export function Editor({ id, title, content, description }: EditorProps) {
         },
       },
     ];
-  }, []);
+  }, [content]);
 
   const [editorState, dispatch] = React.useReducer(editorReducer, {
     metadata: null,
@@ -71,27 +75,30 @@ export function Editor({ id, title, content, description }: EditorProps) {
   const router = useRouter();
   const focusedRef = React.useRef<HTMLDivElement>();
 
-  async function handleSavePress(event: KeyboardEvent) {
-    if (event.ctrlKey && event.key === "s") {
-      event.preventDefault();
+  const handleSavePress = React.useCallback(
+    async (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.key === "s") {
+        event.preventDefault();
 
-      if (editorTitleRef.current && editorDescriptionRef.current) {
-        await mutateAsync({
-          title: editorTitleRef.current.value,
-          description: editorDescriptionRef.current.value,
-          editorState,
-        });
+        if (editorTitleRef.current && editorDescriptionRef.current) {
+          await mutateAsync({
+            title: editorTitleRef.current.value,
+            description: editorDescriptionRef.current.value,
+            editorState,
+          });
 
-        toast({
-          variant: "success",
-          title: `${editorTitle} saved`,
-          description:
-            "Your post was saved. For others to view it, be sure to publish it.",
-          timeout: 1000,
-        });
+          toast({
+            variant: "success",
+            title: `${editorTitle} saved`,
+            description:
+              "Your post was saved. For others to view it, be sure to publish it.",
+            timeout: 1000,
+          });
+        }
       }
-    }
-  }
+    },
+    [editorState, editorTitle, mutateAsync, toast]
+  );
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
@@ -101,7 +108,7 @@ export function Editor({ id, title, content, description }: EditorProps) {
         window.removeEventListener("keydown", handleSavePress);
       };
     }
-  }, [window]);
+  }, [handleSavePress]);
 
   async function onSave() {
     await mutateAsync({
@@ -129,20 +136,22 @@ export function Editor({ id, title, content, description }: EditorProps) {
 
   return (
     <EditorContext.Provider value={{ dispatch, editorState }}>
-      <Layout>
-        <div>
-          <div className="grid w-full gap-2 pt-4 pl-16 ">
-            <header className="sticky top-0 z-40 ">
-              <div className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4">
-                <Breadcrumbs paths={[{ href: "/", value: "Home" }]} />
-                <div className="flex gap-2">
-                  <Button variant="secondary" onClick={onSave}>
-                    Save
-                  </Button>
-                  <Button onClick={onClick}>Publish</Button>
-                </div>
-              </div>
-            </header>
+      <Container>
+        <Sidebar />
+        <LayoutPane>
+          <LayoutHeader
+            paths={[
+              { href: "/", value: "Home" },
+              { href: "/", value: "Create Post", disabled: true },
+            ]}
+          >
+            <Button variant="secondary" onClick={onSave}>
+              Save
+            </Button>
+            <Button onClick={onClick}>Publish</Button>
+          </LayoutHeader>
+
+          <div className="grid w-full gap-2 pt-4 ">
             <article className="prose mx-auto w-full max-w-screen-lg">
               <TextareaAutosize
                 autoFocus
@@ -173,8 +182,8 @@ export function Editor({ id, title, content, description }: EditorProps) {
               </div>
             </article>
           </div>
-        </div>
-      </Layout>
+        </LayoutPane>
+      </Container>
     </EditorContext.Provider>
   );
 }

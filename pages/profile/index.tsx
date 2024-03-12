@@ -1,36 +1,39 @@
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]";
-import {
-  useCommunitiesByIDQuery,
-  useCommunitiesByParamQuery,
-} from "@/lib/queries/useCommunities";
-import { ProfileComponent } from "@/components/profile";
-import { useSession } from "next-auth/react";
+import { LayoutHeader } from "@/components/layout/header";
+import { Container } from "@/components/layout/container";
+import React from "react";
+import { usePathname } from "next/navigation";
+import { useSidebarRoutes } from "@/config/dashboard";
+import { useFeedQuery, usePostsForCommunity } from "@/lib/queries/post-queries";
+import { Sidebar } from "@/components/sidebar/sidebar";
+import { FeedPost } from "@/components/posts/feed-post";
+import { FeedAside } from "@/components/sidebar/feed-aside";
+import { NotificationMenu } from "@/components/notification-menu";
+import { CreatePostButton } from "@/components/create-post-button";
 
-export default function Profile({
-  user,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { data } = useCommunitiesByParamQuery(user.id);
-  return <ProfileComponent slug={user.id} data={data} />;
-  // return <p>{JSON.stringify(data)}</p>;
-}
+export default function Profile() {
+  const { data } = useFeedQuery();
 
-export async function getServerSideProps({
-  req,
-  res,
-}: GetServerSidePropsContext) {
-  const session = await getServerSession(req, res, authOptions);
-
-  if (session === null) {
-    return {
-      redirect: "/login",
-    };
-  }
-
-  return {
-    props: {
-      user: session.user,
-    },
-  };
+  return (
+    <Container>
+      <Sidebar />
+      <div className="relative mx-auto overflow-auto flex w-full">
+        <div className="relative min-h-screen pt-12 w-full max-w-screen-lg mx-auto px-4 break-words">
+          <div>
+            <LayoutHeader
+              paths={[{ href: "/", disabled: true, value: "Home" }]}
+            >
+              <NotificationMenu />
+              <CreatePostButton />
+            </LayoutHeader>
+            {data?.pages.map((page) =>
+              page.response.map(({ post }) => (
+                <FeedPost post={post} includeAuthor key={post.id} />
+              ))
+            )}
+          </div>
+        </div>
+        <FeedAside />
+      </div>
+    </Container>
+  );
 }

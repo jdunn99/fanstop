@@ -70,7 +70,6 @@ export const CommunitiesValidators = {
     slug: z.string(),
     tags: z.array(z.string().cuid()),
     description: z.string().default(""),
-    creatorId: z.string().cuid(),
     facebook: z.string().optional(),
     instagram: z.string().optional(),
     twitter: z.string().optional(),
@@ -101,7 +100,40 @@ export type CommunityByIDQuery = z.infer<
 export type Socials = z.infer<
   typeof CommunitiesValidators.CommunitySocialsSchema
 >;
+export type RecommendedCommunity = {
+  slug: string;
+  name: string;
+  image: string;
+};
 
+// Groups
+const GroupBaseSchema = z.object({
+  id: z.string().cuid(),
+  name: z.string(),
+});
+
+export const GroupValidators = {
+  GroupBaseSchema,
+  GroupArgsSchema: z.object({
+    name: z.string(),
+    description: z.string(),
+    image: z.string().nullable(),
+  }),
+  GroupSchema: z
+    .object({
+      description: z.string(),
+      image: z.string().nullable(),
+      createdAt: z.date(),
+      updatedAt: z.date(),
+      slug: z.string(),
+      _count: z.object({
+        posts: z.number(),
+      }),
+    })
+    .merge(GroupBaseSchema),
+};
+export type Group = z.infer<typeof GroupValidators.GroupSchema>;
+export type GroupArgs = z.infer<typeof GroupValidators.GroupArgsSchema>;
 // Posts
 
 const PostValidTagsSchema = z.union([
@@ -134,6 +166,7 @@ export const PostVailidators = {
       comments: z.number(),
       likes: z.number(),
     }),
+    group: GroupBaseSchema.nullable().optional(),
     image: z.string().nullable(),
     commentsVisible: z.boolean(),
     subscribersOnly: z.boolean(),
@@ -147,6 +180,15 @@ export const PostVailidators = {
       }),
       image: z.string().nullable(),
     }),
+  }),
+  PostUpdateFields: z.object({
+    title: z.string().optional(),
+    description: z.string().optional().nullable(),
+    content: z.array(ContentSchema.nullable()).optional(),
+    image: z.string().optional().nullable(),
+    isPublished: z.boolean().optional(),
+    subscribersOnly: z.boolean().optional(),
+    commentsVisible: z.boolean().optional(),
   }),
   PostUpdateSchema: z.object({
     id: z.string().cuid(),
@@ -178,7 +220,9 @@ export const CommunityPostsSchema = z.object({
 export type ValidTags = z.infer<typeof PostValidTagsSchema>;
 export type PostContent = z.infer<typeof PostVailidators.PostContentSchema>;
 export type PostItem = z.infer<typeof PostVailidators.PostSchema>;
-export type PostUpdateArgs = z.infer<typeof PostVailidators.PostUpdateSchema>;
+export type PostUpdateArgs = z.infer<
+  typeof PostVailidators.PostUpdateSchema
+> & { group?: string };
 export type PostResponse = {
   post: PostItem;
   isAuthor: boolean;

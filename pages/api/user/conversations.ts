@@ -1,66 +1,45 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]";
+import { allowMethods } from "@/lib/middleware/methods-middleware";
+import { getServerErrors } from "@/lib/middleware/server-error-middleware";
 import {
-  createConversation,
-  getConversationByParticipantIds,
-  getConversationsForUser,
-} from "@/lib/api/conversations";
+  NextApiRequestWithSession,
+  useServerAuth,
+} from "@/lib/middleware/session-middleware";
+import {
+  NextApiRequestWithValidatedSession,
+  validate,
+} from "@/lib/middleware/validation-middleware";
+import { PaginationSchema } from "@/lib/pagination";
+import { ConversationService } from "@/lib/services/conversation-service";
+import { NextApiResponse } from "next";
+import { use } from "next-api-route-middleware";
 import { z } from "zod";
 
-const methods = ["GET", "POST"];
+const methods = ["GET"];
 
-export default async function handler(
-  req: NextApiRequest,
+async function handler(
+  req: NextApiRequestWithValidatedSession<z.infer<typeof PaginationSchema>>,
   res: NextApiResponse
 ) {
-  try {
-    const { method, body, query } = req;
-    const session = await getServerSession(req, res, authOptions);
+  const { session, validatedQuery } = req;
 
-    if (!methods.includes(method!)) {
-      res.status(400).json({ message: "Invalid Method" });
-      return;
-    }
-
-    if (session === null) {
-      res.status(400).json({ message: "Not logged in" });
-      return;
-    }
-
-    if (method === "GET") {
-      const parsed = z
-        .object({
-          participants: z.string(),
-        })
-        .safeParse(query);
-
-      if (parsed.success) {
-        const participants = JSON.parse(parsed.data.participants);
-
-        const data = await getConversationByParticipantIds([
-          ...participants,
-          session.user.id,
-        ]);
-
-        res.status(200).json(data);
-        return;
-      } else {
-        const result = await getConversationsForUser(session.user.id);
-        res.status(200).json(result);
-        return;
-      }
-    } else {
-      console.log(method, body);
-      const { userIds } = body;
-      console.log({ userIds });
-      const result = await createConversation([...userIds, session.user.id]);
-      res.status(200).json(result);
-      return;
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ message: "Something went wrong" });
-    return;
-  }
+  return res.status(200).json(
+    await ConversationService.getConversationsForUser({
+      id: session.user.id,
+      ...validatedQuery,
+    })
+  );
 }
+
+export default use(
+  getServerErrors,
+  useServerAuth,
+  validate({ query: PaginationSchema }),
+  allowMethods(methods),
+  handler
+);
+
+export const config = {
+  api: {
+    externalResolver: true,
+  },
+};
