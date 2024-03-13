@@ -23,7 +23,7 @@ export default function ExplorePage() {
           paths={[{ href: "/explore", value: "Explore", disabled: true }]}
         />
         <Search />
-        <div className="flex mx-auto items-center gap-2 justify-center w-full">
+        <div className="flex mx-auto items-center gap-2 justify-center w-full mt-4">
           {typeof tags !== "undefined"
             ? tags.map(({ id, name }) => (
                 <Link href={`/explore/search/${name}`} key={id}>

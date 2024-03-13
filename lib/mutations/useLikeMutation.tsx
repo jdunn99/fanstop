@@ -7,9 +7,9 @@ export function useLikeMutation(postId: string) {
   return useMutation(["likes", postId], {
     async mutationFn({ isDeletion }: { isDeletion: boolean }) {
       if (isDeletion) {
-        return await fetch(`/api/posts/${postId}/likes`, { method: "DELETE" });
+        return await fetch(`/api/posts/${postId}/like`, { method: "DELETE" });
       } else {
-        const like = await fetch("/api/like", {
+        const like = await fetch(`/api/posts/${postId}/like`, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -20,7 +20,7 @@ export function useLikeMutation(postId: string) {
       }
     },
     onSuccess(data, { isDeletion }) {
-      queryClient.setQueryData(["post", postId], (oldData) => {
+      queryClient.setQueryData(["post", postId], (oldData: unknown) => {
         const temp = oldData as unknown as PostResponse;
         if (isDeletion) {
           temp.isLiked = false;

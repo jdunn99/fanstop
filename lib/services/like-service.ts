@@ -11,4 +11,32 @@ export const LikeService = {
       })) > 0
     );
   },
+
+  addLike(postId: string, userId: string) {
+    return db.likes.create({
+      data: {
+        postId,
+        userId,
+      },
+    });
+  },
+
+  async removeLike(postId: string, userId: string) {
+    const like = await db.likes.findFirst({
+      where: {
+        postId,
+        userId,
+      },
+    });
+
+    if (like === null) {
+      throw new Error("Like not found");
+    }
+
+    return await db.likes.delete({
+      where: {
+        id: like.id,
+      },
+    });
+  },
 };
