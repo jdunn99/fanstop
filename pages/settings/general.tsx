@@ -9,11 +9,16 @@ import {
 import { useCommunitiesByIDQuery } from "@/lib/queries/useCommunities";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]";
+import { authOptions } from "../api/auth/[...nextauth]";
 import { useUpdateCommunityMutation } from "@/lib/mutations/useUpdateCommunityMutation";
 import { useCreateCommunityForm } from "@/lib/useCreateCommunityForm";
-import { CreateCommunityForm, Form } from "@/components/create-community-form";
+import { CreateCommunityForm } from "@/components/forms/create-community-form";
 import { TagsService } from "@/lib/services/tags-service";
+import { Container } from "@/components/layout/container";
+import { Sidebar } from "@/components/sidebar/sidebar";
+import { LayoutHeader } from "@/components/layout/header";
+import { LayoutPane } from "@/components/layout/content";
+import { useCommunitySocialsQuery } from "@/lib/queries/useCommunitySocialsQuery";
 
 export default function Settings({
   slug,
@@ -21,9 +26,7 @@ export default function Settings({
   defaultImage,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data } = useCommunitiesByIDQuery(slug);
-
-  const { mutateAsync } = useUpdateCommunityMutation();
-  const router = useRouter();
+  const { data: socials } = useCommunitySocialsQuery(slug);
 
   const defaultSelected = React.useMemo(() => {
     const selected: Record<string, string> = {};
@@ -35,56 +38,27 @@ export default function Settings({
     return selected;
   }, [tags]);
 
-  const { selected, setSelected, profileImage, setProfileImage } =
-    useCreateCommunityForm({
-      defaultProfileImage: {
-        src: defaultImage,
-      },
-      defaultSelected,
-    });
-
-  console.log(selected);
-
-  async function onSubmit(data: Form) {
-    await mutateAsync({
-      id: slug,
-      img: profileImage,
-      tags: Object.values(selected),
-      ...data,
-    });
-    router.reload();
-    router.push("/");
-  }
-
-  if (!data) {
+  if (!data || !socials) {
     return null;
   }
 
   return (
-    <Layout heading="Settings">
-      <DashboardItem>
-        <DashboardItemHeading heading="Your Community" />
-        <p className="font-medium text-sm opacity-60">
-          This is how others will see you on the site
-        </p>
-        <div className="lg:max-w-2xl">
+    <Container>
+      <Sidebar />
+      <LayoutPane>
+        <div className="mx-auto lg:max-w-2xl">
+          <div className="px-4 space-y-2 my-8">
+            <h1 className="text-lg font-semibold">Settings</h1>
+          </div>
           <CreateCommunityForm
-            profileImage={profileImage}
-            setProfileImage={setProfileImage}
-            onSubmit={onSubmit}
-            selected={selected}
-            setSelected={setSelected}
-            defaultValues={{
-              description: data.community.description,
-              name: data.community.name,
-              slug: data.community.slug,
-            }}
-          >
-            <Button type="submit">Update</Button>
-          </CreateCommunityForm>
+            isUpdate
+            {...data.community}
+            {...socials}
+            defaultTags={defaultSelected}
+          />
         </div>
-      </DashboardItem>
-    </Layout>
+      </LayoutPane>
+    </Container>
   );
 }
 

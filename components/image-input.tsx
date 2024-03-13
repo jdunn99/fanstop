@@ -8,10 +8,15 @@ export type ImageState = {
 };
 
 interface ImageInputProps {
+  children?: React.ReactNode;
   coverImage: ImageState;
   setCoverImage: React.Dispatch<React.SetStateAction<ImageState>>;
 }
-export function ImageInput({ setCoverImage, coverImage }: ImageInputProps) {
+export function ImageInput({
+  setCoverImage,
+  coverImage,
+  children,
+}: ImageInputProps) {
   const imageInputRef = React.useRef<HTMLInputElement>(null);
 
   function onFileChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -32,7 +37,22 @@ export function ImageInput({ setCoverImage, coverImage }: ImageInputProps) {
     }
   }
 
-  return (
+  return typeof children !== "undefined" ? (
+    <React.Fragment>
+      <div
+        className="flex items-center gap-4"
+        onClick={() => imageInputRef.current?.click()}
+      >
+        {children}
+      </div>
+      <input
+        type="file"
+        className="hidden"
+        ref={imageInputRef}
+        onChange={onFileChange}
+      />
+    </React.Fragment>
+  ) : (
     <React.Fragment>
       <div
         className="w-full border min-h-[64px] rounded-xl cursor-pointer bg-white hover:bg-rose-50"

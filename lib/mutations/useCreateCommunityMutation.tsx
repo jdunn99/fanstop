@@ -1,36 +1,19 @@
 import { useMutation } from "react-query";
 import { CreateCommunityArgs } from "../api/validators";
 import { FileImage, uploadImage } from "../file";
-
-export async function getImage(image: FileImage | undefined) {
-  if (image) {
-    if (image.formData) {
-      return await uploadImage(image.formData);
-    } else {
-      return image.src;
-    }
-  }
-
-  return undefined;
-}
+import { ImageState } from "@/components/image-input";
 
 export function useCreateCommunityMutation() {
   return useMutation("community", {
-    mutationFn: async ({
-      img,
-      ...rest
-    }: Partial<CreateCommunityArgs> & {
-      img?: {
-        formData?: FormData;
-        src: string;
-      };
-    }) => {
-      const image = await getImage(img);
-
+    mutationFn: async (
+      args: Partial<CreateCommunityArgs> & {
+        img?: string;
+      }
+    ) => {
       const result = await fetch("/api/communities", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image, ...rest }),
+        body: JSON.stringify(args),
       });
 
       return await result.json();

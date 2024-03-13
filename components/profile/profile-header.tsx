@@ -37,7 +37,7 @@ export function ProfileHeader({
           <React.Fragment>
             <NotificationMenu />
             <CreatePostButton />
-            <Link href="/settings">
+            <Link href="/settings/general">
               <Button className="inline-flex gap-2" variant="secondary">
                 <BsGearFill />
                 Edit Profile

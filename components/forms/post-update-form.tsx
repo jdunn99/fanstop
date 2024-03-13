@@ -13,8 +13,6 @@ import {
 import Input from "../ui/input";
 import Textarea from "../ui/textarea";
 import Button from "../ui/button";
-import { BsPlusCircleFill } from "react-icons/bs";
-import { getFileData } from "@/lib/file";
 import React from "react";
 import { FormContainer } from "../form-container";
 import { useRouter } from "next/router";

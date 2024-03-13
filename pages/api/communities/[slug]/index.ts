@@ -53,11 +53,13 @@ async function handler(
         return;
       }
 
-      res
-        .status(200)
-        .json(
-          await CommunityService.updateCommunity({ slug, ...validatedBody })
-        );
+      const result = await CommunityService.updateCommunity({
+        slug,
+        ...validatedBody,
+      });
+
+      res.status(200).json(result);
+      return;
     }
     case "DELETE": {
       res.status(501).send({ message: "Not implemented yet!" });
