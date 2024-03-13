@@ -10,10 +10,13 @@ export function useCreateCommunityMutation() {
         img?: string;
       }
     ) => {
+      console.log(args);
       const result = await fetch("/api/communities", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(args),
+        body: JSON.stringify({
+          ...args,
+        }),
       });
 
       return await result.json();

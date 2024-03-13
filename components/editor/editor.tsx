@@ -14,6 +14,18 @@ import { Container } from "../layout/container";
 import { Sidebar } from "../sidebar/sidebar";
 import { LayoutPane } from "../layout/content";
 import { LayoutHeader } from "../layout/header";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContentNoOverlay,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerPortal,
+  DrawerTitle,
+  DrawerTrigger,
+} from "../ui/drawer";
+import { BsX } from "react-icons/bs";
+import { PostUpdateForm } from "../forms/post-update-form";
 
 interface EditorProps {
   id: string;
@@ -72,7 +84,6 @@ export function Editor({ id, title, content, description }: EditorProps) {
   const { mutateAsync } = useSavePostMutation(id);
   const { toast } = useToast();
 
-  const router = useRouter();
   const focusedRef = React.useRef<HTMLDivElement>();
 
   const handleSavePress = React.useCallback(
@@ -131,7 +142,6 @@ export function Editor({ id, title, content, description }: EditorProps) {
       description: editorDescription,
       editorState,
     });
-    router.push(`/editor/${id}/publish`);
   }
 
   return (
@@ -148,7 +158,38 @@ export function Editor({ id, title, content, description }: EditorProps) {
             <Button variant="secondary" onClick={onSave}>
               Save
             </Button>
-            <Button onClick={onClick}>Publish</Button>
+            <Drawer direction="right">
+              <DrawerTrigger>
+                <Button onClick={async () => await onClick()}>Publish</Button>
+              </DrawerTrigger>
+              <DrawerPortal>
+                <DrawerOverlay />
+
+                <DrawerContentNoOverlay className="lg:w-1/3 w-3/4 break-words  fixed right-0 top-0 dark:border-slate-800 h-full !m-0 !rounded-t-none">
+                  <DrawerHeader className="flex items-center w-full justify-between">
+                    <DrawerTitle>Publish Post</DrawerTitle>
+                    <DrawerClose>
+                      <Button variant="ghost">
+                        <BsX />
+                      </Button>
+                    </DrawerClose>
+                  </DrawerHeader>
+                  <PostUpdateForm
+                    commentsVisible={true}
+                    description={editorDescription}
+                    title={editorTitle}
+                    id={id}
+                    image={
+                      editorState.blocks[0].tag === "img"
+                        ? (editorState.blocks[0].data.src as string)
+                        : null
+                    }
+                    isPublished={false}
+                    subscribersOnly={false}
+                  />
+                </DrawerContentNoOverlay>
+              </DrawerPortal>
+            </Drawer>
           </LayoutHeader>
 
           <div className="grid w-full gap-2 pt-4 ">

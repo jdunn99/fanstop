@@ -37,7 +37,7 @@ export function PostBar({ views, postId, likes, isLiked }: PostBarProps) {
   }
 
   return (
-    <div className="w-full flex gap-4 pt-2 px-8 text-sm">
+    <div className="w-full flex gap-4 pt-8 px-8 text-sm">
       {data !== null ? (
         <div
           className={`${

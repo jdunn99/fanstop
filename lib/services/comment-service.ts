@@ -6,6 +6,7 @@ import {
   paginationArgs,
   getPaginatedMetadata,
 } from "../pagination";
+import { NotificationService } from "./notification-service";
 import { USER_WITH_IMAGE } from "./user-service";
 
 export const CommentService = {
@@ -14,15 +15,48 @@ export const CommentService = {
    * @param data - The underlying data for the comments
    * @returns The newly created comment
    */
-  createComment(data: Pick<Comment, "userId" | "postId" | "content">) {
-    return db.comment.create({
+  async createComment(data: Pick<Comment, "userId" | "postId" | "content">) {
+    const result = await db.comment.create({
       data,
       include: {
         user: {
-          select: USER_WITH_IMAGE,
+          select: {
+            community: {
+              select: {
+                name: true,
+              },
+            },
+
+            ...USER_WITH_IMAGE,
+          },
+        },
+        post: {
+          select: {
+            title: true,
+            authorId: true,
+            community: {
+              select: {
+                slug: true,
+              },
+            },
+          },
         },
       },
-    }) as Promise<Comment>;
+    });
+
+    if (result.post.authorId !== data.userId) {
+      await NotificationService.createNotification({
+        receiver: result.post.authorId,
+        creator: data.userId,
+        message:
+          result.user.community!.name +
+          " created a comment on your post: " +
+          result.post.title,
+        path: "/" + result.post.community.slug + "/" + result.postId,
+      });
+    }
+
+    return CommentValidators.CommentSchema.parse(result);
   },
 
   /**

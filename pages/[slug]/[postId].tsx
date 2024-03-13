@@ -13,6 +13,9 @@ import { Container } from "@/components/layout/container";
 import { Sidebar } from "@/components/sidebar/sidebar";
 import { Content, LayoutPane } from "@/components/layout/content";
 import { LayoutHeader } from "@/components/layout/header";
+import { NotificationMenu } from "@/components/notification-menu";
+import { PostEditMenu } from "@/components/posts/post-edit-menu";
+import { PostItem } from "@/lib/api/validators";
 
 export default function PostPage({
   postId,
@@ -41,14 +44,12 @@ export default function PostPage({
     <Container>
       <Sidebar />
       <LayoutPane>
-        <LayoutHeader paths={paths}></LayoutHeader>
+        <LayoutHeader paths={paths}>
+          <NotificationMenu />
+          {isAuthor ? <PostEditMenu {...post} /> : null}
+        </LayoutHeader>
 
         <div className="grid w-full gap-2 py-4  border-b">
-          <header className="max-w-screen-xl flex h-16 items-center mx-auto w-full justify-between py-4 ">
-            {isAuthor ? (
-              <OwnPostMenu id={postId} isPublished={post.isPublished} />
-            ) : null}
-          </header>
           <article className="prose px-0 mx-auto w-full max-w-screen-lg dark:prose-invert">
             <h1
               autoFocus
@@ -94,17 +95,17 @@ export default function PostPage({
                 />
               </div>
             ) : (
-              <p className="text-xs text-slate-600 font-medium text-center">
+              <p className="text-xs text-slate-600 font-medium text-center py-4">
                 You must be signed in to interact with this post.
               </p>
             )
           ) : (
-            <p className="text-center text-xs text-slate-600 font-medium">
+            <p className="text-center text-xs text-slate-600 font-medium py-4">
               Comments are disabled for this post.
             </p>
           )
         ) : (
-          <p className="text-center text-xs text-slate-600 font-medium">
+          <p className="text-center text-xs text-slate-600 font-medium py-4">
             Comments are only available on published posts
           </p>
         )}

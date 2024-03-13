@@ -23,6 +23,7 @@ import { Community } from "@/lib/api/validators";
 import { usePopularTags } from "@/lib/queries/usePopularTags";
 import { MdClose } from "react-icons/md";
 import { parseImageState } from "@/lib/parseImageState";
+import { useRouter } from "next/router";
 
 const CreateCommunitySchema = z.object({
   name: z.string(),
@@ -74,6 +75,7 @@ export function CreateCommunityForm({
   const { data: tags } = usePopularTags(10);
   const [selected, setSelected] =
     React.useState<Record<string, string>>(defaultTags);
+  const router = useRouter();
 
   async function onSubmit(values: CreateCommunityFormType) {
     const tagIds = Object.values(selected);
@@ -86,6 +88,13 @@ export function CreateCommunityForm({
         tags: tagIds,
         ...values,
       });
+    } else {
+      await createAsync({
+        image,
+        tags: tagIds,
+        ...values,
+      });
+      router.reload();
     }
   }
 

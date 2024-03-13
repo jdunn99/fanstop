@@ -1,4 +1,5 @@
 import { db } from "../db";
+import { NotificationService } from "./notification-service";
 
 export const LikeService = {
   async isLiked(postId: string, userId: string) {
@@ -12,13 +13,48 @@ export const LikeService = {
     );
   },
 
-  addLike(postId: string, userId: string) {
-    return db.likes.create({
+  async addLike(postId: string, userId: string) {
+    const like = await db.likes.create({
       data: {
         postId,
         userId,
       },
+      include: {
+        user: {
+          select: {
+            community: {
+              select: {
+                slug: true,
+                name: true,
+              },
+            },
+          },
+        },
+        post: {
+          select: {
+            authorId: true,
+            community: {
+              select: {
+                slug: true,
+              },
+            },
+            title: true,
+          },
+        },
+      },
     });
+
+    if (like.post.authorId !== userId) {
+      await NotificationService.createNotification({
+        receiver: like.post.authorId,
+        creator: userId,
+        message:
+          like.user.community!.name + " liked your post: " + like.post.title,
+        path: `/${like.post.community.slug}/${like.postId}`,
+      });
+    }
+
+    return like;
   },
 
   async removeLike(postId: string, userId: string) {

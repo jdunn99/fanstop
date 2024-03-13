@@ -17,6 +17,24 @@ export const UserService = {
     });
   },
 
+  async register({
+    email,
+    name,
+    password,
+  }: {
+    email: string;
+    name: string;
+    password: string;
+  }) {
+    return db.user.create({
+      data: {
+        email,
+        name,
+        password: await hash(password),
+      },
+    });
+  },
+
   async updateUser(id: string, { name, newPassword }: UserUpdateBody) {
     return db.user.update({
       where: {

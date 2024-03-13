@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { BsThreeDots } from "react-icons/bs";
 import Button from "../ui/button";
-import { FaPen, FaTrashAlt } from "react-icons/fa";
+import { FaEye, FaPen, FaTrashAlt } from "react-icons/fa";
 import Link from "next/link";
 import { useDeletePostMutation } from "@/lib/mutations/post-mutations";
 import {
@@ -23,12 +23,15 @@ import {
   AlertDialogTitle,
 } from "../ui/alert-dialog";
 import { useToast } from "../ui/toast";
+import { usePathname } from "next/navigation";
 
 export function PostEditMenu(post: PostItem) {
   const { mutateAsync } = useDeletePostMutation(
     post.id,
     post.author.community.slug
   );
+
+  const pathname = usePathname();
 
   const { toast } = useToast();
 
@@ -53,6 +56,15 @@ export function PostEditMenu(post: PostItem) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="z-[99]">
+          {pathname !== `/${post.author.community.slug}/${post.id}` ? (
+            <Link href={`/${post.author.community.slug}/${post.id}`}>
+              <DropdownMenuItem className="cursor-pointer gap-2">
+                <FaEye className="text-xs" />
+                View
+              </DropdownMenuItem>
+            </Link>
+          ) : null}
+
           <Link href={`/editor/${post.id}`}>
             <DropdownMenuItem className="cursor-pointer gap-2">
               <FaPen className="text-xs" />

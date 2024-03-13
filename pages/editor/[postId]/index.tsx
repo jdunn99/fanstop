@@ -11,18 +11,8 @@ import { z } from "zod";
 export default function PostEditorPage({
   postId,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { data: post, mutate } = useEditingMutation(postId);
   const { data } = usePostQuery(postId);
   const { data: content } = usePostContentQuery(postId);
-
-  const [isMounted, setIsMounted] = React.useState<boolean>(false);
-
-  React.useEffect(() => {
-    if (isMounted) {
-      mutate();
-    }
-    setIsMounted(true);
-  }, [mutate, isMounted]);
 
   if (!data) return null;
 

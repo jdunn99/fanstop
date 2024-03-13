@@ -50,7 +50,17 @@ export function PostUpdateForm({
   isPublished,
   image,
   group,
-}: PostItem) {
+}: Pick<
+  PostItem,
+  | "id"
+  | "title"
+  | "description"
+  | "subscribersOnly"
+  | "commentsVisible"
+  | "isPublished"
+  | "image"
+  | "group"
+>) {
   const form = useForm<PostUpdateFormProps>({
     resolver: zodResolver(PostUpdateFormSchema),
     defaultValues: {

@@ -1,5 +1,5 @@
 import { Group, PostItem } from "@/lib/api/validators";
-import { ColumnDef, flexRender } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "./data-table";
 import { usePostsForAuthedUserQuery } from "@/lib/queries/post-queries";
 import { useFlattenedPaginatedData } from "@/lib/useFlattenedPaginatedData";
@@ -7,17 +7,6 @@ import { CreatePostButton } from "../create-post-button";
 import React from "react";
 import { Badge } from "../ui/badge";
 import { truncateString } from "@/lib/truncate";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import Button from "../ui/button";
-import { BsThreeDots } from "react-icons/bs";
-import { FaCommentDots } from "react-icons/fa";
 import { PostEditMenu } from "../posts/post-edit-menu";
 
 export const columns: ColumnDef<PostItem>[] = [
@@ -103,7 +92,12 @@ export const columns: ColumnDef<PostItem>[] = [
     header: "Group",
     cell: ({ cell }) => {
       const value = cell.getValue() as Group;
-      return value !== null ? value.name : "None";
+
+      return value !== null ? (
+        <Badge>{value.name}</Badge>
+      ) : (
+        <Badge variant="secondary">None</Badge>
+      );
     },
   },
   {
