@@ -6,7 +6,6 @@ import {
   DrawerPortal,
   DrawerOverlay,
   DrawerContentNoOverlay,
-  DrawerContent,
   DrawerHeader,
   DrawerTitle,
   DrawerClose,
@@ -15,10 +14,7 @@ import { useRouter } from "next/router";
 import { usePostQuery } from "@/lib/queries/post-queries";
 import Button from "@/components/ui/button";
 import { BsX } from "react-icons/bs";
-import {
-  PostUpdateForm,
-  PostUpdateFormProps,
-} from "@/components/forms/post-update-form";
+import { PostUpdateForm } from "@/components/forms/post-update-form";
 
 export default function CommunityPostPageWithDrawer({
   postId,

@@ -1,8 +1,5 @@
 import * as React from "react";
 import Link from "next/link";
-import { NavLink } from "@/types";
-import { Search } from "./search";
-import Button from "./ui/button";
 import { AvatarMenu } from "./avatar-menu";
 import { CreatePostButton } from "./create-post-button";
 import Image from "next/image";
@@ -19,7 +16,7 @@ export function ProfileNav({ children }: ProfileNavProps) {
   const { data: session } = useSession();
 
   return (
-    <header className="sticky h-[46px] top-0 z-50 w-full backdrop-blur  flex-none transition-colors duration-500 border-b border-slate-200 bg-transparent ">
+    <header className="sticky py-3 top-0 z-50 w-full backdrop-blur  flex-none transition-colors duration-500 border-b border-slate-200 bg-transparent ">
       <div className="max-w-[84rem] mx-auto h-full my-auto">
         <div className=" lg:px-4 px-1 mx-4 h-full">
           <div className="relative flex items-center h-full  ">
@@ -39,13 +36,13 @@ export function ProfileNav({ children }: ProfileNavProps) {
                   <CreatePostButton />
                   <NotificationMenu />
                   <AvatarMenu />
+                  <NavDrawerOpenButton />
                 </React.Fragment>
               ) : (
                 <React.Fragment>
                   <LoginSignupButtons />
                 </React.Fragment>
               )}
-              <NavDrawerOpenButton />
             </div>
           </div>
         </div>
