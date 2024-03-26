@@ -12,6 +12,7 @@ export function SidebarSubscriberContent() {
   return (
     <ul className="px-3 space-y-1">
       {typeof data !== "undefined" &&
+      typeof data.pages !== "undefined" &&
       data.pages.length > 0 &&
       data.pages[0].response.length > 0
         ? data.pages.map((page, index) => (
